@@ -27,7 +27,6 @@ g++ -std=c++17 test_cpp17.cpp -o test_cpp17
 ./test_cpp17
 
 Output: C++17 works!
-text
 
 **Result**: ✅ C++17 fully supported
 
@@ -40,7 +39,6 @@ text
 cmake --version
 
 Output: cmake version 3.2x.x
-text
 
 **Result**: ✅ CMake configured
 
@@ -57,7 +55,7 @@ Verify
 ls /opt/homebrew/include/boost
 
 Output: Shows boost headers
-text
+
 
 **Result**: ✅ Boost libraries available
 
@@ -77,7 +75,6 @@ Verify
 qmake --version
 
 Output: QMake version 3.1, Using Qt version 6.x.x
-text
 
 **Result**: ✅ Qt6 ready for CGAL demos
 
@@ -92,7 +89,6 @@ brew install gmp mpfr eigen
 Verify installations
 brew list | grep -E 'gmp|mpfr|eigen'
 
-text
 
 **Result**: ✅ All dependencies installed
 
@@ -108,12 +104,6 @@ ssh-keygen -t ed25519 -C "utkarshkhajuria55@gmail.com"
 Add to GitHub
 cat ~/.ssh/id_ed25519.pub
 
-(Added to GitHub settings)
-Test connection
-ssh -T git@github.com
-
-Output: Hi UtkarsHMer05! You've successfully authenticated...
-text
 
 **Result**: ✅ Git with SSH configured for GitHub & Bitbucket
 
@@ -129,3 +119,4 @@ text
 ## ⏭️ Next Steps
 
 - Proceed to **Step 1.2**: Build CGAL from source
+
