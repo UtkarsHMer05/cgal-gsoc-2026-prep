@@ -3,7 +3,7 @@
 **Project**: Enhancing CGAL Python Bindings  
 **Applicant**: Utkarsh Khajuria | [GitHub](https://github.com/UtkarsHMer05) | [LinkedIn](https://linkedin.com/in/utkarshkhajuria05)  
 **Mentor**: Efi Fogel  
-**Timeline**: December 2024 - March 2025  
+**Timeline**: December 2025 - March 2026
 
 ---
 
@@ -32,28 +32,6 @@ This repository documents my preparation journey for Google Summer of Code 2026 
 | 1.7 | First Contribution | ⏳ Pending | 0% |
 
 **Overall Phase 1**: ████████░░░░░░░░░░░░ 35%
-
----
-
-## 📂 Repository Structure
-
-\`\`\`
-cgal-gsoc-2026-prep/
-├── README.md                                    # This file
-├── phase1-foundation/
-│   ├── step1.1-environment-setup/
-│   │   └── setup-log.md                        # Installation & dependencies
-│   ├── step1.2-build-cgal/
-│   │   └── build-notes.md                      # CGAL build process
-│   └── step1.3-master-arrangements/
-│       ├── part-a-theory.md                    # 2D Arrangements theory
-│       ├── part-b-examples.md                  # Examples compilation & runs
-│       └── part-d-architecture.md              # Template architecture analysis
-├── screenshots/                                 # Terminal outputs, demos
-└── code-explorations/                          # Custom CGAL code experiments
-\`\`\`
-
----
 
 ## 🎓 What I've Learned So Far
 
@@ -133,7 +111,7 @@ Each step includes:
 ## 📧 Contact
 
 **Utkarsh Khajuria**  
-📧 utkarshkhajuria05@gmail.com  
+📧 utkarshkhajuria55@gmail.com  
 🔗 [GitHub](https://github.com/UtkarsHMer05) | [LinkedIn](https://linkedin.com/in/utkarshkhajuria05)  
 
 ---
