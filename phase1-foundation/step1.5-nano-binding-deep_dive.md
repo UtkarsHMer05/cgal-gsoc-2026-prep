@@ -30,8 +30,10 @@ This document is my learning journey through nanobind—the foundation I need to
 - Cleaner syntax
 
 **CGAL uses nanobind** with a migration alias:
-namespace py = nanobind;
 
+```cpp
+namespace py = nanobind;
+```
 
 This lets CGAL maintain compatibility if they switch between binding libraries.
 
@@ -75,36 +77,38 @@ Makes a copy of the returned C++ object for Python to own.
 - For simple types like numbers, strings
 
 **Example:**
-    
-    .def("get_point", &get_point, py::return_value_policy::copy)
 
-
+```cpp
+.def("get_point", &get_point, py::return_value_policy::copy)
+```
 
 **C++ code:**
 
-    Point_2 get_point() {
-    return Point_2(1.0, 2.0); // Return by value
-    }
-
+```cpp
+Point_2 get_point() {
+    return Point_2(1.0, 2.0);  // Return by value
+}
+```
 
 **Python behavior:**
 
-    p = arr.get_point() # Python gets a copy
-    
-    Original C++ object can be destroyed safely
+```python
+p = arr.get_point()  # Python gets a copy
 
+# Original C++ object can be destroyed safely
+```
 
 **Memory diagram:**
 
-    C++ Side: Python Side:
-    ┌─────────┐ ┌─────────┐
-    │ Point │ COPY → │ Point │
-    │ (1, 2) │ │ (1, 2) │
-    └─────────┘ └─────────┘
-    ↓ ↓
-    Destroyed Lives independently
-
-
+```
+C++ Side:                Python Side:
+┌─────────┐              ┌─────────┐
+│ Point   │    COPY →    │ Point   │
+│ (1, 2)  │              │ (1, 2)  │
+└─────────┘              └─────────┘
+     ↓                        ↓
+  Destroyed            Lives independently
+```
 
 ---
 
@@ -118,15 +122,17 @@ Basically never, unless you're desperate (like line 857).
 
 **Example:**
 
-    .def("get_vertex", &get_vertex, py::return_value_policy::reference)
-
-
+```cpp
+.def("get_vertex", &get_vertex, py::return_value_policy::reference)
+```
 
 **The problem:**
 
-    v = arr.get_vertex(0)
-    del arr # Delete the arrangement
-    print(v.point()) # CRASH! v points to freed memory
+```python
+v = arr.get_vertex(0)
+del arr  # Delete the arrangement
+print(v.point())  # CRASH! v points to freed memory
+```
 
 **Why line 857 uses this:**  
 `reference_internal` doesn't work for `insert_cv_with_history`, so they're using bare `reference` as a workaround. **This is the bug I need to fix.**
@@ -145,31 +151,32 @@ Returns a reference to a C++ object, **BUT** keeps the parent object alive.
 
 **Example:**
 
-    // Arrangement_2::vertex(int index)
-    .def("vertex", &Arrangement_2::vertex,
-    py::return_value_policy::reference_internal)
-
-
+```cpp
+// Arrangement_2::vertex(int index)
+.def("vertex", &Arrangement_2::vertex,
+     py::return_value_policy::reference_internal)
+```
 
 **How it works:**
 
-    arr = Arrangement_2()
-    v = arr.vertex(0) # v holds reference to vertex inside arr
-    del arr # Python keeps arr alive because v still exists!
-    print(v.point()) # Works! arr is still alive
-
-
+```python
+arr = Arrangement_2()
+v = arr.vertex(0)  # v holds reference to vertex inside arr
+del arr  # Python keeps arr alive because v still exists!
+print(v.point())  # Works! arr is still alive
+```
 
 **Memory diagram:**
 
-    C++ Side:
-    ┌─────────────────────┐
-    │ Arrangement_2 │ ← Python keeps this alive
-    │ ┌───────────────┐ │
-    │ │ Vertex 0 │ ←┼── v points here
-    │ └───────────────┘ │
-    └─────────────────────┘
-
+```
+C++ Side:
+┌─────────────────────┐
+│   Arrangement_2     │  ← Python keeps this alive
+│  ┌───────────────┐  │
+│  │   Vertex 0    │ ←┼── v points here
+│  └───────────────┘  │
+└─────────────────────┘
+```
 
 **This is the CORRECT policy for most CGAL bindings.**
 
@@ -186,18 +193,18 @@ Python takes ownership of a C++ pointer and will `delete` it.
 
 **Example:**
 
-    .def("create_arrangement", &create_arrangement,
-    py::return_value_policy::take_ownership)
-
-
+```cpp
+.def("create_arrangement", &create_arrangement,
+     py::return_value_policy::take_ownership)
+```
 
 **C++ code:**
 
-    Arrangement_2* create_arrangement() {
-    return new Arrangement_2(); // Python will delete this
-    }
-
-
+```cpp
+Arrangement_2* create_arrangement() {
+    return new Arrangement_2();  // Python will delete this
+}
+```
 
 **CGAL doesn't use this much** because modern C++ prefers smart pointers.
 
@@ -243,22 +250,23 @@ A policy that says: "Keep argument X alive while argument Y exists."
 
 **Example:**
 
-    .def("vertices", &Arrangement_2::vertices,
-    py::keep_alive<0, 1>())
-
+```cpp
+.def("vertices", &Arrangement_2::vertices,
+     py::keep_alive<0, 1>())
+```
 
 **What this does:**
 
-    arr = Arrangement_2()
-    vertices_iter = arr.vertices() # Iterator over vertices
-    
-    del arr # Try to delete arrangement
-    
-    Python keeps arr alive because vertices_iter depends on it!
-    for v in vertices_iter: # Works! arr is still alive
+```python
+arr = Arrangement_2()
+vertices_iter = arr.vertices()  # Iterator over vertices
+
+del arr  # Try to delete arrangement
+
+# Python keeps arr alive because vertices_iter depends on it!
+for v in vertices_iter:  # Works! arr is still alive
     print(v.point())
-
-
+```
 
 **Why this matters:**  
 Iterators point into the arrangement. If the arrangement gets destroyed while iterators exist, we get **use-after-free crashes**.
@@ -271,19 +279,22 @@ Iterators point into the arrangement. If the arrangement gets destroyed while it
 
 **Example:** When inserting objects into containers:
 
-    .def("insert_curve", &insert_curve,
-    py::keep_alive<1, 2>())
+```cpp
+.def("insert_curve", &insert_curve,
+     py::keep_alive<1, 2>())
+```
 
 **What this does:**
 
-    arr = Arrangement_2()
-    curve = Segment_2(Point_2(0,0), Point_2(1,1))
-    
-    arr.insert_curve(curve)
-    del curve # Try to delete curve
+```python
+arr = Arrangement_2()
+curve = Segment_2(Point_2(0,0), Point_2(1,1))
 
-Python keeps curve alive because arr might reference it!
+arr.insert_curve(curve)
+del curve  # Try to delete curve
 
+# Python keeps curve alive because arr might reference it!
+```
 
 ---
 
@@ -295,52 +306,58 @@ This is critical for my GSoC project since Efi said "hundreds needed."
 
 **Current CGAL bindings:**
 
-    help(arr.insert)
-    insert(arg0, arg1, arg2)
+```python
+help(arr.insert)
+# insert(arg0, arg1, arg2)
+```
 
 **What users see:**
 
-    arr.insert(???, ???, ???) # What do these arguments mean?!
+```python
+arr.insert(???, ???, ???)  # What do these arguments mean?!
+```
 
 #### **The Solution: Named Parameters**
 
 **Add `py::arg()` to bindings:**
 
-    // Before (bad):
-    .def("insert", &Arrangement_2::insert)
-    
-    // After (good):
-    .def("insert", &Arrangement_2::insert,
-    py::arg("curve"),
-    py::arg("point_location") = true,
-    py::arg("validate") = true)
+```cpp
+// Before (bad):
+.def("insert", &Arrangement_2::insert)
 
+// After (good):
+.def("insert", &Arrangement_2::insert,
+     py::arg("curve"),
+     py::arg("point_location") = true,
+     py::arg("validate") = true)
+```
 
 **What users now see:**
 
-    help(arr.insert)
-    insert(curve, point_location=True, validate=True)
-    
-    Much better!
-    arr.insert(curve=my_segment, validate=False)
+```python
+help(arr.insert)
+# insert(curve, point_location=True, validate=True)
 
-
+# Much better!
+arr.insert(curve=my_segment, validate=False)
+```
 
 #### **Optional Parameters with Defaults:**
 
-    .def("insert", &insert_func,
-    py::arg("curve"), // Required
-    py::arg("validate") = true, // Optional, default True
-    py::arg("point_location") = true) // Optional, default True
-
+```cpp
+.def("insert", &insert_func,
+     py::arg("curve"),                    // Required
+     py::arg("validate") = true,          // Optional, default True
+     py::arg("point_location") = true)    // Optional, default True
+```
 
 **Python usage:**
 
-      arr.insert(curve) # Use all defaults
-      arr.insert(curve, validate=False) # Override one default
-      arr.insert(curve, False, False) # Positional works too
-
-
+```python
+arr.insert(curve)                    # Use all defaults
+arr.insert(curve, validate=False)    # Override one default
+arr.insert(curve, False, False)      # Positional works too
+```
 
 ---
 
@@ -350,18 +367,20 @@ Now I had enough knowledge to understand **why line 857 is broken** and **how to
 
 #### **The Code:**
 
-    // Line 857-858 in arrangement_on_surface_2_bindings.cpp
-    //! \todo Why the f... reference_internal doesn't work?
-    m.def("insert", &aos2::insert_curves_with_history)
-    .def("insert", &aos2::insert_cv_with_history, ref) // Using bare ref!
-
+```cpp
+// Line 857-858 in arrangement_on_surface_2_bindings.cpp
+//! \todo Why the f... reference_internal doesn't work?
+m.def("insert", &aos2::insert_curves_with_history)
+.def("insert", &aos2::insert_cv_with_history, ref)  // Using bare ref!
+```
 
 **What `insert_cv_with_history` does:**
-    
-    Curve_handle insert_cv_with_history(const X_monotone_curve_2& c);
-    
-    
-    Returns a handle to curve history metadata.
+
+```cpp
+Curve_handle insert_cv_with_history(const X_monotone_curve_2& c);
+
+// Returns a handle to curve history metadata.
+```
 
 ---
 
@@ -369,15 +388,15 @@ Now I had enough knowledge to understand **why line 857 is broken** and **how to
 
 **Hypothesis 1: Ownership Chain is Broken**
 
-    Arrangement_2
-    └─ DCEL structure
-    └─ Vertices, Edges, Faces
-    
-    Curve_history (separate structure)
-    └─ Curve metadata
-    └─ Curve_handle points here
+```
+Arrangement_2
+  └─ DCEL structure
+       └─ Vertices, Edges, Faces
 
-
+Curve_history (separate structure)
+  └─ Curve metadata
+       └─ Curve_handle points here
+```
 
 **Problem:** `Curve_handle` might not be directly owned by `Arrangement_2`. It might be owned by `Curve_history`, which is a sibling structure, not a child.
 
@@ -387,19 +406,19 @@ Now I had enough knowledge to understand **why line 857 is broken** and **how to
 ---
 
 **Hypothesis 2: Multi-Owner Scenario**
-    
-    Python: C++:
-    ┌──────────────┐ ┌──────────────────┐
-    │ Arrangement │───────→ │ Arrangement_2 │
-    └──────────────┘ │ ├─ DCEL │
-    │ └─ Curve_history│
-    └──────────────────┘
-    ↓
-    ┌──────────────────┐
-    │ Curve_handle │ ← Who owns this?
-    └──────────────────┘
 
-
+```
+Python:                   C++:
+┌──────────────┐         ┌──────────────────┐
+│ Arrangement  │───────→ │ Arrangement_2    │
+└──────────────┘         │  ├─ DCEL         │
+                         │  └─ Curve_history│
+                         └──────────────────┘
+                                  ↓
+                         ┌──────────────────┐
+                         │  Curve_handle    │ ← Who owns this?
+                         └──────────────────┘
+```
 
 **Problem:** Both `Arrangement_2` and `Curve_history` might need to stay alive. `reference_internal` only keeps one parent alive.
 
@@ -408,19 +427,19 @@ Now I had enough knowledge to understand **why line 857 is broken** and **how to
 #### **Potential Fixes I'm Considering:**
 
 **Option 1: Custom `keep_alive` Chain**
-    
-    .def("insert", &aos2::insert_cv_with_history,
-    py::keep_alive<0, 1>(), // Keep Arrangement alive
-    py::return_value_policy::reference)
 
-
+```cpp
+.def("insert", &aos2::insert_cv_with_history,
+     py::keep_alive<0, 1>(),  // Keep Arrangement alive
+     py::return_value_policy::reference)
+```
 
 **Option 2: Return by Value (Copy)**
-    
-    .def("insert", &aos2::insert_cv_with_history,
-    py::return_value_policy::copy)
 
-
+```cpp
+.def("insert", &aos2::insert_cv_with_history,
+     py::return_value_policy::copy)
+```
 
 **Downside:** Expensive if `Curve_handle` is large or copying is slow.
 
@@ -428,13 +447,14 @@ Now I had enough knowledge to understand **why line 857 is broken** and **how to
 
 **Option 3: Explicit Lifetime Annotation**
 
-    // Might need to modify the C++ code to use shared_ptr
-    .def("insert", [](Arrangement_2& arr, const X_monotone_curve_2& c) {
+```cpp
+// Might need to modify the C++ code to use shared_ptr
+.def("insert", [](Arrangement_2& arr, const X_monotone_curve_2& c) {
     auto result = arr.insert_cv_with_history(c);
     // Manually manage lifetime
     return result;
-    }, py::keep_alive<0, 1>())
-
+}, py::keep_alive<0, 1>())
+```
 
 ---
 
@@ -459,13 +479,14 @@ Need to **read the C++ implementation** of `insert_cv_with_history` to understan
 
 **Key code sections:**
 
-    // Line 420: Typical reference_internal usage
-    .def("vertex", &aos2::vertex,
-    py::return_value_policy::reference_internal)
-    
-    // Line 857: The broken one
-    .def("insert", &aos2::insert_cv_with_history, ref) // ref is bare reference!
+```cpp
+// Line 420: Typical reference_internal usage
+.def("vertex", &aos2::vertex,
+     py::return_value_policy::reference_internal)
 
+// Line 857: The broken one
+.def("insert", &aos2::insert_cv_with_history, ref)  // ref is bare reference!
+```
 
 ---
 
@@ -492,10 +513,11 @@ Need to **read the C++ implementation** of `insert_cv_with_history` to understan
 - Type definitions for handles (Vertex_handle, Halfedge_handle, etc.)
 
 **Key finding:**
+
+```cpp
 typedef typename Dcel::Vertex_handle Vertex_handle;
 typedef typename Dcel::Halfedge_handle Halfedge_handle;
-
-text
+```
 
 Handles are typedefs from DCEL, meaning they're **not directly owned by Arrangement_2**, they're owned by the DCEL.
 
@@ -522,28 +544,26 @@ Handles are typedefs from DCEL, meaning they're **not directly owned by Arrangem
 **Goal:** Understand when `reference_internal` works vs. fails
 
 **Setup:**
+
+```python
 from cgal import Arrangement_2, Segment_2, Point_2
 
-    arr = Arrangement_2()
-    seg = Segment_2(Point_2(0, 0), Point_2(1, 1))
-    he = arr.insert(seg)
+arr = Arrangement_2()
+seg = Segment_2(Point_2(0, 0), Point_2(1, 1))
+he = arr.insert(seg)
 
-Test 1: Does halfedge stay valid?
+# Test 1: Does halfedge stay valid?
+print(he.source().point())  # Works
 
-    print(he.source().point()) # Works
+# Test 2: Delete arrangement, does halfedge crash?
+arr_ref = arr
+del arr
+print(he.source().point())  # Still works! reference_internal is working
 
-Test 2: Delete arrangement, does halfedge crash?
-
-    arr_ref = arr
-    del arr
-    print(he.source().point()) # Still works! reference_internal is working
-
-Test 3: Delete both references
-
-    del arr_ref
-
-Now he might crash if accessed
-
+# Test 3: Delete both references
+del arr_ref
+# Now he might crash if accessed
+```
 
 **Result:** For most methods, `reference_internal` **works correctly**.
 
@@ -553,16 +573,16 @@ Now he might crash if accessed
 
 **Command:**
 
-    grep -rn "py::return_value_policy ref" cgal-python-bindings/
-
-text
+```bash
+grep -rn "py::return_value_policy ref" cgal-python-bindings/
+```
 
 **Found:**
 
-    // In arrangement_on_surface_2_bindings.cpp, line ~20
-    auto ref = py::return_value_policy::reference;
-
-
+```cpp
+// In arrangement_on_surface_2_bindings.cpp, line ~20
+auto ref = py::return_value_policy::reference;
+```
 
 **Aha!** `ref` is just an alias for `py::return_value_policy::reference` (the dangerous one).
 
@@ -572,8 +592,9 @@ text
 
 **Command:**
 
-    grep -rn "todo|TODO|FIXME" cgal-python-bindings/ | grep -i "reference|lifetime|memory"
-
+```bash
+grep -rn "todo|TODO|FIXME" cgal-python-bindings/ | grep -i "reference|lifetime|memory"
+```
 
 **Found:**
 - Line 430: TODO about turning something into a template
@@ -617,9 +638,11 @@ text
 **Tasks:**
 1. Read `insert_cv_with_history` implementation in CGAL source
 2. Map the exact ownership chain:
-Arrangement_2 → DCEL → Curve_history → Curve_handle
 
-text
+```
+Arrangement_2 → DCEL → Curve_history → Curve_handle
+```
+
 3. Determine: Does `Curve_handle` point into DCEL or Curve_history?
 
 ### **Phase 2: Test Fix Approaches**

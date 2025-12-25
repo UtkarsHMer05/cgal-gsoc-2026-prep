@@ -90,8 +90,10 @@ CGAL doesn't hardcode "this arrangement works with line segments only" - instead
 
 This connects directly to C++ templates and generic programming - the Arrangement_2 class is templated:
 
-    template<typename Traits>
-    class Arrangement_2 { ... }
+```cpp
+template<typename Traits>
+class Arrangement_2 { ... }
+```
 
 The algorithm doesn't care if you're using lines, circles, or Bézier curves. As long as your `Traits` class provides the required operations, it'll work. This is the **traits pattern** in action - separating algorithm from geometric primitives.
 
@@ -218,28 +220,29 @@ Incremental insertion allows:
 When binding these to Python, I'll need to:
 
 1. **Hide C++ complexity**:
-   
-Python users shouldn't see Traits/Kernel
+   Python users shouldn't see Traits/Kernel
 
-      arr = Arrangement2D() # Default traits internally
-      arr.insert(Segment2D(p1, p2)) # Simple API
-
+```python
+arr = Arrangement2D()  # Default traits internally
+arr.insert(Segment2D(p1, p2))  # Simple API
+```
 
 2. **Pythonic queries**:
+   Instead of C++ CGAL::Object polymorphism
 
-Instead of C++ CGAL::Object polymorphism
-   
-      result = arr.locate(point)
-      if isinstance(result, Face):
-      print(f"Inside face {result.id}")
-
+```python
+result = arr.locate(point)
+if isinstance(result, Face):
+    print(f"Inside face {result.id}")
+```
 
 3. **Iterator adaptation**:
-Pythonic iteration
-  
-        for vertex in arr.vertices():
-        print(vertex.point())
+   Pythonic iteration
 
+```python
+for vertex in arr.vertices():
+    print(vertex.point())
+```
 
 4. **Memory management**:
 - CGAL uses handles (smart pointers)

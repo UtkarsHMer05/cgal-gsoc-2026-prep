@@ -17,39 +17,39 @@ Build and run key 2D Arrangements examples to understand:
 
 ## 📂 1. Navigate to Examples Directory
 
-    cd ~/cgal/examples/Arrangement_on_surface_2
-    ls -la
+```bash
+cd ~/cgal/examples/Arrangement_on_surface_2
+ls -la
+```
 
 Output shows:
 
-      incremental_insertion.cpp
-      point_location.cpp
-      edge_insertion.cpp
-      overlay.cpp
-      ... many more
-
+```
+incremental_insertion.cpp
+point_location.cpp
+edge_insertion.cpp
+overlay.cpp
+... many more
+```
 
 ---
 
 ## 🔨 2. Build Examples
 
-Create build directory
+```bash
+# Create build directory
+mkdir build
+cd build
 
-      mkdir build
-      cd build
+# Configure
+cmake -DCMAKE_BUILD_TYPE=Release ..
 
-Configure
+# Build all examples
+cmake --build . -j8
 
-      cmake -DCMAKE_BUILD_TYPE=Release ..
-
-Build all examples
-
-      cmake --build . -j8
-
-Verify executables created
-
-      ls -lh | grep -E 'incremental|point_location|edge'
-
+# Verify executables created
+ls -lh | grep -E 'incremental|point_location|edge'
+```
 
 **Result**: ✅ All 3 examples compiled successfully
 
@@ -62,26 +62,26 @@ Demonstrates how to construct an arrangement by inserting curves one at a time.
 
 ### Run
 
-    ./incremental_insertion
-
+```bash
+./incremental_insertion
+```
 
 ### Output
 
+```
 Inserting segments incrementally...
-
-      Segment 1: (1, 3) -> (4, 6)
-      Segment 2: (2, 5) -> (6, 1)
-      Segment 3: (1, 1) -> (6, 6)
-      ... [more insertions]
+Segment 1: (1, 3) -> (4, 6)
+Segment 2: (2, 5) -> (6, 1)
+Segment 3: (1, 1) -> (6, 6)
+... [more insertions]
 
 Arrangement size:
-
-      Vertices: 7
-      Edges: 12
-      Faces: 6
+Vertices: 7
+Edges: 12
+Faces: 6
 
 Construction completed successfully!
-
+```
 
 ### What I Observed
 
@@ -115,40 +115,38 @@ Demonstrates spatial query: "Given a point, which face/edge/vertex contains it?"
 
 ### Run
 
-    ./point_location
-
+```bash
+./point_location
+```
 
 ### Output
 
+```
 Building arrangement with 5 segments...
 Arrangement constructed:
-
-      Vertices: 6
-      Edges: 10
-      Faces: 5
+Vertices: 6
+Edges: 10
+Faces: 5
 
 Testing point location strategies:
 
 Query point: (2.5, 3.0)
-
-      Naive strategy: Inside Face #3
-      Landmarks strategy: Inside Face #3
-      ✓ Results match!
+Naive strategy: Inside Face #3
+Landmarks strategy: Inside Face #3
+✓ Results match!
 
 Query point: (3.0, 4.0)
-
-      Naive strategy: On Edge between V2 and V4
-      Landmarks strategy: On Edge between V2 and V4
-      ✓ Results match!
+Naive strategy: On Edge between V2 and V4
+Landmarks strategy: On Edge between V2 and V4
+✓ Results match!
 
 Query point: (1.0, 1.0)
-
-      Naive strategy: At Vertex #0
-      Landmarks strategy: At Vertex #0
-      ✓ Results match!
+Naive strategy: At Vertex #0
+Landmarks strategy: At Vertex #0
+✓ Results match!
 
 All point location queries completed successfully!
-
+```
 
 ### What I Observed
 
@@ -181,37 +179,32 @@ Demonstrates modifying an existing arrangement by inserting new curves that inte
 
 ### Run
 
-    ./edge_insertion
-
+```bash
+./edge_insertion
+```
 
 ### Output
 
+```
 Initial arrangement:
-
-      Vertices: 4
-      Edges: 6
-      Faces: 3
+Vertices: 4
+Edges: 6
+Faces: 3
 
 Inserting new edge from (0, 2) to (4, 2)...
-
 Intersects with Edge #2 at point (1.5, 2)
-
 Intersects with Edge #4 at point (3.0, 2)
-
 Created 2 new vertices
-
 Split 2 existing edges
-
 Split Face #1 into 2 faces
 
 After insertion:
-
-      Vertices: 6
-      Edges: 10
-      Faces: 4
+Vertices: 6
+Edges: 10
+Faces: 4
 
 Arrangement remains valid!
-
+```
 
 ### What I Observed
 
@@ -224,11 +217,12 @@ Arrangement remains valid!
    - Face boundaries updated
 
 3. **DCEL updates under the hood**:
-Before: After:
 
-        V1 ------> V2 V1 -> Vnew -> V2
-        (1 halfedge) (2 halfedges)
-
+```
+Before:               After:
+V1 ------> V2         V1 -> Vnew -> V2
+  (1 halfedge)          (2 halfedges)
+```
 
 4. **Validity maintained**: Arrangement stays topologically correct (Euler formula: V - E + F = 2 for planar graphs)
 
@@ -276,26 +270,30 @@ Incremental insertion allows:
 When binding these to Python, I'll need to:
 
 1. **Hide C++ complexity**:
-Python users shouldn't see Traits/Kernel
+   Python users shouldn't see Traits/Kernel
 
-        arr = Arrangement2D() # Default traits internally
-        arr.insert(Segment2D(p1, p2)) # Simple API
-
+```python
+arr = Arrangement2D()  # Default traits internally
+arr.insert(Segment2D(p1, p2))  # Simple API
+```
 
 2. **Pythonic queries**:
-Instead of C++ CGAL::Object polymorphism
+   Instead of C++ CGAL::Object polymorphism
 
-        result = arr.locate(point)
-        if isinstance(result, Face):
-        print(f"Inside face {result.id}")
-
+```python
+result = arr.locate(point)
+if isinstance(result, Face):
+    print(f"Inside face {result.id}")
+```
 
 3. **Iterator adaptation**:
-Pythonic iteration
-        
-        for vertex in arr.vertices():
-        print(vertex.point())
-   
+   Pythonic iteration
+
+```python
+for vertex in arr.vertices():
+    print(vertex.point())
+```
+
 4. **Memory management**:
 - CGAL uses handles (smart pointers)
 - Nanobind needs proper ownership specification
@@ -328,5 +326,3 @@ Pythonic iteration
 
 **Status**: Part B Complete ✅  
 **Next**: [Part D - Architecture Analysis →](part-d-architecture.md)
-
-

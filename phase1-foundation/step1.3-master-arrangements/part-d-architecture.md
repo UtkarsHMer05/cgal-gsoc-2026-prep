@@ -14,14 +14,16 @@
 
 **Template signature:**
 
-    template <class GeomTraits_,
-    class Dcel_ = Arr_default_dcel<GeomTraits_> >
-    class Arrangement_2 :
+```cpp
+template <class GeomTraits_,
+          class Dcel_ = Arr_default_dcel<GeomTraits_> >
+class Arrangement_2 :
     public Arrangement_on_surface_2
-    <GeomTraits_, typename Default_planar_topology<GeomTraits_, Dcel_>::Traits>
-    {
+        <GeomTraits_, typename Default_planar_topology<GeomTraits_, Dcel_>::Traits>
+{
     // Implementation
-    };
+};
+```
 
 ### Template Parameters
 
@@ -45,10 +47,11 @@
 
 ### Inheritance Hierarchy
 
-    Arrangement_2<GeomTraits, Dcel>
+```
+Arrangement_2<GeomTraits, Dcel>
     ↓ inherits from
-    Arrangement_on_surface_2<GeomTraits, TopologyTraits>
-
+Arrangement_on_surface_2<GeomTraits, TopologyTraits>
+```
 
 **Why this design?**
 - `Arrangement_2` is **specialized** for **planar** arrangements (2D plane)
@@ -65,33 +68,31 @@
 ## 2. Type Flow Through Templates
 
 **Example instantiation:**
-// Step 1: Define kernel (provides basic geometry)
 
-     typedef CGAL::Cartesian<double> Kernel;
+```cpp
+// Step 1: Define kernel (provides basic geometry)
+typedef CGAL::Cartesian<double> Kernel;
 
 // Step 2: Define traits (uses kernel)
-
-    typedef CGAL::Arr_segment_traits_2<Kernel> Traits;
+typedef CGAL::Arr_segment_traits_2<Kernel> Traits;
 
 // Step 3: Create arrangement (uses traits)
-
-    typedef CGAL::Arrangement_2<Traits> Arrangement;
-
+typedef CGAL::Arrangement_2<Traits> Arrangement;
+```
 
 **Type resolution chain:**
 
+```
 Kernel::Point_2
-
     → Traits::Point_2
     → Arrangement::Point_2
     → Dcel::Vertex stores this
 
 Kernel::Segment_2
-
     → Traits::X_monotone_curve_2
     → Arrangement::X_monotone_curve_2
     → Stored on halfedges in arrangement
-
+```
 
 **What happens at compile time:**
 
@@ -111,30 +112,33 @@ Kernel::Segment_2
 
 ### Geometric Types (from Traits)
 
-    typedef GeomTraits_ Geometry_traits_2;
-    typedef typename Base::Point_2 Point_2;
-    typedef typename Base::X_monotone_curve_2 X_monotone_curve_2;
-
+```cpp
+typedef GeomTraits_ Geometry_traits_2;
+typedef typename Base::Point_2 Point_2;
+typedef typename Base::X_monotone_curve_2 X_monotone_curve_2;
+```
 
 ### Topological Elements (from DCEL)
 
-    typedef typename Base::Vertex Vertex;
-    typedef typename Base::Halfedge Halfedge;
-    typedef typename Base::Face Face;
-    typedef typename Base::Size Size;
-
+```cpp
+typedef typename Base::Vertex Vertex;
+typedef typename Base::Halfedge Halfedge;
+typedef typename Base::Face Face;
+typedef typename Base::Size Size;
+```
 
 ### Handles (Smart Pointers to DCEL Elements)
 
-    typedef typename Base::Vertex_handle Vertex_handle;
-    typedef typename Base::Halfedge_handle Halfedge_handle;
-    typedef typename Base::Face_handle Face_handle;
-    
-    // Const versions (read-only)
-    typedef typename Base::Vertex_const_handle Vertex_const_handle;
-    typedef typename Base::Halfedge_const_handle Halfedge_const_handle;
-    typedef typename Base::Face_const_handle Face_const_handle;
+```cpp
+typedef typename Base::Vertex_handle Vertex_handle;
+typedef typename Base::Halfedge_handle Halfedge_handle;
+typedef typename Base::Face_handle Face_handle;
 
+// Const versions (read-only)
+typedef typename Base::Vertex_const_handle Vertex_const_handle;
+typedef typename Base::Halfedge_const_handle Halfedge_const_handle;
+typedef typename Base::Face_const_handle Face_const_handle;
+```
 
 **What are handles?**
 - Essentially **smart pointers** to DCEL elements
@@ -144,40 +148,45 @@ Kernel::Segment_2
 
 ### Iterators (for Traversal)
 
-    typedef typename Base::Vertex_iterator Vertex_iterator;
-    typedef typename Base::Halfedge_iterator Halfedge_iterator;
-    typedef typename Base::Edge_iterator Edge_iterator;
-    typedef typename Base::Face_iterator Face_iterator;
-    
-    // Const versions
-    typedef typename Base::Vertex_const_iterator Vertex_const_iterator;
-    typedef typename Base::Halfedge_const_iterator Halfedge_const_iterator;
-    typedef typename Base::Face_const_iterator Face_const_iterator;
+```cpp
+typedef typename Base::Vertex_iterator Vertex_iterator;
+typedef typename Base::Halfedge_iterator Halfedge_iterator;
+typedef typename Base::Edge_iterator Edge_iterator;
+typedef typename Base::Face_iterator Face_iterator;
 
+// Const versions
+typedef typename Base::Vertex_const_iterator Vertex_const_iterator;
+typedef typename Base::Halfedge_const_iterator Halfedge_const_iterator;
+typedef typename Base::Face_const_iterator Face_const_iterator;
+```
 
 **Usage pattern:**
 
-    Arrangement arr;
-    // Iterate all vertices
-    for (Vertex_iterator vit = arr.vertices_begin();
-    vit != arr.vertices_end(); ++vit) {
+```cpp
+Arrangement arr;
+// Iterate all vertices
+for (Vertex_iterator vit = arr.vertices_begin();
+     vit != arr.vertices_end(); ++vit) {
     Point_2 p = vit->point();
     // Do something with vertex
-    }
+}
+```
 
 ### Circulators (Circular Iterators)
 
-    typedef typename Base::Halfedge_around_vertex_circulator
+```cpp
+typedef typename Base::Halfedge_around_vertex_circulator
     Halfedge_around_vertex_circulator;
-    
-    typedef typename Base::Ccb_halfedge_circulator
+
+typedef typename Base::Ccb_halfedge_circulator
     Ccb_halfedge_circulator;
-    
-    typedef typename Base::Outer_ccb_iterator
+
+typedef typename Base::Outer_ccb_iterator
     Outer_ccb_iterator;
-    
-    typedef typename Base::Inner_ccb_iterator
+
+typedef typename Base::Inner_ccb_iterator
     Inner_ccb_iterator;
+```
 
 **What are circulators?**
 - Like iterators but for **circular structures**
@@ -187,14 +196,15 @@ Kernel::Segment_2
 
 **Usage:**
 
-    Halfedge_around_vertex_circulator circ = arr.incident_halfedges(v);
-    Halfedge_around_vertex_circulator curr = circ;
-    do {
+```cpp
+Halfedge_around_vertex_circulator circ = arr.incident_halfedges(v);
+Halfedge_around_vertex_circulator curr = circ;
+do {
     Halfedge_handle he = curr;
     // Process halfedge
     ++curr;
-    } while (curr != circ); // Back to start
-
+} while (curr != circ);  // Back to start
+```
 
 ---
 
@@ -204,43 +214,53 @@ Kernel::Segment_2
 
 ### Constructors
 
-    Arrangement_2()
+```cpp
+Arrangement_2()
+```
 - **Purpose:** Create empty arrangement
 - **Result:** 1 unbounded face, 0 vertices, 0 edges
 
-      Arrangement_2(const Base& base)
+```cpp
+Arrangement_2(const Base& base)
+```
 - **Purpose:** Copy constructor from base class
 - **Use case:** Converting from `Arrangement_on_surface_2`
 
-      Arrangement_2(const Traits_2* tr)
+```cpp
+Arrangement_2(const Traits_2* tr)
+```
 - **Purpose:** Constructor with custom traits object
 - **When to use:** When you need to configure traits with specific parameters
 
 ### Assignment
 
-    Self& operator=(const Base& base)
-    void assign(const Base& base)
-    
+```cpp
+Self& operator=(const Base& base)
+void assign(const Base& base)
+```
 - **Purpose:** Copy assignment from another arrangement
 - **Effect:** Deep copy of entire DCEL structure
 
 ### Access Methods
 
-    const Traits_2* traits() const
-
+```cpp
+const Traits_2* traits() const
+```
 - **Purpose:** Get pointer to geometry traits object
 - **Returns:** Const pointer to traits
 - **Use case:** Calling traits operations directly
 
-      Size number_of_vertices_at_infinity() const
-
+```cpp
+Size number_of_vertices_at_infinity() const
+```
 - **Purpose:** Count vertices at infinity (for unbounded curves)
 - **Returns:** Number of such vertices
 - **Note:** These are "valid but not concrete" vertices
 
-        Face_handle unbounded_face()
-        Face_const_handle unbounded_face() const
-
+```cpp
+Face_handle unbounded_face()
+Face_const_handle unbounded_face() const
+```
 - **Purpose:** Get the unbounded (infinite) face
 - **Returns:** Handle to the one unbounded face
 - **Important:** There's always exactly ONE unbounded face in a planar arrangement
@@ -256,8 +276,9 @@ Kernel::Segment_2
 
 ### Category 1: Inserting Points
 
-    Vertex_handle insert_in_face_interior(const Point_2& p, Face_handle f)
-
+```cpp
+Vertex_handle insert_in_face_interior(const Point_2& p, Face_handle f)
+```
 
 - **Purpose:** Insert an isolated point inside a face
 - **Parameters:**
@@ -271,8 +292,9 @@ Kernel::Segment_2
 
 ### Category 2: Inserting Curves as New Inner CCBs
 
-    Halfedge_handle insert_in_face_interior(const X_monotone_curve_2& cv, Face_handle f)
-
+```cpp
+Halfedge_handle insert_in_face_interior(const X_monotone_curve_2& cv, Face_handle f)
+```
 
 - **Purpose:** Insert curve entirely contained within a face (creates new hole)
 - **Parameters:**
@@ -281,10 +303,9 @@ Kernel::Segment_2
 - **Returns:** Handle to one of the new halfedges (directed left to right)
 - **Precondition:** Curve `cv` lies entirely in face interior
 - **Effect:**
-  
-      - Creates 2 new vertices (curve endpoints)
-      - Creates 2 new halfedges (twins)
-      - Adds new inner CCB to face `f`
+  - Creates 2 new vertices (curve endpoints)
+  - Creates 2 new halfedges (twins)
+  - Adds new inner CCB to face `f`
 - **Use case:** Inserting an island curve inside a face
 
 ---
@@ -293,10 +314,11 @@ Kernel::Segment_2
 
 #### Insert from Left Endpoint
 
-    Halfedge_handle insert_from_left_vertex(const X_monotone_curve_2& cv,
-    Vertex_handle v,
-    Face_handle f = Face_handle())
-
+```cpp
+Halfedge_handle insert_from_left_vertex(const X_monotone_curve_2& cv,
+                                         Vertex_handle v,
+                                         Face_handle f = Face_handle())
+```
 
 - **Purpose:** Insert curve whose left endpoint matches existing vertex
 - **Parameters:**
@@ -306,9 +328,10 @@ Kernel::Segment_2
 - **Returns:** Halfedge directed toward new vertex (right endpoint)
 - **Precondition:** `cv`'s left endpoint equals `v`'s point
 
-        Halfedge_handle insert_from_left_vertex(const X_monotone_curve_2& cv,
-        Halfedge_handle prev)
-
+```cpp
+Halfedge_handle insert_from_left_vertex(const X_monotone_curve_2& cv,
+                                         Halfedge_handle prev)
+```
 
 - **Purpose:** Insert curve with exact placement in circular order around vertex
 - **Parameters:**
@@ -319,29 +342,33 @@ Kernel::Segment_2
 
 #### Insert from Right Endpoint
 
-    Halfedge_handle insert_from_right_vertex(const X_monotone_curve_2& cv,
-    Vertex_handle v,
-    Face_handle f = Face_handle())
-
+```cpp
+Halfedge_handle insert_from_right_vertex(const X_monotone_curve_2& cv,
+                                          Vertex_handle v,
+                                          Face_handle f = Face_handle())
+```
 
 - **Purpose:** Insert curve whose right endpoint matches existing vertex
 - **Precondition:** `cv`'s right endpoint equals `v`'s point
 - **Returns:** Halfedge directed from new vertex to `v`
 
-        Halfedge_handle insert_from_right_vertex(const X_monotone_curve_2& cv,
-        Halfedge_handle prev)
-
+```cpp
+Halfedge_handle insert_from_right_vertex(const X_monotone_curve_2& cv,
+                                          Halfedge_handle prev)
+```
 
 - **Purpose:** Insert with exact placement around right endpoint vertex
 
 ---
 
 ### Category 4: Inserting Between Two Vertices
-    
-    Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
-    Vertex_handle v1,
-    Vertex_handle v2,
-    Face_handle f = Face_handle())
+
+```cpp
+Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
+                                    Vertex_handle v1,
+                                    Vertex_handle v2,
+                                    Face_handle f = Face_handle())
+```
 
 - **Purpose:** Insert curve connecting two existing vertices
 - **Parameters:**
@@ -353,17 +380,19 @@ Kernel::Segment_2
 - **Precondition:** `cv`'s endpoints match `v1` and `v2` points
 - **Effect:** May split face into two if vertices are on same face boundary
 
-        Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
-        Halfedge_handle prev1,
-        Vertex_handle v2)
-
+```cpp
+Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
+                                    Halfedge_handle prev1,
+                                    Vertex_handle v2)
+```
 
 - **Purpose:** Insert between two vertices with exact placement around first vertex
 
-        Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
-        Halfedge_handle prev1,
-        Halfedge_handle prev2)
-
+```cpp
+Halfedge_handle insert_at_vertices(const X_monotone_curve_2& cv,
+                                    Halfedge_handle prev1,
+                                    Halfedge_handle prev2)
+```
 
 - **Purpose:** Insert with exact placement around BOTH vertices
 - **Parameters:**
@@ -378,32 +407,36 @@ Kernel::Segment_2
 
 ### Category 5: Modification Methods
 
-    Vertex_handle modify_vertex(Vertex_handle v, const Point_2& p)
-
+```cpp
+Vertex_handle modify_vertex(Vertex_handle v, const Point_2& p)
+```
 
 - **Purpose:** Replace point associated with vertex
 - **Precondition:** New point `p` is geometrically equivalent to old point
 - **Use case:** Changing representation (e.g., exact → inexact) without changing geometry
 
-      Halfedge_handle modify_edge(Halfedge_handle e, const X_monotone_curve_2& cv)
-
+```cpp
+Halfedge_handle modify_edge(Halfedge_handle e, const X_monotone_curve_2& cv)
+```
 
 - **Purpose:** Replace curve associated with edge
 - **Precondition:** New curve is geometrically equivalent to old curve
-        
-        Halfedge_handle split_edge(Halfedge_handle e,
-        const X_monotone_curve_2& cv1,
-        const X_monotone_curve_2& cv2)
 
+```cpp
+Halfedge_handle split_edge(Halfedge_handle e,
+                            const X_monotone_curve_2& cv1,
+                            const X_monotone_curve_2& cv2)
+```
 
 - **Purpose:** Split edge at point, associating new curves with split edges
 - **Precondition:** cv1's target equals cv2's source (the split point)
 - **Returns:** Halfedge from original source to split point
 - **Effect:** Creates new vertex at split point
 
-        Halfedge_handle merge_edge(Halfedge_handle e1, Halfedge_handle e2,
-        const X_monotone_curve_2& cv)
-
+```cpp
+Halfedge_handle merge_edge(Halfedge_handle e1, Halfedge_handle e2,
+                            const X_monotone_curve_2& cv)
+```
 
 - **Purpose:** Merge two edges sharing a common vertex of degree 2
 - **Precondition:** e1 and e2 are mergeable (share vertex with no other incident edges)
@@ -414,16 +447,19 @@ Kernel::Segment_2
 
 ### Category 6: Removal Methods
 
-    Face_handle remove_isolated_vertex(Vertex_handle v)
+```cpp
+Face_handle remove_isolated_vertex(Vertex_handle v)
+```
 
 - **Purpose:** Remove isolated vertex from face
 - **Precondition:** `v` has no incident edges
 - **Returns:** Handle to face that contained the vertex
 
-        Face_handle remove_edge(Halfedge_handle e,
-        bool remove_source = true,
-        bool remove_target = true)
-
+```cpp
+Face_handle remove_edge(Halfedge_handle e,
+                         bool remove_source = true,
+                         bool remove_target = true)
+```
 
 - **Purpose:** Remove edge from arrangement
 - **Parameters:**
@@ -437,18 +473,20 @@ Kernel::Segment_2
 
 ### Category 7: Query Methods
 
-    Size number_of_vertices() const
-    Size number_of_edges() const
-    Size number_of_faces() const
-    Size number_of_unbounded_faces() const
-
+```cpp
+Size number_of_vertices() const
+Size number_of_edges() const
+Size number_of_faces() const
+Size number_of_unbounded_faces() const
+```
 
 - **Purpose:** Get arrangement statistics
 - **Returns:** Count of respective elements
 
-        bool is_empty() const
-        bool is_valid() const
-
+```cpp
+bool is_empty() const
+bool is_valid() const
+```
 
 - **Purpose:** Check arrangement state
 - `is_valid()` performs comprehensive validity checks (expensive!)
@@ -461,10 +499,11 @@ Kernel::Segment_2
 
 #### General Insertion (with intersection)
 
-    template <typename GeomTraits, typename TopTraits>
-    void insert(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
-    const typename GeomTraits::X_monotone_curve_2& c)
-
+```cpp
+template <typename GeomTraits, typename TopTraits>
+void insert(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
+            const typename GeomTraits::X_monotone_curve_2& c)
+```
 
 - **Purpose:** Insert curve that MAY intersect existing features
 - **Algorithm:** Uses **zone algorithm** to find all intersections, splits curves, updates DCEL
@@ -473,23 +512,25 @@ Kernel::Segment_2
 
 #### Non-Intersecting Insertion
 
-    template <typename GeomTraits, typename TopTraits, typename PointLocation>
-    typename Arrangement_on_surface_2<GeomTraits, TopTraits>::Halfedge_handle
-    insert_non_intersecting_curve(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
-    const typename GeomTraits::X_monotone_curve_2& c,
-    const PointLocation& pl)
+```cpp
+template <typename GeomTraits, typename TopTraits, typename PointLocation>
+typename Arrangement_on_surface_2<GeomTraits, TopTraits>::Halfedge_handle
+insert_non_intersecting_curve(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
+                               const typename GeomTraits::X_monotone_curve_2& c,
+                               const PointLocation& pl)
+```
 
-text
 - **Purpose:** Insert curve known not to intersect existing features
 - **Precondition:** Curve interior doesn't intersect any edges/vertices
 - **Faster** than general insert (no intersection testing)
 
 #### Batch Insertion
 
-    template <typename GeomTraits, typename TopTraits, typename InputIterator>
-    void insert_non_intersecting_curves(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
-    InputIterator begin, InputIterator end)
-
+```cpp
+template <typename GeomTraits, typename TopTraits, typename InputIterator>
+void insert_non_intersecting_curves(Arrangement_on_surface_2<GeomTraits, TopTraits>& arr,
+                                     InputIterator begin, InputIterator end)
+```
 
 - **Purpose:** Insert multiple non-intersecting curves efficiently
 - **Algorithm:** Uses **sweep-line** for efficiency
@@ -503,10 +544,11 @@ text
 
 ### Required Types
 
-    typedef ... Point_2; // Point type
-    typedef ... X_monotone_curve_2; // Curve type (must be x-monotone)
-    typedef ... Curve_2; // General curve (can be subdivided)
-
+```cpp
+typedef ... Point_2;              // Point type
+typedef ... X_monotone_curve_2;   // Curve type (must be x-monotone)
+typedef ... Curve_2;              // General curve (can be subdivided)
+```
 
 ### Required Operations (Functors)
 
@@ -563,62 +605,63 @@ text
 
 ### Structure
 
-    template <typename Traits>
-    class Arr_default_dcel {
-    public:
+```cpp
+template <typename Traits>
+class Arr_default_dcel {
+public:
     class Vertex : public Arr_vertex_base<...> {
-    Point_2* m_point; // Pointer to point (can be null for vertices at infinity)
+        Point_2* m_point;  // Pointer to point (can be null for vertices at infinity)
     };
 
     class Halfedge : public Arr_halfedge_base {
-    X_monotone_curve_2* m_curve; // Pointer to curve
-    Vertex* m_vertex; // Target vertex
-    Halfedge* m_twin; // Opposite halfedge
-    Halfedge* m_next; // Next in CCW order
-    Halfedge* m_prev; // Previous halfedge
-    // Face pointer stored in outer_ccb or inner_ccb
+        X_monotone_curve_2* m_curve;  // Pointer to curve
+        Vertex* m_vertex;              // Target vertex
+        Halfedge* m_twin;              // Opposite halfedge
+        Halfedge* m_next;              // Next in CCW order
+        Halfedge* m_prev;              // Previous halfedge
+        // Face pointer stored in outer_ccb or inner_ccb
     };
 
     class Face : public Arr_face_base {
-    std::list<Outer_ccb*> m_outer_ccbs; // Outer boundaries
-    std::list<Inner_ccb*> m_inner_ccbs; // Holes
-    std::list<Isolated_vertex*> m_iso_verts; // Isolated vertices
+        std::list<Outer_ccb*> m_outer_ccbs;      // Outer boundaries
+        std::list<Inner_ccb*> m_inner_ccbs;      // Holes
+        std::list<Isolated_vertex*> m_iso_verts; // Isolated vertices
     };
-    };
-
+};
+```
 
 ### Halfedge Pointer Structure
 
-    Halfedge e:
+```
+Halfedge e:
     m_vertex → Target vertex (where arrow points TO)
-    m_twin → Opposite halfedge (goes the other way)
-    m_next → Next halfedge in CCW traversal around face
-    m_prev → Previous halfedge in CCW traversal
+    m_twin   → Opposite halfedge (goes the other way)
+    m_next   → Next halfedge in CCW traversal around face
+    m_prev   → Previous halfedge in CCW traversal
     outer_ccb → Outer CCB record (which points to face)
-
-
+```
 
 **How traversal works:**
 
-    Walking around a face:
-    Halfedge* start = face->outer_ccb();
-    Halfedge* current = start;
-    do {
+```cpp
+// Walking around a face:
+Halfedge* start = face->outer_ccb();
+Halfedge* current = start;
+do {
     // Process current halfedge
     current = current->next();
-    } while (current != start);
+} while (current != start);
+```
 
-
-
-    Walking around a vertex:
-    Halfedge* start = vertex->halfedge();
-    Halfedge* current = start;
-    do {
+```cpp
+// Walking around a vertex:
+Halfedge* start = vertex->halfedge();
+Halfedge* current = start;
+do {
     // Process incident halfedge
-    current = current->next()->twin(); // Go to next incident edge
-    } while (current != start);
-
-
+    current = current->next()->twin();  // Go to next incident edge
+} while (current != start);
+```
 
 ---
 
@@ -626,12 +669,12 @@ text
 
 **Complete compile-time trace:**
 
-    // User code
-    typedef CGAL::Cartesian<double> Kernel;
-    typedef CGAL::Arr_segment_traits_2<Kernel> Traits;
-    typedef CGAL::Arrangement_2<Traits> Arrangement;
-
-
+```cpp
+// User code
+typedef CGAL::Cartesian<double> Kernel;
+typedef CGAL::Arr_segment_traits_2<Kernel> Traits;
+typedef CGAL::Arrangement_2<Traits> Arrangement;
+```
 
 **What the compiler does:**
 
@@ -646,9 +689,10 @@ text
 - `Topology_traits` = `typename Default_topology::Traits`
 
 **Step 4:** Inherit from base:
-Arrangement_on_surface_2<GeomTraits_, Topology_traits>
 
-text
+```cpp
+Arrangement_on_surface_2<GeomTraits_, Topology_traits>
+```
 
 **Step 5:** Resolve all typedefs:
 - `Point_2` = `Base::Point_2` = `Traits::Point_2` = `Kernel::Point_2` = `Cartesian<double>::Point_2`
@@ -660,93 +704,65 @@ text
 
 ## 9. Architecture Diagram
 
+```
 USER CODE LEVEL:
-
     Arrangement arr;
-    arr.insert(segment); // Uses global function
-    ↓
+    arr.insert(segment);  // Uses global function
+                ↓
 ───────────────────────────────────────────────────
 GLOBAL FUNCTIONS:
-
     insert(arr, curve) → Zone algorithm
     insert_non_intersecting(...) → Direct insertion
-    ↓
+                ↓
 ───────────────────────────────────────────────────
 ARRANGEMENT_2 LAYER:
-
     Constructors
-    
     unbounded_face()
-    
     traits()
-    
     Assignment operators
-    ↓ inherits from
+                ↓ inherits from
 ───────────────────────────────────────────────────
 ARRANGEMENT_ON_SURFACE_2 LAYER:
-
     Low-level insert methods:
-    
-    insert_in_face_interior()
-    
-    insert_from_left_vertex()
-    
-    insert_at_vertices()
+        insert_in_face_interior()
+        insert_from_left_vertex()
+        insert_at_vertices()
     Query methods:
-    
-    vertices_begin/end()
-    
-    number_of_vertices()
+        vertices_begin/end()
+        number_of_vertices()
     Modification:
-    
-    split_edge(), merge_edge()
-    
-    remove_edge()
-    ↓ uses
+        split_edge(), merge_edge()
+        remove_edge()
+                ↓ uses
 ───────────────────────────────────────────────────
 TRAITS LAYER (GeomTraits_2):
-
     Arr_segment_traits_2<Kernel>
     Types:
-    
-    Point_2, X_monotone_curve_2
+        Point_2, X_monotone_curve_2
     Operations (functors):
-    
-    Compare_xy_2, Intersect_2
-    
-    Split_2, Merge_2
-    
-    Are_mergeable_2
-    
-    Make_x_monotone_2
-    ↓ uses
+        Compare_xy_2, Intersect_2
+        Split_2, Merge_2
+        Are_mergeable_2
+        Make_x_monotone_2
+                ↓ uses
 ───────────────────────────────────────────────────
 DCEL LAYER (Dcel_):
-
     Arr_default_dcel<Traits>
-    
-    Vertex (stores Point_2*)
-    
-    Halfedge (stores X_monotone_curve_2* + pointers)
-    
-    Face (stores CCB pointers)
-    
+        Vertex (stores Point_2*)
+        Halfedge (stores X_monotone_curve_2* + pointers)
+        Face (stores CCB pointers)
     Pointer structure:
-    Halfedge::m_twin → opposite halfedge
-    Halfedge::m_next → next in CCW order
-    Halfedge::m_prev → previous
-    Halfedge::m_vertex → target vertex
-    (face via outer_ccb or inner_ccb)
+        Halfedge::m_twin   → opposite halfedge
+        Halfedge::m_next   → next in CCW order
+        Halfedge::m_prev   → previous
+        Halfedge::m_vertex → target vertex
+        (face via outer_ccb or inner_ccb)
 ───────────────────────────────────────────────────
 KERNEL LAYER:
-
     Cartesian<double> or Exact_predicates_kernel
-    
-    Basic geometric types
-    
-    Point_2, Segment_2, Vector_2, etc.
-
-
+        Basic geometric types
+        Point_2, Segment_2, Vector_2, etc.
+```
 
 ---
 
@@ -802,15 +818,19 @@ KERNEL LAYER:
 
 **Solution approach:**
 - Pre-instantiate common types in C++:
+
+```cpp
 // In bindings
 typedef Arrangement_2<Arr_segment_traits_2<...>> Arrangement_Segment;
 typedef Arrangement_2<Arr_circle_traits_2<...>> Arrangement_Circle;
-
+```
 
 - Expose to Python as separate classes:
+
+```python
 arr_segments = cgal.Arrangement2D_Segment()
 arr_circles = cgal.Arrangement2D_Circle()
-
+```
 
 ### Challenge 2: Handles vs Python References
 **Problem:**
@@ -829,14 +849,16 @@ arr_circles = cgal.Arrangement2D_Circle()
 - Python expects `__iter__` and `__next__` protocol
 
 **Solution approach:**
-Make arrangement iterable
-for vertex in arr.vertices(): # Returns Python iterator
-print(vertex.point())
 
-Circulators need special handling
-for he in vertex.incident_halfedges(): # Convert circulator to generator
-print(he.curve())
+```python
+# Make arrangement iterable
+for vertex in arr.vertices():  # Returns Python iterator
+    print(vertex.point())
 
+# Circulators need special handling
+for he in vertex.incident_halfedges():  # Convert circulator to generator
+    print(he.curve())
+```
 
 ### Challenge 4: Function Overloads
 **Problem:**
@@ -844,11 +866,13 @@ print(he.curve())
 - Python can't directly support C++ overloading
 
 **Solution approach:**
-Use keyword arguments for disambiguation
-arr.insert_at_vertices(curve, v1, v2) # Simple version
-arr.insert_at_vertices(curve, prev1=he1, v2=v2) # With placement
-arr.insert_at_vertices(curve, prev1=he1, prev2=he2) # Full control
 
+```python
+# Use keyword arguments for disambiguation
+arr.insert_at_vertices(curve, v1, v2)                # Simple version
+arr.insert_at_vertices(curve, prev1=he1, v2=v2)      # With placement
+arr.insert_at_vertices(curve, prev1=he1, prev2=he2)  # Full control
+```
 
 ### Challenge 5: Const Correctness
 **Problem:**
@@ -868,11 +892,13 @@ arr.insert_at_vertices(curve, prev1=he1, prev2=he2) # Full control
 **Solution approach:**
 - Hide traits entirely from Python users
 - Provide high-level operations:
-Instead of exposing traits.compare_xy(p1, p2)
-Just use Python operators
-if p1 < p2: # Implement lt using traits internally
-...
 
+```python
+# Instead of exposing traits.compare_xy(p1, p2)
+# Just use Python operators
+if p1 < p2:  # Implement __lt__ using traits internally
+    ...
+```
 
 ### Challenge 7: Preconditions
 **Problem:**
@@ -882,9 +908,11 @@ if p1 < p2: # Implement lt using traits internally
 **Solution approach:**
 - Add runtime checks in Python bindings
 - Raise helpful exceptions:
-if not curve.source() == v.point():
-raise ValueError("Curve's left endpoint must match vertex point!")
 
+```python
+if not curve.source() == v.point():
+    raise ValueError("Curve's left endpoint must match vertex point!")
+```
 
 ### Challenge 8: Low-Level API Complexity
 **Problem:**
@@ -920,37 +948,37 @@ Based on this analysis, the Python binding strategy should:
 
 ### 🎯 **Example Python API Design:**
 
-    from cgal import Arrangement2D, Segment2D, Point2D
-    
-    Simple, Pythonic API
-    arr = Arrangement2D() # Internally uses Arr_segment_traits_2
-    
-    Insert curves
-    p1, p2 = Point2D(0, 0), Point2D(1, 1)
-    seg = Segment2D(p1, p2)
-    arr.insert(seg)
-    
-    Query
-    print(f"Vertices: {arr.num_vertices()}")
-    print(f"Edges: {arr.num_edges()}")
-    print(f"Faces: {arr.num_faces()}")
-    
-    Pythonic iteration
-    for vertex in arr.vertices():
+```python
+from cgal import Arrangement2D, Segment2D, Point2D
+
+# Simple, Pythonic API
+arr = Arrangement2D()  # Internally uses Arr_segment_traits_2
+
+# Insert curves
+p1, p2 = Point2D(0, 0), Point2D(1, 1)
+seg = Segment2D(p1, p2)
+arr.insert(seg)
+
+# Query
+print(f"Vertices: {arr.num_vertices()}")
+print(f"Edges: {arr.num_edges()}")
+print(f"Faces: {arr.num_faces()}")
+
+# Pythonic iteration
+for vertex in arr.vertices():
     print(vertex.point())
-    
-    for face in arr.faces():
+
+for face in arr.faces():
     if face.is_unbounded():
-    print("Found unbounded face!")
-    
-    Point location
-    result = arr.locate(Point2D(0.5, 0.5))
-    if isinstance(result, Face):
+        print("Found unbounded face!")
+
+# Point location
+result = arr.locate(Point2D(0.5, 0.5))
+if isinstance(result, Face):
     print(f"Point is in face")
-    elif isinstance(result, Edge):
+elif isinstance(result, Edge):
     print(f"Point is on edge: {result.curve()}")
-
-
+```
 
 **Clean, simple, hides all C++ complexity!**
 
