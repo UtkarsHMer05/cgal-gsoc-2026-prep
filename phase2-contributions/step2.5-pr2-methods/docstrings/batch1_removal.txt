@@ -1,0 +1,242 @@
+# ==============================================================================
+# BATCH 1: REMOVAL METHODS - CRITICAL SAFETY WARNINGS
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# METHOD 1: remove_isolated_vertex
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("remove_isolated_vertex"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Remove an isolated vertex from the arrangement.
+
+🔴 **CRITICAL SAFETY WARNING**
+
+This method performs NO validation. Calling on a non-isolated vertex will
+CRASH the Python interpreter with a bus error (segmentation fault). This is
+NOT a catchable exception. You MUST manually verify the vertex is isolated
+before calling this method.
+
+Parameters
+----------
+vertex : Vertex
+    The isolated vertex to remove.
+    **MUST** satisfy ``vertex.is_isolated() == True``.
+
+Raises
+------
+Segmentation fault (bus error)
+    If the vertex is not isolated (has incident edges). Cannot be caught with
+    try/except - crashes the entire Python process.
+
+Examples
+--------
+**CORRECT usage with validation:**
+
+>>> arr = Arrangement_2()
+>>> v = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> 
+>>> # ✓ ALWAYS validate before removal
+>>> if v.is_isolated():
+...     arr.remove_isolated_vertex(v)
+...     print("Removed successfully")
+... else:
+...     print(f"Cannot remove: vertex has {v.degree()} incident edges")
+Removed successfully
+
+**INCORRECT usage (WILL CRASH):**
+
+>>> # Create connected vertex (degree 1)
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> 
+>>> # 🔴 DANGEROUS - v1 is not isolated (degree = 1)
+>>> arr.remove_isolated_vertex(v1)  # Bus error - Python crashes!
+
+**Safe batch removal pattern:**
+
+>>> # Remove all isolated vertices safely
+>>> isolated = [v for v in get_all_vertices(arr) if v.is_isolated()]
+>>> for v in isolated:
+...     arr.remove_isolated_vertex(v)
+
+DCEL Changes
+------------
+- Vertices: -1 (removes the specified vertex)
+- Removes vertex from its face's isolated vertices list
+- No change to edges or faces
+
+Preconditions (NOT CHECKED - You Must Verify)
+----------------------------------------------
+- ``vertex.is_isolated()`` MUST be True
+- ``vertex.degree()`` MUST be 0
+- Vertex must have no incident halfedges
+
+Notes
+-----
+This is the most dangerous method in the Arrangement_2 API for Python users:
+
+- **C++ expects**: Users read documentation and check preconditions
+- **Python expects**: Exceptions for invalid input, not crashes
+- **Reality**: This method will crash Python if preconditions are violated
+
+**Safe alternatives:**
+
+1. Use :meth:`remove_edge` which safely handles vertex removal
+2. Always check ``vertex.is_isolated()`` before calling this method
+3. For interactive code, prefer high-level operations
+
+See Also
+--------
+remove_edge : Safely removes edges and isolated vertices
+is_isolated : Check if vertex has degree 0
+degree : Get number of incident edges
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 2: remove_edge
+# FILE: arrangement_on_surface_2_bindings.cpp  
+# LINE: Search for: .def("remove_edge"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Remove an edge from the arrangement.
+
+Removes the specified halfedge and its twin from the arrangement, merging
+the two faces that were separated by the edge. Vertices are automatically
+removed if they become isolated (degree 0) after the edge removal.
+
+⚠️ **Python Binding Limitation**
+
+The C++ version provides optional parameters to control vertex removal:
+``remove_edge(e, remove_source, remove_target)``. The Python binding only
+exposes the default behavior (always removes isolated vertices).
+
+⚠️ **Handle Invalidation**
+
+After removal, the halfedge handle and any removed vertex handles become
+INVALID. Accessing them causes crashes or returns stale data. Do NOT reuse
+handles after removal.
+
+Parameters
+----------
+halfedge : Halfedge
+    The halfedge to remove (along with its twin).
+
+Returns
+-------
+Face
+    The face resulting from merging the two incident faces.
+
+Raises
+------
+Segmentation fault
+    If the halfedge is invalid (e.g., already removed). Cannot be caught
+    with try/except.
+
+Examples
+--------
+**Example 1: Both vertices removed (become isolated):**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> 
+>>> arr.number_of_vertices()  # 2 vertices (each degree 1)
+2
+>>> face = arr.remove_edge(he)
+>>> arr.number_of_vertices()  # 0 - both became isolated, auto-removed
+0
+
+**Example 2: Vertices kept (still have edges):**
+
+>>> arr = Arrangement_2()
+>>> # Create triangle (3 vertices, 3 edges)
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 0), arr.unbounded_face())
+>>> v3 = arr.insert_in_face_interior(Point_2(5, 10), arr.unbounded_face())
+>>> he1 = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 0)), v1, v2)
+>>> he2 = arr.insert_at_vertices(Segment_2(Point_2(10, 0), Point_2(5, 10)), v2, v3)
+>>> he3 = arr.insert_at_vertices(Segment_2(Point_2(5, 10), Point_2(0, 0)), v3, v1)
+>>> 
+>>> arr.number_of_vertices()  # 3 vertices (each degree 2)
+3
+>>> arr.remove_edge(he1)  # Remove bottom edge
+>>> arr.number_of_vertices()  # 3 - vertices still have edges, kept
+3
+
+**DANGEROUS: Accessing invalidated handles:**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> 
+>>> arr.remove_edge(he)
+>>> 
+>>> # 🔴 DANGER - handles are now invalid
+>>> he.source()      # May crash or return garbage
+>>> v1.degree()      # Returns stale data (1 instead of error)
+>>> arr.remove_edge(he)  # CRASH - double removal
+
+**Safe pattern: Discard handles after removal:**
+
+>>> he = arr.insert_at_vertices(seg, v1, v2)
+>>> face = arr.remove_edge(he)
+>>> # Discard invalidated handles
+>>> he = None
+>>> v1 = None
+>>> v2 = None
+
+DCEL Changes
+------------
+- Edges: -1 (removes the edge)
+- Halfedges: -2 (removes halfedge and twin)
+- Faces: -1 (merges two faces into one)
+- Vertices: Conditionally -1 or -2 (removes if degree becomes 0)
+
+Vertex Removal Logic
+--------------------
+After edge removal, for each endpoint vertex:
+
+- If ``degree == 0`` after removal → vertex is removed
+- If ``degree >= 1`` after removal → vertex is kept
+
+This happens automatically with no user control in Python.
+
+Preconditions (NOT CHECKED)
+----------------------------
+- Halfedge must be a valid handle to an existing edge
+- Calling on already-removed halfedge causes crash
+
+Notes
+-----
+**Missing Python API:**
+
+The C++ method signature is:
+``Face_handle remove_edge(Halfedge_handle e, bool remove_source=true, bool remove_target=true)``
+
+Python only provides:
+``Face remove_edge(Halfedge halfedge)``
+
+To keep vertices after removal in Python, you would need to manually
+re-insert them as isolated vertices (workaround).
+
+**Handle lifetime issues:**
+
+- nanobind's ``reference_internal`` policy keeps handles alive while
+  arrangement exists
+- But handles can become invalid when DCEL elements are deleted
+- No automatic detection of invalid handles in Python
+- User must track handle validity manually
+
+See Also
+--------
+remove_isolated_vertex : Remove vertex (requires manual validation)
+is_isolated : Check if vertex has degree 0
+degree : Get number of incident edges
+)pbdoc"

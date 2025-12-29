@@ -1,0 +1,413 @@
+# ==============================================================================
+# BATCH 3: QUERY METHODS - ALL SAFE
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# METHOD 7: number_of_vertices
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("number_of_vertices"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the number of vertices in the arrangement.
+
+Counts all vertices, both isolated (degree 0) and non-isolated.
+
+Returns
+-------
+int
+    Total count of vertices in the arrangement.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> arr.number_of_vertices()
+0
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> arr.number_of_vertices()
+1
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> arr.number_of_vertices()
+2
+
+See Also
+--------
+number_of_edges : Count of edges
+number_of_faces : Count of faces
+number_of_isolated_vertices : Count of degree-0 vertices only
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 8: number_of_edges
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("number_of_edges"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the number of edges in the arrangement.
+
+Counts undirected edges. Each edge consists of two halfedges (twins).
+
+Returns
+-------
+int
+    Total count of edges in the arrangement.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> arr.number_of_edges()
+0
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> arr.number_of_edges()
+1
+
+Notes
+-----
+Invariant: ``number_of_halfedges() == 2 * number_of_edges()``
+
+See Also
+--------
+number_of_halfedges : Count of directed halfedges (2 per edge)
+number_of_vertices : Count of vertices
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 9: number_of_faces
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("number_of_faces"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the number of faces in the arrangement.
+
+Counts all faces including the unbounded face. An empty arrangement has
+1 face (the unbounded face).
+
+Returns
+-------
+int
+    Total count of faces in the arrangement.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> arr.number_of_faces()
+1
+>>> # Create triangle (adds 1 bounded face)
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 0), arr.unbounded_face())
+>>> v3 = arr.insert_in_face_interior(Point_2(5, 10), arr.unbounded_face())
+>>> arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 0)), v1, v2)
+>>> arr.insert_at_vertices(Segment_2(Point_2(10, 0), Point_2(5, 10)), v2, v3)
+>>> arr.insert_at_vertices(Segment_2(Point_2(5, 10), Point_2(0, 0)), v3, v1)
+>>> arr.number_of_faces()
+2
+
+Notes
+-----
+The unbounded face always exists, even in an empty arrangement.
+
+See Also
+--------
+unbounded_face : Get handle to the unbounded face
+number_of_edges : Count of edges
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 10: is_empty
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("is_empty"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Check if the arrangement is empty.
+
+An arrangement is empty if it contains no vertices and no edges. An empty
+arrangement still has one face (the unbounded face).
+
+Returns
+-------
+bool
+    True if the arrangement has no vertices or edges, False otherwise.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> arr.is_empty()
+True
+>>> arr.number_of_vertices()
+0
+>>> arr.number_of_faces()
+1
+>>> v = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> arr.is_empty()
+False
+
+See Also
+--------
+number_of_vertices : Count vertices
+number_of_edges : Count edges
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 11: is_valid
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("is_valid"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Validate the arrangement's DCEL structure.
+
+Performs comprehensive validation of the internal DCEL (Doubly-Connected
+Edge List) structure, checking topological consistency. This is useful for
+debugging after using low-level modification methods.
+
+Returns
+-------
+bool
+    True if the DCEL structure is valid, False if corruption detected.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> arr.is_valid()
+True
+>>> # Build arrangement normally
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> arr.is_valid()
+True
+
+**Detecting corruption from misuse:**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())  # Duplicate!
+>>> arr.is_valid()
+False
+
+Notes
+-----
+Validation checks include:
+
+- Halfedge twin symmetry
+- Counter-Clockwise Boundary (CCB) cycles
+- Face/edge incidence consistency  
+- Vertex degree accounting
+- Isolated vertex lists
+
+**Performance**: O(n) where n is the arrangement size. Expensive for large
+arrangements - use during debugging, not in production loops.
+
+**Use after low-level operations:**
+
+>>> # After batch modifications with specialized methods
+>>> for seg in segments:
+...     arr.insert_at_vertices(seg, ...)
+>>> if not arr.is_valid():
+...     print("ERROR: Arrangement corrupted!")
+
+See Also
+--------
+insert : High-level insertion (always maintains validity)
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 12: unbounded_face
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("unbounded_face"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the unbounded face of the arrangement.
+
+The unbounded face is the unique face that extends to infinity. It always
+exists, even in an empty arrangement.
+
+Returns
+-------
+Face
+    Handle to the unbounded (outer) face.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> unbounded = arr.unbounded_face()
+>>> unbounded.is_unbounded()
+True
+>>> # Use as parameter for insertions
+>>> v = arr.insert_in_face_interior(Point_2(0, 0), unbounded)
+
+Notes
+-----
+The unbounded face:
+
+- Always exists (even when ``is_empty() == True``)
+- Has no outer boundary (``has_outer_ccb() == False``)
+- Contains all isolated vertices initially
+- Its properties change as edges are added to the arrangement
+
+See Also
+--------
+is_unbounded : Check if a face is the unbounded face
+number_of_faces : Count all faces (includes unbounded)
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 13: Vertex.degree
+# FILE: arrangement_on_surface_2_bindings.cpp  
+# LINE: Search for: .def("degree" (in Vertex class binding)
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the number of edges incident to this vertex.
+
+The degree is the count of halfedges emanating from the vertex. A vertex
+with degree 0 is isolated.
+
+Returns
+-------
+int
+    Number of incident edges.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v1.degree()
+0
+>>> v1.is_isolated()
+True
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> v1.degree()
+1
+>>> v1.is_isolated()
+False
+
+**Vertex in a triangle has degree 2:**
+
+>>> # After creating triangle with v1, v2, v3
+>>> v1.degree()
+2
+
+See Also
+--------
+is_isolated : Check if vertex has degree 0
+incident_halfedges : Iterate over incident halfedges
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 14: Vertex.is_isolated
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("is_isolated" (in Vertex class binding)
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Check if this vertex is isolated (has no incident edges).
+
+A vertex is isolated if its degree is 0. Isolated vertices are stored in
+their containing face's isolated vertex list.
+
+Returns
+-------
+bool
+    True if the vertex has degree 0, False otherwise.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> v = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v.is_isolated()
+True
+>>> v.degree()
+0
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v, v2)
+>>> v.is_isolated()
+False
+>>> v.degree()
+1
+
+**CRITICAL: Always check before remove_isolated_vertex:**
+
+>>> if v.is_isolated():
+...     arr.remove_isolated_vertex(v)
+... else:
+...     print(f"Cannot remove: vertex has {v.degree()} incident edges")
+
+See Also
+--------
+degree : Get number of incident edges
+remove_isolated_vertex : Remove isolated vertex (requires manual check)
+face : Get containing face (only for isolated vertices)
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 15: Halfedge.twin
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("twin" (in Halfedge class binding)
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Return the twin halfedge (opposite direction).
+
+Every halfedge has a twin that represents the same edge but in the opposite
+direction. Together, a halfedge and its twin form an undirected edge.
+
+Returns
+-------
+Halfedge
+    The twin halfedge with reversed direction.
+
+Examples
+--------
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> 
+>>> print(f"Halfedge: {he.source().point()} → {he.target().point()}")
+Halfedge: 0 0 → 5 5
+>>> twin = he.twin()
+>>> print(f"Twin: {twin.source().point()} → {twin.target().point()}")
+Twin: 5 5 → 0 0
+
+**Invariant: twin of twin is original:**
+
+>>> he.twin().twin() == he
+True
+
+**Twin points to different face:**
+
+>>> he.face() != he.twin().face()
+True
+
+Notes
+-----
+The twin relationship is fundamental to the DCEL structure:
+
+- Every halfedge has exactly one twin
+- ``he.twin().twin() == he`` (reflexive)
+- ``he.source() == he.twin().target()``
+- ``he.target() == he.twin().source()``
+- Twins share the same curve but opposite directions
+
+See Also
+--------
+source : Get source vertex
+target : Get target vertex
+face : Get incident face (to the left of halfedge)
+)pbdoc"

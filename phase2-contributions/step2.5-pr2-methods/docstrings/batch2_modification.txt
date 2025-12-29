@@ -1,0 +1,464 @@
+# ==============================================================================
+# BATCH 2: MODIFICATION METHODS
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# METHOD 3: split_edge
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("split_edge"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Split an edge into two edges at an interior point.
+
+Splits the specified edge at a point on its interior, creating a new vertex
+at the split point. The original edge is replaced by two edges sharing the
+new vertex.
+
+⚠️ **No Validation Warning**
+
+This method performs NO validation of preconditions. Providing incorrect
+curves will silently create invalid arrangements:
+
+- Split point not on original curve
+- Curves don't match endpoints
+- Degenerate splits (at endpoints)
+
+Parameters
+----------
+halfedge : Halfedge
+    The halfedge of the edge to split.
+curve1 : X_monotone_curve_2
+    Curve for the first segment (from ``halfedge.source()`` to split point).
+curve2 : X_monotone_curve_2
+    Curve for the second segment (from split point to ``halfedge.target()``).
+
+Returns
+-------
+Halfedge
+    Halfedge of the first segment, directed from original source to new vertex.
+
+Examples
+--------
+**Correct usage:**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> # Split at midpoint (5, 5)
+>>> c1 = Segment_2(Point_2(0, 0), Point_2(5, 5))
+>>> c2 = Segment_2(Point_2(5, 5), Point_2(10, 10))
+>>> he_first = arr.split_edge(he, c1, c2)
+>>> 
+>>> print(f"First segment: {he_first.source().point()} → {he_first.target().point()}")
+First segment: 0 0 → 5 5
+>>> arr.number_of_vertices()  # 3 (original 2 + new vertex at split)
+3
+>>> arr.number_of_edges()     # 2 (original edge split into 2)
+2
+>>> he_first.target().degree()  # New vertex has degree 2
+2
+
+**DANGEROUS: Mismatched curves (no validation!):**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> # Wrong split point (3,3) instead of intended (5,5)
+>>> bad_c1 = Segment_2(Point_2(0, 0), Point_2(3, 3))
+>>> bad_c2 = Segment_2(Point_2(3, 3), Point_2(10, 10))
+>>> arr.split_edge(he, bad_c1, bad_c2)  # ⚠️ No error - creates invalid arrangement!
+
+**DANGEROUS: Degenerate split at endpoint:**
+
+>>> # Splits "at" source vertex (creates duplicate vertex!)
+>>> degenerate_c1 = Segment_2(Point_2(0, 0), Point_2(0, 0))  # Zero-length
+>>> degenerate_c2 = Segment_2(Point_2(0, 0), Point_2(10, 10))
+>>> arr.split_edge(he, degenerate_c1, degenerate_c2)  # ⚠️ Accepted!
+
+DCEL Changes
+------------
+- Vertices: +1 (new vertex at split point, degree 2)
+- Edges: +1 (original edge becomes 2 edges)
+- Halfedges: +2 (now 4 halfedges instead of 2)
+- Original source/target vertices: degree +1 each
+
+Returned Halfedge Direction
+----------------------------
+Returns halfedge of the **first segment**:
+
+- Source: Original edge source (``halfedge.source()``)
+- Target: New vertex at split point
+
+To get the second segment, use: ``he_first.target().incident_halfedges()``
+
+Preconditions (NOT CHECKED - You Must Ensure)
+----------------------------------------------
+- ``curve1.source()`` must equal ``halfedge.source().point()``
+- ``curve1.target()`` must equal ``curve2.source()`` (split point)
+- ``curve2.target()`` must equal ``halfedge.target().point()``
+- Split point must be in interior of original curve (not at endpoints)
+
+Handle Invalidation
+-------------------
+The original halfedge handle may become invalid or be reused for the first
+segment (implementation-dependent). Do not rely on the old handle after split.
+
+Notes
+-----
+**Performance**: This is a low-level method designed for maximum speed when
+you can guarantee correctness (e.g., sweep-line algorithms).
+
+**Safety**: For interactive use with validation, consider:
+
+1. Verify split point is on original curve
+2. Check curves are contiguous
+3. Validate with ``arr.is_valid()`` after batch operations
+
+See Also
+--------
+merge_edge : Reverse operation (merge two edges)
+insert : High-level safe insertion with automatic subdivision
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 4: merge_edge
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("merge_edge"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Merge two edges that share a common vertex.
+
+Merges two edges that share a degree-2 vertex, removing the shared vertex
+and combining the edges into one. The shared vertex must have exactly
+two incident edges (degree 2).
+
+🔴 **CRITICAL: Will Crash on Invalid Input**
+
+This method performs NO validation. Attempting to merge edges that don't
+share a vertex will CRASH Python with a segmentation fault.
+
+⚠️ **Handle Invalidation**
+
+After merge, the shared vertex handle and old halfedge handles become INVALID.
+Accessing them causes crashes.
+
+Parameters
+----------
+halfedge1 : Halfedge
+    First halfedge (ends at shared vertex).
+halfedge2 : Halfedge
+    Second halfedge (starts at shared vertex).
+    Must satisfy: ``halfedge1.target() == halfedge2.source()``
+merged_curve : X_monotone_curve_2
+    Curve for the merged edge (from ``halfedge1.source()`` to ``halfedge2.target()``).
+
+Returns
+-------
+Halfedge
+    Halfedge of the merged edge.
+
+Raises
+------
+Segmentation fault
+    If edges don't share a vertex. Cannot be caught with try/except.
+
+Examples
+--------
+**Correct usage:**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(5, 5), arr.unbounded_face())
+>>> v3 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> 
+>>> he1 = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(5, 5)), v1, v2)
+>>> he2 = arr.insert_at_vertices(Segment_2(Point_2(5, 5), Point_2(10, 10)), v2, v3)
+>>> 
+>>> print(f"Before merge: {arr.number_of_vertices()} vertices, {arr.number_of_edges()} edges")
+Before merge: 3 vertices, 2 edges
+>>> print(f"Shared vertex v2: {v2.point()}, degree {v2.degree()}")
+Shared vertex v2: 5 5, degree 2
+>>> 
+>>> merged_curve = Segment_2(Point_2(0, 0), Point_2(10, 10))
+>>> he_merged = arr.merge_edge(he1, he2, merged_curve)
+>>> 
+>>> print(f"After merge: {arr.number_of_vertices()} vertices, {arr.number_of_edges()} edges")
+After merge: 2 vertices, 1 edges
+>>> print(f"Merged edge: {he_merged.source().point()} → {he_merged.target().point()}")
+Merged edge: 0 0 → 10 10
+
+**CRITICAL: Do NOT access deleted vertex:**
+
+>>> # v2 was deleted by merge_edge
+>>> v2.point()  # 🔴 CRASH - segmentation fault!
+
+**CRITICAL: Non-adjacent edges (WILL CRASH):**
+
+>>> # Two edges that DON'T share a vertex
+>>> he_a = # ... edge from (0,0) to (5,5)
+>>> he_b = # ... edge from (10,0) to (15,5)  # Different vertices!
+>>> arr.merge_edge(he_a, he_b, curve)  # 🔴 INSTANT CRASH
+
+**Safe pattern: Verify adjacency first:**
+
+>>> if he1.target() == he2.source() and he1.target().degree() == 2:
+...     merged = arr.merge_edge(he1, he2, curve)
+...     # Discard invalidated handles
+...     he1 = None
+...     he2 = None
+...     v_shared = None
+... else:
+...     print("Edges not suitable for merging")
+
+DCEL Changes
+------------
+- Vertices: -1 (shared vertex removed)
+- Edges: -1 (two edges become one)
+- Halfedges: -2 (four halfedges become two)
+
+Preconditions (NOT CHECKED - You Must Verify)
+----------------------------------------------
+- ``halfedge1.target()`` must equal ``halfedge2.source()``
+- Shared vertex must have degree exactly 2
+- ``merged_curve`` should represent geometric union of the two curves
+
+Handle Invalidation
+-------------------
+After merge:
+
+- Shared vertex handle is INVALID (accessing crashes)
+- Original halfedge handles are INVALID
+- Returned halfedge handle is the new merged edge
+
+Notes
+-----
+This is the reverse operation of ``split_edge``. Common use cases:
+
+- Simplifying arrangements after edge removal
+- Cleaning up redundant vertices in batch processing
+- Implementing geometric simplification algorithms
+
+**Always verify preconditions** to avoid crashes:
+
+>>> def safe_merge_edge(arr, he1, he2, curve):
+...     if he1.target() != he2.source():
+...         raise ValueError("Edges don't share vertex")
+...     if he1.target().degree() != 2:
+...         raise ValueError(f"Shared vertex has degree {he1.target().degree()}, need 2")
+...     return arr.merge_edge(he1, he2, curve)
+
+See Also
+--------
+split_edge : Reverse operation (split one edge into two)
+remove_edge : Remove edge and optionally vertices
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 5: modify_vertex
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("modify_vertex"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Change the point associated with a vertex.
+
+Updates the geometric point of a vertex. Does NOT automatically update
+incident edge curves, which can create geometric inconsistency.
+
+⚠️ **Geometric Inconsistency Warning**
+
+This method changes only the vertex point, NOT the incident edge curves.
+After calling this, edge curves will not match vertex positions unless you
+manually update them with :meth:`modify_edge`.
+
+Parameters
+----------
+vertex : Vertex
+    The vertex to modify.
+new_point : Point_2
+    New geometric location for the vertex.
+
+Examples
+--------
+**Basic usage (creates inconsistency):**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> print(f"Before: v1 = {v1.point()}, edge curve = {he.curve()}")
+Before: v1 = 0 0, edge curve = 0 0 10 10
+>>> 
+>>> # Move v1 to new location
+>>> arr.modify_vertex(v1, Point_2(5, 0))
+>>> 
+>>> print(f"After: v1 = {v1.point()}, edge curve = {he.curve()}")
+After: v1 = 5 0, edge curve = 0 0 10 10
+>>> # ⚠️ INCONSISTENCY: Vertex at (5,0) but curve starts at (0,0)!
+
+**Correct usage: Update vertex AND incident curves:**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> new_point = Point_2(5, 0)
+>>> arr.modify_vertex(v1, new_point)
+>>> 
+>>> # ✓ Also update incident edge curves
+>>> new_curve = Segment_2(new_point, v2.point())
+>>> arr.modify_edge(he, new_curve)
+>>> 
+>>> print(f"Consistent: v1 = {v1.point()}, edge curve = {he.curve()}")
+Consistent: v1 = 5 0, edge curve = 5 0 10 10
+
+**For vertices with multiple edges:**
+
+>>> # Must update ALL incident edges
+>>> circ = vertex.incident_halfedges()
+>>> new_point = Point_2(...)
+>>> arr.modify_vertex(vertex, new_point)
+>>> 
+>>> # Update each incident edge
+>>> for he in circ:  # Iterate around vertex
+...     new_curve = Segment_2(he.source().point(), he.target().point())
+...     arr.modify_edge(he, new_curve)
+
+DCEL Changes
+------------
+- Vertex point: Changed to ``new_point``
+- Topology: Unchanged
+- Edge curves: UNCHANGED (creates inconsistency!)
+
+Preconditions (NOT CHECKED)
+----------------------------
+- New point should not create conflicts with other vertices
+- New point should maintain topological validity
+- User must update incident curves manually
+
+Notes
+-----
+This is a low-level operation that intentionally separates vertex position
+from edge geometry to allow flexible updates. Typical workflow:
+
+1. Call ``modify_vertex`` to change vertex position
+2. Call ``modify_edge`` for each incident edge to update curves
+3. Optionally validate with ``arr.is_valid()``
+
+**Why separate operations?**
+
+Allows atomic updates when modifying multiple vertices (e.g., moving a
+subgraph). Update all vertex positions first, then update curves.
+
+See Also
+--------
+modify_edge : Update edge curve to match new vertex positions
+is_valid : Verify arrangement consistency after modifications
+)pbdoc"
+
+
+# ------------------------------------------------------------------------------
+# METHOD 6: modify_edge
+# FILE: arrangement_on_surface_2_bindings.cpp
+# LINE: Search for: .def("modify_edge"
+# ------------------------------------------------------------------------------
+
+R"pbdoc(
+Change the curve associated with an edge.
+
+Updates the geometric curve of an edge. Does NOT verify that the new curve
+matches the endpoint vertex positions.
+
+⚠️ **No Validation Warning**
+
+This method accepts any curve, even if it doesn't match the source/target
+vertex positions, creating geometric inconsistency.
+
+Parameters
+----------
+halfedge : Halfedge
+    The halfedge of the edge to modify.
+new_curve : X_monotone_curve_2
+    New curve for the edge.
+
+Examples
+--------
+**Correct usage (after modify_vertex):**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> # Move vertex
+>>> new_point = Point_2(5, 0)
+>>> arr.modify_vertex(v1, new_point)
+>>> 
+>>> # Update edge curve to match
+>>> new_curve = Segment_2(v1.point(), v2.point())
+>>> arr.modify_edge(he, new_curve)
+>>> 
+>>> print(f"Consistent: v1={v1.point()}, v2={v2.point()}, curve={he.curve()}")
+Consistent: v1=5 0, v2=10 10, curve=5 0 10 10
+
+**DANGEROUS: Curve doesn't match vertices (no validation!):**
+
+>>> arr = Arrangement_2()
+>>> v1 = arr.insert_in_face_interior(Point_2(0, 0), arr.unbounded_face())
+>>> v2 = arr.insert_in_face_interior(Point_2(10, 10), arr.unbounded_face())
+>>> he = arr.insert_at_vertices(Segment_2(Point_2(0, 0), Point_2(10, 10)), v1, v2)
+>>> 
+>>> # Set curve that doesn't reach v2
+>>> bad_curve = Segment_2(Point_2(0, 0), Point_2(5, 5))
+>>> arr.modify_edge(he, bad_curve)  # ⚠️ No error!
+>>> 
+>>> print(f"v2 at {v2.point()}, but curve ends at {bad_curve.target()}")
+v2 at 10 10, but curve ends at 5 5
+>>> # Geometric inconsistency created!
+
+DCEL Changes
+------------
+- Edge curve: Changed to ``new_curve``
+- Topology: Unchanged
+- Vertex positions: UNCHANGED
+
+Preconditions (NOT CHECKED)
+----------------------------
+- ``new_curve.source()`` should equal ``halfedge.source().point()``
+- ``new_curve.target()`` should equal ``halfedge.target().point()``
+- New curve interior should not intersect other edges
+
+Notes
+-----
+This method is typically used together with :meth:`modify_vertex` to keep
+geometry consistent after vertex position changes.
+
+**Recommended pattern:**
+
+>>> # 1. Modify vertices
+>>> for v in vertices_to_move:
+...     arr.modify_vertex(v, new_positions[v])
+>>> 
+>>> # 2. Update affected edges
+>>> for he in affected_halfedges:
+...     new_curve = compute_curve(he.source().point(), he.target().point())
+...     arr.modify_edge(he, new_curve)
+>>> 
+>>> # 3. Validate
+>>> assert arr.is_valid(), "Arrangement became invalid"
+
+See Also
+--------
+modify_vertex : Update vertex position (requires curve updates)
+is_valid : Check arrangement consistency
+)pbdoc"
