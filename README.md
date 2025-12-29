@@ -17,8 +17,14 @@ Opened first contribution PR to CGAL Python bindings: **"Add docstrings for Arra
 - **What Changed:** Docstrings + named parameters for 6 core insertion methods
 - **Lines Changed:** Clean, focused diff (avoided formatting explosion)
 
-🔗 **PR Link:** [Bitbucket PR #1](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/)  
-📝 **Proposal Link:** [Google Docs - Commenting Access](https://docs.google.com/document/d/1XL1RYG9U-9OJlXU0i78VNDTHCz3OLBPHnfQPgQmCfz4/edit?usp=sharing)
+🔗 **PR Link:** [Bitbucket PR #1](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/3)  
+
+### ✅ SECOND PR SUBMITTED - December 29, 2025, 11:51 PM IST
+- **PR Status:** Awaiting review from Efi Fogel
+- **What Changed:** Added 15 comprehensive docstrings to Arrangement_2 + crash warnings
+- **Lines Changed:** Clean, focused diff (avoided formatting explosion)
+🔗 **PR Link:** [Bitbucket PR #2](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/4)
+📝 **Proposal Updated Link:** [Google Docs - Commenting Access](https://docs.google.com/document/d/1XL1RYG9U-9OJlXU0i78VNDTHCz3OLBPHnfQPgQmCfz4/edit?usp=sharing)
 
 ---
 
