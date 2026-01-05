@@ -71,7 +71,7 @@
 
 ### 📝 GSoC 2026 Proposal
 
-🔗 [Live Proposal — Google Docs](https://docs.google.com/document/d/1XL1RYG9U-9OJlXU0i78VNDTHCz3OLBPHnfQPgQmCfz4/edit?usp=sharing)
+🔗 [Live Proposal — Google Docs](https://docs.google.com/document/d/1ZM5TAC5rkKm3xmntMy7ZzfwnKFbS7yrk4IlOB5_FW_M/edit?usp=sharing)
 
 **Updated to include:**
 - Both PR submissions (21 methods documented total)
