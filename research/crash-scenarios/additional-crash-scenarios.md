@@ -177,9 +177,13 @@ he_modified = arr.modify_edge(he1, wrong_curve)  # Succeeds...
 
 ## ✅ Good News: Some Things Are Safe!
 
-### Iterator Invalidation Handled Correctly
+Not everything is doom and gloom! I also found several behaviors that work correctly and safely.
 
-I was worried this would crash, but it doesn't:
+---
+
+### ✅ Test #7: Iterator Invalidation Handled Correctly
+
+**Test:** Delete vertices while iterating over them
 
 ```python
 for v in arr.vertices():
@@ -187,9 +191,67 @@ for v in arr.vertices():
         arr.remove_isolated_vertex(v)
 ```
 
-**Result:** All 3 vertices deleted successfully, no crash. The iterator handles modification correctly.
+**Result:** ✅ All 3 vertices deleted successfully, no crash.
 
-This is actually really nice - it means you can safely delete while iterating. Not all C++ iterators behave this way.
+**Conclusion:** The iterator handles modification correctly - this is **SAFE**. Actually really nice behavior - you can safely delete while iterating. Not all C++ iterators behave this way!
+
+---
+
+### ✅ Test #8: `modify_vertex()` Handle Management
+
+**Test:** Modify an isolated vertex, then remove using the original handle
+
+```python
+v = arr.insert_in_face_interior(Point_2(5, 5), unbounded)
+v_modified = arr.modify_vertex(v, Point_2(10, 10))  # Returns new handle
+
+# Remove using original handle - does this work?
+arr.remove_isolated_vertex(v)  # ✅ Works!
+```
+
+**Output:**
+```
+Created isolated vertex at 5 5
+Modified vertex to 10 10
+Attempting to remove using original handle...
+✅ Removal succeeded
+```
+
+**Result:** ✅ Removal succeeds - original handle remains valid.
+
+**Conclusion:** `modify_vertex()` returns a new handle for convenience, but the original handle is still valid for the same vertex. This is **SAFE** and user-friendly behavior.
+
+---
+
+### ✅ Test #9: `split_edge()` Handle Management
+
+**Test:** Split an edge, then access the original halfedge handle
+
+```python
+he_original = arr.insert_from_left_vertex(seg, v1)  # (0,0) to (10,10)
+
+# Split into two segments
+seg1 = Segment_2(Point_2(0, 0), Point_2(5, 5))
+seg2 = Segment_2(Point_2(5, 5), Point_2(10, 10))
+he_new = arr.split_edge(he_original, seg1, seg2)
+
+# Access original handle - what does it show?
+curve = he_original.curve()
+```
+
+**Output:**
+```
+Created edge: 0 0 to 10 10
+Edge split successfully
+Attempting to access original halfedge after split...
+⚠️  Original halfedge still accessible: 0 0 to 5 5
+```
+
+**Result:** ✅ Original halfedge shows the first segment: (0,0) to (5,5)
+
+**Conclusion:** `split_edge()` modifies the original halfedge to represent the first segment and returns a new halfedge for the second segment. This is expected and **SAFE** behavior - the original handle is updated, not invalidated.
+
+**Documentation note:** This behavior should be clearly documented in the docstring for `split_edge()` so users know the input halfedge is modified in place, not deleted.
 
 ---
 
@@ -238,9 +300,9 @@ This is actually really nice - it means you can safely delete while iterating. N
 |----------|-------|
 | Total crashes found | 7 (5 from December + 2 new) |
 | Total warnings found | 4 (unsafe but no crash) |
-| Safe behaviors verified | 1 (iterator invalidation) |
+| Safe behaviors verified | 3 (iterator, modify_vertex, split_edge) |
 | Methods requiring precondition checks | 8 |
-| Safe methods confirmed | 15+ (all query methods) |
+| Safe methods confirmed | 15+ query methods + 3 modification methods verified safe |
 
 ---
 
@@ -297,6 +359,8 @@ Based on everything I've found, here's what needs to be fixed:
 - `test_crash_5_double_remove.py` - Double removal crash
 - `test_crash_6_modify_edge.py` - Modify edge with wrong endpoints
 - `test_crash_7_iterator.py` - Iterator invalidation (safe!)
+- `test_crash_8_modify_then_remove.py` - Modify vertex then remove (safe!)
+- `test_crash_9_split_then_access.py` - Split edge then access original (safe!)
 - `test_additional_crashes.py` - All tests combined
 
 ---
