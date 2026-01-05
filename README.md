@@ -691,9 +691,9 @@ Line 857 TODO still exists:
 ## 🔗 Important Links
 
 ### My Contributions:
-- 🔗 **PR #1 (Insertion Methods):** [Bitbucket PR #1](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/)
-- 🔗 **PR #2 (Removal/Modification/Query):** [Bitbucket PR #2](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/)
-- 🔗 **GSoC 2026 Proposal:** [Google Docs](https://docs.google.com/document/d/1XL1RYG9U-9OJlXU0i78VNDTHCz3OLBPHnfQPgQmCfz4/edit?usp=sharing)
+- 🔗 **PR #1 (Insertion Methods):** [Bitbucket PR #1](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/3)
+- 🔗 **PR #2 (Removal/Modification/Query):** [Bitbucket PR #2](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/4)
+- 🔗 **GSoC 2026 Proposal:** [Google Docs](https://docs.google.com/document/d/1ZM5TAC5rkKm3xmntMy7ZzfwnKFbS7yrk4IlOB5_FW_M/edit?usp=sharing)
 - 🔗 **This Prep Repository:** [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)
 
 ### Research Documents:
