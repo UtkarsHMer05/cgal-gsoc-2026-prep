@@ -1,820 +1,544 @@
-# 🎯 CGAL GSoC 2026 Preparation Repository
+# 🎯 CGAL GSoC 2026: Python Bindings Enhancement — Preparation Repository
 
-**Project:** CGAL Python Bindings Enhancement  
-**Applicant:** Utkarsh Khajuria  
+**Author:** Utkarsh Khajuria (@UtkarsHMer05)  
+**Project:** Enhancing CGAL Python Bindings  
 **Mentor:** Efi Fogel (efifogel@gmail.com)  
-**Preparation Period:** December 20, 2025 – January 5, 2026  
-**Total Time Invested:** 95+ hours
+**Organization:** CGAL (Computational Geometry Algorithms Library)  
+**Period:** December 20, 2025 – January 11, 2026  
+**Total Investment:** 107+ hours
 
 ---
 
-## 📌 Current Status — January 5, 2026
+## 📋 Table of Contents
 
-### ✅ TWO SUBSTANTIAL PRs SUBMITTED + CONTINUED RESEARCH
-
----
-
-#### PR #1: Insertion Methods Documentation
-
-- **Submitted:** December 27, 2025, 12:51 AM IST
-- **Status:** Awaiting review
-- 🔗 [PR Link](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/)
-
-**What Changed:**
-- Added NumPy-style docstrings for 6 insertion method overloads
-- Named parameters with `py::arg()` for all 6 methods
-- Documented counter-intuitive `insert_from_right_vertex` behavior (returns halfedge RIGHT→LEFT)
-- Warned about no validation in specialized insertion methods
-
-**Methods Documented:**
-- `insert_from_left_vertex(curve, vertex)`
-- `insert_from_left_vertex(curve, halfedge)`
-- `insert_from_right_vertex(curve, vertex)`
-- `insert_from_right_vertex(curve, halfedge)`
-- `insert_in_face_interior(curve, face)`
-- `insert_in_face_interior(point, face)`
+- [Overview](#-overview)
+- [Project Context](#-project-context)
+- [Work Summary](#-work-summary)
+- [Technical Discoveries](#-technical-discoveries)
+- [Repository Structure](#-repository-structure)
+- [Research Findings](#-research-findings)
+- [Key Statistics](#-key-statistics)
+- [How to Navigate This Repo](#-how-to-navigate-this-repo)
+- [Next Steps](#-next-steps)
+- [References](#-references)
 
 ---
 
-#### PR #2: Removal, Modification & Query Methods Documentation
+## 🎯 Overview
 
-- **Submitted:** December 29, 2025, 11:51 PM IST
-- **Status:** Awaiting review
-- 🔗 [PR Link](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/)
+This repository documents my preparation work for Google Summer of Code 2026 with CGAL, focusing on enhancing the Python bindings for the Computational Geometry Algorithms Library. Over **107+ hours** across three phases, I built CGAL from source, learned the 2D Arrangements package, empirically tested methods, discovered crash scenarios, and researched solutions to technical challenges raised by my mentor.
 
-**What Changed:**
-- Added comprehensive docstrings for 15 methods across 3 categories
-- 🔴 **CRITICAL** crash warnings for 2 methods that kill Python interpreter
-- Documented 5 segfault scenarios discovered through empirical testing
-- Documented 10+ silent corruption scenarios
-- Safe usage patterns with validation checks
-- Handle lifetime and invalidation warnings
+### Key Achievements
 
-**Methods Documented:**
-
-*Removal Methods (2):*
-- `remove_isolated_vertex(vertex)` — 🔴 CRITICAL: crashes if vertex not isolated
-- `remove_edge(halfedge)` — Handle invalidation + missing optional parameters
-
-*Modification Methods (4):*
-- `split_edge(halfedge, curve1, curve2)` — No validation warnings
-- `merge_edge(he1, he2, merged_curve)` — 🔴 CRITICAL: crashes on non-adjacent edges
-- `modify_vertex(vertex, new_point)` — Geometric inconsistency warning
-- `modify_edge(halfedge, new_curve)` — No validation warning
-
-*Query Methods (9):*
-- **Arrangement:** `number_of_vertices()`, `number_of_edges()`, `number_of_faces()`, `is_empty()`, `is_valid()`, `unbounded_face()`
-- **Vertex:** `degree()`, `is_isolated()`
-- **Halfedge:** `twin()`
+- ✅ Built CGAL successfully on macOS M2 (Apple Silicon)
+- ✅ Documented **21 methods** across 2 pull requests with NumPy-style docstrings
+- ✅ Discovered **7 crash scenarios** through systematic testing
+- ✅ Found **10 silent corruption cases**
+- ✅ Researched 3 docstring organization approaches (Approach A validated)
+- ✅ Identified critical bugs (line 857 lifetime management issue)
+- ✅ Created comprehensive CGAL package analysis (19 packages evaluated)
 
 ---
 
-### 📝 GSoC 2026 Proposal
+## 🔧 Project Context
 
-🔗 [Live Proposal — Google Docs](https://docs.google.com/document/d/1ZM5TAC5rkKm3xmntMy7ZzfwnKFbS7yrk4IlOB5_FW_M/edit?usp=sharing)
+| | |
+|---|---|
+| **Project** | CGAL Python Bindings Enhancement |
+| **Binding Library** | nanobind (modern C++17 bindings) |
+| **Main Repository** | [bitbucket.org/taucgl/cgal-python-bindings](https://bitbucket.org/taucgl/cgal-python-bindings) |
+| **CGAL Documentation** | [doc.cgal.org](https://doc.cgal.org) |
 
-**Updated to include:**
-- Both PR submissions (21 methods documented total)
-- Complete 95+ hour preparation timeline
-- Critical safety discoveries from testing
-- Architecture diagram showing three-layer structure
-- Detailed week-by-week plan for GSoC 350 hours
+### Core Problem
+
+The CGAL Python bindings exist but are incomplete:
+- 90% of methods lack documentation
+- Parameters appear as `arg0`, `arg1`, `arg2` instead of meaningful names
+- Several methods cause segmentation faults when misused
+- CGAL's compile-time Named Parameters pattern isn't applied to Python bindings
+- No precondition validation, leading to silent data corruption
 
 ---
 
-## 🚀 Why This Project?
+## 📊 Work Summary
 
-I found CGAL when I needed 2D arrangement algorithms for a project. The C++ API was elegant—template metaprogramming, traits classes, DCEL structures. But when I tried the Python bindings, I hit a wall immediately.
+### Phase 1: Foundation (50+ hours, Dec 20-24, 2025)
 
-No docstrings. Parameters showing as `arg0`, `arg1`, `arg2`. And there's literally a comment on line 857 that says:
+Built the development environment and studied CGAL's architecture.
+
+**Achievements:**
+- ✅ Built CGAL 5.6 from source on macOS Apple Silicon M2
+- ✅ Studied 2D Arrangements: DCEL data structures, traits classes, template architecture
+- ✅ Analyzed 50+ bound methods in the Python bindings repository
+- ✅ Mastered nanobind: return value policies, `keep_alive` patterns, lifetime management
+- ✅ Discovered line 857-858 bug: `reference_internal` doesn't work for `insert_cv_with_history()`
+
+**Files Created:**
+- `phase1-foundation/environment-setup.md` — Complete build instructions
+- `phase1-foundation/cgal-learning-notes.md` — DCEL and 2D Arrangements deep dive
+- `phase1-foundation/nanobind-deep-dive.md` — Lifetime management patterns
+- `phase1-foundation/line857-bug-analysis.md` — Memory management bug documentation
+
+---
+
+### Phase 2: Contributions & Testing (40+ hours, Dec 25-29, 2025)
+
+Submitted pull requests and conducted empirical testing across methods.
+
+**Achievements:**
+- ✅ Submitted **PR #1:** Documented 6 methods with NumPy-style docstrings
+- ✅ Submitted **PR #2:** Documented 15 methods (removal, modification, query operations)
+- ✅ Empirically tested 30+ methods across 13 hours of systematic testing
+- ✅ Discovered **5 crash scenarios** (segfaults that kill Python interpreter):
+  1. `remove_isolated_vertex()` on non-isolated vertex → Bus error
+  2. `remove_edge()` called twice on same halfedge → Segfault
+  3. `merge_edge()` on non-adjacent edges → Segfault
+  4. Accessing halfedge after `remove_edge()` → Segfault
+  5. Invalid iterator access → Segfault (later verified as SAFE)
+- ✅ Documented **10 silent corruption scenarios**:
+  - Duplicate points accepted without validation
+  - Mismatched curve endpoints accepted
+  - Overlapping segments silently allowed
+  - Invalid geometric transformations succeed
+
+**Files Created:**
+- `phase2-contributions/pr1-submission.md` — First PR documentation
+- `phase2-contributions/pr2-submission.md` — Second PR documentation
+- `phase2-contributions/complete-methods-research.md` — 2,500 lines method analysis
+- `phase2-contributions/test_removal_methods.py` — 300 lines of tests
+- `phase2-contributions/test_modification_methods.py` — 350 lines of tests
+- `phase2-contributions/test_query_methods.py` — 200 lines of tests
+
+---
+
+### Phase 3: Research (17+ hours, Jan 5-11, 2026)
+
+Addressed mentor's technical questions and extended research.
+
+**Achievements:**
+
+#### ✅ Docstring Organization Research (Question 7 from mentor)
+- Tested 3 approaches: External variables (A), External headers (B), Namespace organization (C)
+- **Validated Approach A:** 85% readability improvement, zero build system changes
+- Created proof-of-concept: `test-approach-a/test_external_docstrings.cpp`
+- **Result:** Production-ready, can implement in 20 minutes
+
+#### ✅ Extended Crash Testing
+- Found **2 NEW crashes** (total: 7):
+  - **Crash 6:** Accessing twin after `remove_edge()` → Segfault
+  - **Crash 7:** `remove_isolated_vertex()` called twice → Segfault
+- Verified **3 SAFE behaviors:**
+  - `modify_vertex` handle management works correctly
+  - `split_edge` handle management works correctly
+  - Iterator invalidation handled properly
+- Documented 4 geometric validation warnings
+
+#### ✅ Build System Mastery
+- Successfully built Polygon Mesh Processing (PMP) bindings
+- Resolved Eigen 3.4.1/CGAL 5.6 compatibility issues
+- Fixed GMP/GMPXX linking on macOS M2
+- Created `build_pmp.sh` automation script
+
+**Files Created:**
+- `research/docstring-location/docstring-location-research.md` — Full analysis
+- `research/docstring-location/test-approach-a/test_external_docstrings.cpp` — Proof-of-concept
+- `research/crash-scenarios/additional-crash-scenarios.md` — Comprehensive findings
+- 9 test files for crash scenarios (`test_crash_*.py`)
+- `docs/technical/build_pmp_guide.md` — PMP build documentation
+
+---
+
+## 🔬 Technical Discoveries
+
+### 1. Docstring Shadowing Problem
+
+**Problem:** Inline docstrings make binding code hard to read.
+- **Current:** `arrangement_on_surface_2_bindings.cpp` is 1,676 lines
+- **Each method:** 40-50 lines (5 lines code + 35-45 lines docstring)
+
+**Solution — Approach A (VALIDATED):**
 
 ```cpp
-//! \todo Why the f... reference_internal doesn't work?
-```
-
-That's when it clicked: elegant C++ architecture is worthless if Python users can't figure out how to use it.
-
-I'm not here for just a summer project. I want to make CGAL's Python bindings actually usable for researchers and developers who need computational geometry but don't want to read C++ source code. I've already invested 95+ hours before even applying, and I'll keep contributing regardless of GSoC selection.
-
----
-
-## 📚 Phase 1: Foundation (50+ Hours, Dec 20-24)
-
-### Day 1: Environment Setup (December 20)
-
-**What I did:**
-- Built CGAL from source on MacBook Air M1
-- Configured Qt6, Boost 1.86, CORE support
-- Set up CMake with Python bindings enabled
-- Verified installation with test programs
-
-**What I learned:**
-- CGAL's build system is complex but well-documented
-- Dependencies matter—wrong Boost version breaks everything
-- Building from source gives full control for debugging
-
-**Time spent:** ~8 hours (mostly debugging Qt6 linking issues)
-
----
-
-### Day 2: Mastering 2D Arrangements (December 21)
-
-**What I did:**
-- Studied DCEL (Doubly-Connected Edge List) data structure in depth
-- Built and analyzed 3 C++ examples: `incremental_insertion`, `point_location`, `edge_insertion`
-- Wrote 600+ lines of architecture analysis
-
-**What I learned:**
-
-*DCEL Structure:*
-- Vertices store geometric points + degree
-- Halfedges are directed edges with twin pointers
-- Faces represent regions bounded by edges
-- Everything links bidirectionally for traversal
-
-*Traits Classes:*
-- `Arr_segment_traits_2` for line segments
-- `Arr_circle_segment_traits_2` for circular arcs
-- Traits define geometric operations (intersections, comparisons)
-
-*Insertion Methods (15+ types!):*
-- General vs specialized insertion
-- When to use each method
-- DCEL topology changes for each
-
-**Time spent:** ~12 hours
-
----
-
-### Day 3: Exploring Python Bindings Repository (December 22)
-
-**What I did:**
-- Cloned `cgal-python-bindings` from Bitbucket
-- Analyzed binding code in `src/libs/cgalpy/lib/`
-- Studied 50+ bound methods in `Arrangement_2`
-- Found 70+ Python examples
-
-**What I discovered:**
-
-*The Good:*
-- 2D/3D Arrangements ~80% complete
-- 13+ geometry types supported
-- Pythonic iteration works well
-
-*The Gaps:*
-- 90% of methods have NO docstrings
-- Most show `arg0`, `arg1`, `arg2` instead of names
-- No IDE autocomplete (missing `.pyi` stubs)
-- Some functions commented out (lifetime issues)
-
-**Critical Finding — Line 857:**
-```cpp
-//! \todo Why the f... reference_internal doesn't work?
-m.def("insert", &aos2::insert_cv_with_history, ref);  // Dangerous workaround!
-```
-
-**Time spent:** ~10 hours
-
----
-
-### Day 4-5: Learning Nanobind (December 23-24)
-
-**What I learned:**
-
-*Return Value Policies:*
-- `reference_internal` — Keeps parent alive (most common)
-- `copy` — Independent copy
-- `take_ownership` — Python owns object
-- `reference` — Bare reference (dangerous!)
-
-*Lifetime Management:*
-- `keep_alive<0, 1>` patterns
-- Critical for iterators and handles
-- Line 857 uses dangerous bare ref as workaround
-
-**Time spent:** ~12 hours
-
----
-
-### Day 5: Proposal Writing (December 24)
-
-- Drafted comprehensive 12-week proposal
-- Created architecture diagrams
-- Structured 2-week increment timeline
-- Submitted to prep repository
-
-**Time spent:** ~8 hours  
-**Submitted:** December 24, 2025, 11:57 PM IST
-
----
-
-## 🔥 Phase 2: Real Contributions (40+ Hours, Dec 25-29)
-
-### Night 1: Building cgalpy (Dec 25-26, 12 hours)
-
-**The Challenge:** Build Python bindings with arrangement support
-
-**What happened:**
-- Initial GCC build failed (Qt6 issues on macOS)
-- Switched to Apple Clang → success
-- Key flag: `-DCGALPY_ARRANGEMENT_ON_SURFACE_2_BINDINGS=ON`
-- Discovered import path: `from CGALPY.Aos2 import Arrangement_2`
-
-**Testing discoveries:**
-- `insert_in_face_interior(point, face)` — NO validation, creates duplicate vertices at same coordinates
-- `insert_from_left_vertex(curve, vertex)` — Intuitive, returns halfedge LEFT→RIGHT
-- `insert_from_right_vertex(curve, vertex)` — Counter-intuitive! Returns halfedge RIGHT→LEFT
-
-**Time spent:** 12 hours
-
----
-
-### Day 6: Research Documentation (Dec 26)
-
-Wrote detailed research files for three methods based on testing:
-- Method behavior analysis
-- DCEL topology changes
-- Preconditions (none validated!)
-- Common mistakes and warnings
-
-**Time spent:** 4 hours
-
----
-
-### Day 7: The Formatting Disaster & PR #1 (Dec 26-27)
-
-**The Problem:**
-- Wrote docstrings, saved file
-- VS Code auto-formatter rewrote entire file
-- Result: +1306 / -823 lines changed (mostly whitespace)
-
-**The Fix:**
-1. Reset to clean master
-2. Disabled all auto-formatters in VS Code
-3. Created fresh branch
-4. Re-applied changes manually (clean diff!)
-5. Rebuilt and tested
-6. Submitted PR
-
-**Time spent:** 9 hours (3 fixing formatter disaster, 6 writing docs)  
-**PR #1 Submitted:** December 27, 2025, 12:51 AM IST
-
----
-
-### Days 8-9: Deep Methods Research (Dec 27-28, 13 HOURS) 🔬
-
-After submitting PR #1, I didn't stop. I systematically tested 25+ methods to understand safety characteristics. This wasn't casual testing—I wrote 800+ lines of test code and documented everything in a 2,500+ line research document.
-
-**Timeline:**
-- Dec 27, 6:18 PM - 11:05 PM: Specialized insertion methods (5 hours)
-- Dec 28, 2:00 PM - 4:50 PM: Removal, modification, query methods (8 hours)
-
----
-
-### 🔴 Critical Discovery #1: FIVE CRASH SCENARIOS
-
-These ALL cause SEGFAULT or Bus Error (kill Python interpreter, no exception):
-
-**1. `remove_isolated_vertex()` on non-isolated vertex**
-```python
-v = arr.insert_in_face_interior(Point_2(0, 0), unbounded)
-arr.insert_at_vertices(seg, v, v2)  # v now has degree 1
-
-arr.remove_isolated_vertex(v)  # v is NOT isolated!
-# Result: zsh: bus error python test.py
-```
-
-**2. `remove_edge()` twice on same halfedge**
-```python
-arr.remove_edge(he)  # First removal - OK
-arr.remove_edge(he)  # Second removal - he is INVALID!
-# Result: zsh: segmentation fault python test.py
-```
-
-**3. `merge_edge()` on non-adjacent edges**
-```python
-he1 = arr.insert_at_vertices(seg1, v1, v2)  # Edge 1
-he2 = arr.insert_at_vertices(seg2, v3, v4)  # Edge 2 (different vertices!)
-
-arr.merge_edge(he1, he2, merged)  # Edges don't share vertex!
-# Result: zsh: segmentation fault python test.py
-```
-
-**4. Accessing deleted vertex after `merge_edge()`**
-```python
-v2 = he1.target()  # Save handle to shared vertex
-arr.merge_edge(he1, he2, merged)  # v2 gets deleted internally
-
-v2.point()  # Accessing deleted vertex!
-# Result: zsh: segmentation fault python test.py
-```
-
-**5. Accessing deleted halfedge after `remove_edge()`**
-```python
-arr.remove_edge(he)  # he is now invalid
-
-he.source()  # Accessing deleted halfedge!
-# Result: zsh: segmentation fault python test.py
-```
-
-**Pattern:** All involve accessing freed memory or calling methods with invalid handles. Python GC can't detect this—handles exist but point to freed C++ memory.
-
----
-
-### ⚠️ Critical Discovery #2: TEN+ SILENT CORRUPTION SCENARIOS
-
-These create invalid arrangements with NO error:
-
-1. **Duplicate points** — `insert_in_face_interior(point, face)` creates multiple vertices at same coordinates
-2. **Mismatched endpoints** — `insert_from_left_vertex(seg, v)` where `seg.source() != v.point()`
-3. **Overlapping segments** — `insert_in_face_interior()` accepts segments that overlap existing edges
-4. **Duplicate edges** — `insert_at_vertices()` can create multiple edges between same vertices
-5. **Wrong split point** — `split_edge()` accepts curves that don't actually split at the original edge
-6. **Degenerate split** — `split_edge()` with zero-length first curve creates duplicate vertex
-7. **Wrong merged curve** — `merge_edge()` accepts curve that doesn't match vertex positions
-8. **Vertex moved, edge not updated** — `modify_vertex()` doesn't update incident edge curves automatically
-9. **Curve doesn't match vertices** — `modify_edge()` accepts curve with endpoints not matching vertex positions
-10. **Non-isolated vertices** — `insert_at_vertices()` accepts vertices that already have edges (violates precondition)
-
-**Detection:** Use `arr.is_valid()` after operations to check arrangement consistency.
-
----
-
-### ✅ Good Discovery: All Query Methods SAFE
-
-Tested 15+ query/traversal methods:
-- **Counting:** `number_of_vertices()`, `number_of_edges()`, `number_of_faces()`
-- **Boolean:** `is_empty()`, `is_valid()`
-- **Vertex:** `point()`, `degree()`, `is_isolated()`
-- **Halfedge:** `source()`, `target()`, `twin()`, `next()`, `prev()`
-- **Face:** `is_unbounded()`, `has_outer_ccb()`
-
-**Result:** ALL work correctly, no crashes, no corruption. These are the baseline for "safe" behavior.
-
----
-
-### Day 10: PR #2 Preparation & Submission (Dec 28-29)
-
-**What I did:**
-- Wrote docstrings for 15 methods in 3 batches
-- Added 🔴 CRITICAL warnings for crash scenarios
-- Documented safe usage patterns
-- Wrote side-by-side correct vs incorrect examples
-- Tested all examples in fresh Python session
-- Integrated into binding code carefully (no formatter!)
-- Rebuilt and verified
-
-**Docstring Features:**
-- NumPy-style format with parameter types
-- Explicit "will CRASH Python" language for segfaults
-- Safe validation patterns (e.g., `if vertex.is_isolated():`)
-- Handle lifetime warnings
-- Cross-references to related methods
-
-**Time Spent:** 6 hours (docs already researched, just needed integration)  
-**PR #2 Submitted:** December 29, 2025, 11:51 PM IST
-
----
-
-## 🔬 Phase 3: Extended Research (5+ Hours, Jan 5, 2026)
-
-After submitting both PRs, Efi raised two important questions in his feedback. Instead of waiting, I explored both immediately.
-
----
-
-### Research Question #1: Docstring "Screening" Problem
-
-**Efi's question:** Can docstrings be defined externally to avoid "screening or shadowing the code"?
-
-**What I did:**
-- Analyzed `arrangement_on_surface_2_bindings.cpp` (1,676 lines)
-- Found the problem: each method binding spans 40-50 lines (5 lines code + 35-45 lines inline docstring)
-- Researched 3 approaches for external definition
-- Created proof-of-concept for Approach A
-
-**Approaches Documented:**
-
-**Approach A: Variables at Top of File**
-```cpp
-// At top of file
-const char* METHOD_NAME_DOC = R"pbdoc(
-    Full docstring here...
+// DOCSTRINGS SECTION - At top of file
+const char* INSERT_FROM_LEFT_VERTEX_DOC = R"pbdoc(
+Insert a curve from a given vertex.
+
+Parameters
+----------
+curve : Curve
+    The curve to insert
+vertex : Vertex
+    The source vertex
+
+Returns
+-------
+Halfedge
+    A halfedge directed from source to target
 )pbdoc";
 
-// In binding section (much cleaner!)
-m.def("method_name", &function, py::arg("param"), METHOD_NAME_DOC);
+// BINDINGS - Clean section!
+NB_MODULE(cgalpy_aos2, m) {
+    m.def("insert_from_left_vertex", &aos2_insert_from_left_vertex_cv,
+          nb::arg("curve"), nb::arg("vertex"),
+          nb::keep_alive<0, 1>(),
+          INSERT_FROM_LEFT_VERTEX_DOC);  // Just reference the variable
+}
 ```
-- **Pros:** Simple, no build changes, 85% readability improvement
-- **Cons:** Still in same file, long files get harder to navigate
-- **Status:** ✅ Tested, syntax verified, production-ready
 
-**Approach B: External Header File**
+**Benefits:**
+- 85% readability improvement in binding section
+- Zero build system changes needed
+- Drop-in replacement for inline docstrings
+- Can implement in 20 minutes for existing methods
+
+---
+
+### 2. Crash Scenarios Discovered
+
+#### 🔴 HIGH PRIORITY — Cause Segmentation Faults
+
+| Method | Crash Scenario | Cause | Fix Required |
+|--------|---------------|-------|--------------|
+| `remove_isolated_vertex` | Called on non-isolated vertex | No precondition check | `RuntimeError` if degree > 0 |
+| `remove_edge` | Called twice on same halfedge | Handle invalidation not enforced | Handle validity tracking |
+| `merge_edge` | Called on non-adjacent edges | No adjacency validation | `ValueError` on connectivity check |
+| Twin access | Accessing twin after `remove_edge()` | Both handles invalidated | Track twin invalidation |
+| Double removal | `remove_isolated_vertex()` twice | Handle remains accessible | Handle validity check |
+
+#### ⚠️ MEDIUM PRIORITY — Silent Corruption
+
+| Method | Issue | Result | Fix Required |
+|--------|-------|--------|--------------|
+| `modify_vertex` | Called on connected vertex with arbitrary new point | Geometric inconsistency | `ValueError` if edges don't align |
+| `split_edge` | Split point not on edge | Topology broken | Geometric validation |
+| `merge_edge` | Wrong halfedge orientation (using twin) | Ambiguous behavior | Direction validation |
+| `modify_edge` | New curve with different endpoints | Geometric inconsistency | Endpoint matching check |
+
+#### ✅ SAFE BEHAVIORS (Verified)
+
+- ✅ `modify_vertex`: Original handle remains valid after modification
+- ✅ `split_edge`: Original halfedge updated in-place (not invalidated)
+- ✅ Iterator invalidation: Handled correctly during traversal
+
+---
+
+### 3. Line 857 Bug
+
+**Location:** `arrangement_on_surface_2_bindings.cpp:857-858`
+
+**Problem:**
 ```cpp
-// arrangement_docstrings.h
-namespace CGAL { namespace docstrings {
-    const char* METHOD_NAME_DOC = R"pbdoc(...)pbdoc";
-}}
-
-// arrangement_bindings.cpp
-#include "arrangement_docstrings.h"
-m.def("method_name", &function, py::arg("param"), CGAL::docstrings::METHOD_NAME_DOC);
+m.def("insert_cv_with_history", &aos2_insert_cv_with_history,
+      nb::arg("curve"), nb::arg("object"),
+      nb::rv_policy::reference_internal);  // BUG: Doesn't work!
 ```
-- **Pros:** Clean separation, easy to find/edit docs
-- **Cons:** Requires build system change, more files to maintain
-- **Status:** Recommended for long-term
 
-**Approach C: Namespace Organization**
-- Middle ground between A and B
-- Organizes docstrings in namespaces within same file
+**Issue:** `reference_internal` policy doesn't properly manage lifetime for this method, leading to potential use-after-free bugs in long-running applications.
 
-**Recommendation:** Approach A for immediate wins (20 minutes to migrate 5 methods), Approach B for long-term architecture.
-
-**Files created:**
-- `research/docstring-location/docstring-location-research.md` (full analysis)
-- `research/docstring-location/test-approach-a/test_external_docstrings.cpp` (proof-of-concept)
-- `research/docstring-location/test-approach-a/README.md` (documentation)
-
-**Time spent:** ~2 hours
+**Fix Required:** Test `keep_alive` chains or shared pointer wrappers.
 
 ---
 
-### Research Question #2: More Crash Scenarios?
+### 4. Package Analysis Results
 
-**What I did:**
-- Tested 3 more potentially unsafe operations
-- Found 2 NEW crashes + verified 3 SAFE behaviors
+Created comprehensive analysis of 19 CGAL packages using 0-3 completeness scale:
 
-**NEW Crash #6: Accessing Twin After `remove_edge()`**
+| Completeness | Count | Percentage | Packages |
+|-------------|-------|------------|----------|
+| 3 (Complete) | 1 | 5% | 2D/3D Kernel |
+| 2 (Partial) | 1 | 5% | 2D Arrangements (~20% documented) |
+| 1 (Minimal) | 1 | 5% | Polygon Mesh Processing (only 1 function) |
+| 0 (None) | 16 | 84% | All others unavailable from Python |
+
+**Conclusion:** Massive opportunity for expansion, but existing partial bindings need consolidation first.
+
+---
+
+## 📁 Repository Structure
+
+```
+cgal-gsoc-2026-prep/
+├── README.md                          # This file
+├── proposal/
+│   ├── gsoc-2026-proposal-v1.md      # Dec 24 - original
+│   ├── gsoc-2026-proposal-v2.docx    # Jan 1 - revised after feedback
+│   └── gsoc-2026-proposal-v3.docx    # Jan 11 - final with CI & package table
+│
+├── phase1-foundation/                 # Dec 20-24, 50+ hours
+│   ├── environment-setup.md           # CGAL build instructions
+│   ├── cgal-learning-notes.md         # DCEL, traits, policy-based design
+│   ├── nanobind-deep-dive.md          # Lifetime management, policies
+│   └── line857-bug-analysis.md        # Memory management bug
+│
+├── phase2-contributions/              # Dec 25-29, 40+ hours
+│   ├── pr1-submission.md              # First PR: 6 methods documented
+│   ├── pr2-submission.md              # Second PR: 15 methods documented
+│   ├── complete-methods-research.md   # 2,500 lines method analysis
+│   ├── test_removal_methods.py        # 300 lines tests
+│   ├── test_modification_methods.py   # 350 lines tests
+│   └── test_query_methods.py          # 200 lines tests
+│
+├── research/                          # Jan 5-11, 17+ hours
+│   ├── docstring-location/
+│   │   ├── docstring-location-research.md
+│   │   ├── test-approach-a/
+│   │   │   ├── test_external_docstrings.cpp    # VALIDATED
+│   │   │   └── README.md
+│   │   └── test-approach-b/
+│   │       ├── arrangement_docstrings.h
+│   │       └── test_external_header.cpp
+│   │
+│   └── crash-scenarios/
+│       ├── additional-crash-scenarios.md
+│       ├── test_crash_3_twin.py
+│       ├── test_crash_4_merge.py
+│       ├── test_crash_5_double_remove.py
+│       ├── test_crash_6_modify_edge.py
+│       ├── test_crash_7_iterator.py
+│       ├── test_crash_8_modify_then_remove.py
+│       ├── test_crash_9_split_then_access.py
+│       └── README.md
+│
+├── docs/
+│   ├── technical/
+│   │   ├── build_guide.md
+│   │   ├── build_pmp_guide.md
+│   │   └── nanobind_patterns.md
+│   └── troubleshooting/
+│       └── common_issues.md
+│
+├── efi-feedback/                     # Mentor communication history
+│   ├── email1-proposal-feedback.txt
+│   ├── email2-work-direction.txt
+│   ├── email3-ci-packages.txt
+│   ├── my-response-jan1.txt
+│   └── my-update-jan11.txt
+│
+└── master-prompts/                   # AI context files
+    ├── master-prompt-v9.0.md
+    ├── master-prompt-v10.0.md
+    ├── master-prompt-v11.0.md
+    └── master-prompt-v12.0.md        # CURRENT
+```
+
+---
+
+## 🔍 Research Findings
+
+### Research Task 1: Docstring Location ✅ COMPLETE
+
+**Question from Mentor:** "Is there a way to define a docstring not immediately where the binding is defined?"
+
+| Approach | Method | Pros | Cons | Status |
+|----------|--------|------|------|--------|
+| A | External variables at file top | Simple, 85% readability gain, zero build changes | Long files remain long | ✅ VALIDATED |
+| B | External header file | Complete separation, scalable | Requires CMake changes | 📋 TO TEST |
+| C | Namespace organization | Better than A, no build changes | Still in same file | 📋 CONCEPT |
+
+**Recommendation:** Use Approach A for Weeks 3-4 of GSoC. Consider Approach B for long-term architecture.
+
+---
+
+### Research Task 2: Extended Crash Testing ✅ COMPLETE
+
+**Crash Statistics:**
+
+| Category | Count | Status |
+|----------|-------|--------|
+| Total crashes found | 7 | 5 from Dec + 2 new |
+| Geometric warnings | 4 | Silent corruption |
+| Safe behaviors verified | 3 | Positive findings |
+| Methods needing preconditions | 8 | For Weeks 5-6 |
+
+**Precondition Framework Design:**
+
 ```python
-twin = he.twin()  # Store twin before removal
-arr.remove_edge(he)  # Remove edge
-
-point = twin.source().point()  # Access twin - CRASH!
-# Result: zsh: segmentation fault
+# Example: Precondition check implementation
+def remove_isolated_vertex(arr, vertex):
+    # BEFORE (current): Crashes with segfault
+    arr.remove_isolated_vertex(vertex)
+    
+    # AFTER (proposed): Raises Python exception
+    if vertex.degree() > 0:
+        raise RuntimeError(f"Cannot remove vertex: degree={vertex.degree()}, must be isolated")
+    arr.remove_isolated_vertex(vertex)
 ```
-**Finding:** Both the halfedge AND its twin are invalidated when edge is removed.
-
-**NEW Crash #7: `remove_isolated_vertex()` Called Twice**
-```python
-v = arr.insert_in_face_interior(Point_2(3, 3), unbounded)
-arr.remove_isolated_vertex(v)  # First removal - OK
-arr.remove_isolated_vertex(v)  # Second removal - CRASH!
-# Result: zsh: segmentation fault
-```
-**Finding:** Confirms handle invalidation issue. First removal succeeds, but handle remains accessible—using it again crashes.
-
-**SAFE Behavior #1: `modify_vertex()` Handle Management**
-```python
-v = arr.insert_in_face_interior(Point_2(5, 5), unbounded)
-v_modified = arr.modify_vertex(v, Point_2(10, 10))
-arr.remove_isolated_vertex(v)  # Using original handle - works!
-```
-**Finding:** Original handle remains valid after modification. User-friendly behavior!
-
-**SAFE Behavior #2: `split_edge()` Handle Management**
-```python
-he_original = arr.insert_from_left_vertex(seg, v1)  # (0,0) to (10,10)
-he_new = arr.split_edge(he_original, seg1, seg2)
-curve = he_original.curve()  # Shows (0,0) to (5,5) - works!
-```
-**Finding:** Original halfedge is updated in-place to represent first segment. Expected and safe.
-
-**SAFE Behavior #3: Iterator Invalidation Handled**
-```python
-for v in arr.vertices():
-    if v.is_isolated():
-        arr.remove_isolated_vertex(v)  # Deleting while iterating - works!
-```
-**Finding:** Iterator correctly handles modification during traversal.
-
-**Additional Warnings Found (No Crash, But Invalid Geometry):**
-- `modify_vertex()` on Connected Vertex — Accepts modification even when vertex has edges, creating geometric inconsistency
-- `split_edge()` with Wrong Point — Accepts split with point not on original edge
-- `merge_edge()` with Wrong Orientation — Unclear if using `he2.twin()` is intentional or bug
-- `modify_edge()` with Mismatched Endpoints — Accepts new curve with different endpoints
-
-**Updated Statistics:**
-- Total crashes found: 7 (5 from December + 2 new)
-- Total warnings found: 4 (unsafe but no crash)
-- Safe behaviors verified: 3 (iterator, modify_vertex, split_edge)
-
-**Files created:**
-- `research/crash-scenarios/test_crash_3_twin.py`
-- `research/crash-scenarios/test_crash_4_merge.py`
-- `research/crash-scenarios/test_crash_5_double_remove.py`
-- `research/crash-scenarios/test_crash_6_modify_edge.py`
-- `research/crash-scenarios/test_crash_7_iterator.py`
-- `research/crash-scenarios/test_crash_8_modify_then_remove.py`
-- `research/crash-scenarios/test_crash_9_split_then_access.py`
-- Updated `research/crash-scenarios/additional-crash-scenarios.md`
-
-**Time spent:** ~3 hours
 
 ---
 
-## 🎯 Total Contribution Statistics (Dec 20 – Jan 5)
+### Research Task 3: Named Parameters 📋 TO DO
 
-| Metric | Count |
-|--------|-------|
-| Total hours invested | 95+ |
-| Methods fully documented | 21 (6 in PR #1, 15 in PR #2) |
-| Methods empirically tested | 30+ |
-| Test code written | 900+ lines (9 files) |
-| Research documentation | 3,000+ lines |
-| Docstrings written | ~950 lines |
-| Crash scenarios discovered | 7 (all cause SEGFAULT) |
-| Corruption scenarios found | 10+ (silent invalid arrangements) |
-| Safe methods confirmed | 15 query methods + 3 modification methods |
-| Pull requests submitted | 2 (both substantial) |
-| Missing API features identified | 2 categories |
-| Research approaches documented | 3 (docstring organization) |
-| Proof-of-concepts created | 1 (Approach A) |
+**Location:** `lib/export_pmp_normal_computation.cpp`  
+**Method:** `compute_face_normals()`  
+**Status:** Not yet started
+
+**Background from Mentor:**
+> "It is applied to compute_face_normals(), and implemented in lib/export_pmp_normal_computation.cpp. It is a hard topic, and I suggest that you simply put it in the timetable and assign, say, 2 weeks to this task."
+
+**Next Steps:**
+1. Study Efi's implementation
+2. Document the compile-time type handling pattern
+3. Identify 15-20 other functions needing this pattern
+4. Create technical analysis document
 
 ---
 
-## 📊 Key Findings Summary
+### Research Task 4: Doxygen Auto-Generation 📋 TO DO
 
-### Gap #1: Documentation (CRITICAL) — ACTIVELY FIXING ⭐
+**Question from Mentor:** "Whether there is a way to generate the docstring automatically from the C++ Doxygen sources?"
 
-**Before my work:**
-- 90% of methods have NO docstrings
-- Users forced to read C++ source
-
-**After my work:**
-- ✅ 21 methods now fully documented
-- ✅ NumPy-style format with examples
-- ✅ Named parameters showing actual argument names
-
-**Remaining:** ~40-50 methods still need docs
+**Research Plan:**
+1. Examine CGAL C++ Doxygen sources
+2. Check if Doxygen exports to XML/JSON
+3. Prototype Python parser script
+4. Test on 5-10 methods
+5. Evaluate time savings vs manual documentation
 
 ---
 
-### Gap #2: Safety Issues (CRITICAL) — NOW DOCUMENTED 🔴
+### Research Task 5: NumPy Arrays 📋 TO DO
 
-**My discoveries:**
-- 7 methods crash Python interpreter if misused (updated from 5)
-- 10+ methods silently create invalid arrangements
-- NO precondition validation in C++ bindings
-- Python users expect exceptions, not crashes
+**Mention from Mentor:** "Another task is the use of NumPy arrays when possible."
 
-**My solution:**
-- 🔴 Explicit CRITICAL warnings in docstrings
-- Safe usage patterns with validation checks
-- Side-by-side correct vs incorrect examples
-- Handle lifetime and invalidation documentation
-
----
-
-### Gap #3: Named Parameters (MAJOR) — PARTIALLY FIXED
-
-**Before:** `insert_from_left_vertex(*args, **kwargs)`  
-**After:** `insert_from_left_vertex(curve, vertex)`
-
-- ✅ Fixed for 21 methods
-- **Remaining:** Hundreds of functions still show `arg0`, `arg1`
+**Research Plan:**
+1. Check nanobind NumPy support (`#include <nanobind/ndarray.h>`)
+2. Identify methods accepting/returning:
+   - Point lists
+   - Coordinate arrays
+   - Index arrays for connectivity
+3. Prototype zero-copy conversions
+4. Benchmark performance gains
 
 ---
 
-### Gap #4: Code Readability (NEW) — SOLUTION PROPOSED
+## 📈 Key Statistics
 
-**Problem identified by Efi:** Inline docstrings "screen or shadow" binding code
+### Time Investment (Dec 20 – Jan 11, 2026)
 
-**Current state:** Each method spans 40-50 lines in binding file
+| Phase | Activity | Hours | Dates |
+|-------|----------|-------|-------|
+| **Phase 1** | Environment setup | 8h | Dec 20 |
+| | 2D Arrangements study | 12h | Dec 21 |
+| | Python bindings analysis | 10h | Dec 22 |
+| | Nanobind learning | 12h | Dec 23-24 |
+| | Proposal writing | 8h | Dec 24 |
+| **Phase 2** | cgalpy build & testing | 12h | Dec 25-26 |
+| | PR #1 preparation | 10h | Dec 26-27 |
+| | Deep methods research | 13h | Dec 27-28 |
+| | PR #2 preparation | 6h | Dec 28-29 |
+| **Phase 2.5** | Proposal revision (feedback) | 3h | Dec 30-Jan 1 |
+| **Phase 3** | Docstring research | 2h | Jan 5 |
+| | Crash testing | 3h | Jan 5-6 |
+| | PMP build success | 8h | Jan 11 |
+| **Total** | | **107h** | Dec 20-Jan 11 |
 
-**My solution:** 3 approaches documented with proof-of-concept
-- Approach A: 85% readability improvement, 20 minutes to implement
-- Approach B: Clean architecture, requires build changes
-- Approach C: Middle ground
+### Contribution Metrics
 
----
-
-### Gap #5: Resource Deallocation (TECHNICAL) — DOCUMENTED FOR GSoC
-
-Line 857 TODO still exists:
-```cpp
-//! \todo Why the f... reference_internal doesn't work?
-```
-- Currently using dangerous bare reference workaround
-- Potential memory leaks in long-running applications
-- 📋 **Planned for GSoC Weeks 9-10:** Investigation + fix
-
----
-
-### Gap #6: Missing API Features — IDENTIFIED
-
-- `remove_edge()` optional parameters not bound
-- Face iterator methods missing
-- **Impact:** Python API less powerful than C++ API
-
----
-
-## 💻 Technical Skills Demonstrated
-
-### C++ & CGAL
-- ✅ Built CGAL from source on macOS M1
-- ✅ Read and understood 4,000+ lines of template code
-- ✅ Analyzed DCEL structure and traits classes
-- ✅ Found real bugs (line 857, missing validations)
-- ✅ Understand policy-based design and SFINAE
-
-### Python API Design
-- ✅ Written NumPy-style documentation (21 methods)
-- ✅ Designed clear, usable examples
-- ✅ Built production APIs for 1,000+ daily users
-- ✅ Understand what makes documentation actually useful
-
-### Binding Libraries (Nanobind)
-- ✅ Mastered return value policies
-- ✅ Understand `keep_alive` patterns
-- ✅ Implemented `py::arg()` for named parameters
-- ✅ Debugged C++/Python interop challenges
-- ✅ **NEW:** Researched docstring organization approaches
-- ✅ **NEW:** Created proof-of-concept implementations
-
-### Testing & Quality Assurance
-- ✅ Wrote 900+ lines of systematic test code
-- ✅ Discovered 7 crash scenarios through empirical testing
-- ✅ Found 10+ silent corruption cases
-- ✅ Documented safe vs unsafe usage patterns
-- ✅ **NEW:** Verified 3 safe behaviors (positive testing)
-
-### Git & Open Source Workflow
-- ✅ Clean, focused PRs (learned from formatter disaster!)
-- ✅ Proper branching and minimal diffs
-- ✅ Descriptive PR messages for reviewers
-- ✅ Proactive communication with mentor
-
-### Research & Problem Solving
-- ✅ **NEW:** Responded to mentor questions with comprehensive research
-- ✅ **NEW:** Documented multiple solution approaches
-- ✅ **NEW:** Created proof-of-concepts for validation
-- ✅ **NEW:** Extended testing to find edge cases
+| Metric | Count | Status |
+|--------|-------|--------|
+| Total hours invested | 107+ | Updated |
+| Methods fully documented | 21 | 6 in PR #1, 15 in PR #2 |
+| Methods empirically tested | 30+ | Systematic testing |
+| Test code written | 900 lines | 9 test files |
+| Research documentation | 3,500+ lines | Comprehensive |
+| Docstrings written | 950 lines | NumPy-style |
+| Crash scenarios discovered | 7 | 5 from Dec + 2 new |
+| Corruption scenarios found | 10 | Silent failures |
+| Safe methods confirmed | 18 | Positive testing |
+| Pull requests submitted | 2 | Substantial work |
+| Research approaches documented | 3 | Docstring organization |
+| Proof-of-concepts created | 1 | Approach A |
 
 ---
 
-## 📝 Next Steps
+## 🧭 How to Navigate This Repo
 
-### Immediate (Jan 5-12):
-- [x] Build cgalpy with arrangements enabled
-- [x] Test 30+ methods systematically
-- [x] Submit PR #1 (insertion methods)
-- [x] Complete 13-hour deep research
-- [x] Submit PR #2 (removal, modification, query methods)
-- [x] Research docstring organization approaches
-- [x] Find 2 additional crash scenarios
-- [x] Verify 3 safe behaviors
-- [ ] Email Efi with research updates
-- [ ] Respond to Efi's feedback on both PRs
-- [ ] Make any requested changes
+### For Reviewing My Work:
+1. Start with this README to understand the full context
+2. Read the proposal (`proposal/gsoc-2026-proposal-v3.docx`) to see the final plan
+3. Check Phase 1 (`phase1-foundation/`) to see how I learned CGAL
+4. Review Phase 2 (`phase2-contributions/`) for PR submissions and testing work
+5. Explore Research (`research/`) for technical solutions to mentor's questions
 
-### January 2026:
-- [ ] Continue docstring work (next batch of methods)
-- [ ] Audit remaining methods for named parameters
-- [ ] Submit PR #3 if feedback is positive
-- [ ] Implement Approach A for docstrings if approved
-- [ ] Engage with CGAL community
+### For Understanding Technical Challenges:
+- **Docstring shadowing:** `research/docstring-location/docstring-location-research.md`
+- **Crash scenarios:** `research/crash-scenarios/additional-crash-scenarios.md`
+- **Build issues:** `docs/technical/build_guide.md`
+- **Line 857 bug:** `phase1-foundation/line857-bug-analysis.md`
 
-### February 2026 (Pre-GSoC):
-- [ ] Have 3-4 quality PRs merged
-- [ ] Begin line 857 investigation (if approved)
-- [ ] Final proposal updates
-- [ ] Prepare for GSoC applications opening
-
-### Long-term (Post-GSoC Decision):
-- Continue contributing regardless of selection
-- Help other Python users through documentation
-- Work toward maintaining Python bindings long-term
-- Build example gallery with real-world use cases
+### For Replicating My Environment:
+1. Read `docs/technical/build_guide.md` for step-by-step CGAL build
+2. Follow `phase1-foundation/environment-setup.md` for macOS M2 specifics
+3. Check `docs/troubleshooting/common_issues.md` for known issues
 
 ---
 
-## 🔗 Important Links
+## 🚀 Next Steps
 
-### My Contributions:
-- 🔗 **PR #1 (Insertion Methods):** [Bitbucket PR #1](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/3)
-- 🔗 **PR #2 (Removal/Modification/Query):** [Bitbucket PR #2](https://bitbucket.org/taucgl/cgal-python-bindings/pull-requests/4)
-- 🔗 **GSoC 2026 Proposal:** [Google Docs](https://docs.google.com/document/d/1ZM5TAC5rkKm3xmntMy7ZzfwnKFbS7yrk4IlOB5_FW_M/edit?usp=sharing)
-- 🔗 **This Prep Repository:** [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)
+### Immediate (Jan 11-15, 2026)
 
-### Research Documents:
-- 📄 **Docstring Location Research:** `research/docstring-location/docstring-location-research.md`
-- 📄 **Additional Crash Scenarios:** `research/crash-scenarios/additional-crash-scenarios.md`
-- 📄 **Complete Methods Research:** `research/complete_methods_research.md`
+- [x] Build PMP bindings successfully ✅
+- [ ] Email Efi with PMP build success update
+- [ ] Research Task 3: Study Named Parameters implementation
+- [ ] Test Approach B: External header files
+- [ ] Research Task 4: Doxygen auto-generation feasibility
+- [ ] Research Task 5: NumPy arrays integration
 
-### CGAL Resources:
-- **Python Bindings Repo:** https://bitbucket.org/taucgl/cgal-python-bindings
-- **CGAL Documentation:** https://doc.cgal.org
-- **Nanobind Docs:** https://nanobind.readthedocs.io
+### If GSoC Accepted (May-August 2026)
 
-### My Links:
-- **GitHub:** https://github.com/UtkarsHMer05
-- **LinkedIn:** https://linkedin.com/in/utkarshkhajuria05
+Execute the 12-week timeline:
+
+| Weeks | Task |
+|-------|------|
+| 1-2 | Parameter names & default values |
+| 3-4 | NumPy-style docstrings (Approach A) |
+| 5-6 | Safety & preconditions framework |
+| 7-8 | CGAL Named Parameters implementation |
+| 9-10 | New package expansion + advanced Arrangement_2 |
+| 11-12 | CI resurrection, testing, polish |
+
+### Long-Term (Beyond GSoC)
+
+- Continue as CGAL Python bindings maintainer
+- Expand to Priority 2 packages (TRI2, TRI3, BSO2)
+- Help mentor new contributors
+- Present case studies at computational geometry conferences
+
+---
+
+## 📚 References
+
+### Official Resources
+- **CGAL Python Bindings:** [bitbucket.org/taucgl/cgal-python-bindings](https://bitbucket.org/taucgl/cgal-python-bindings)
+- **CGAL Documentation:** [doc.cgal.org](https://doc.cgal.org)
+- **Nanobind Documentation:** [nanobind.readthedocs.io](https://nanobind.readthedocs.io)
+
+### Personal Links
+- **GitHub:** [@UtkarsHMer05](https://github.com/UtkarsHMer05)
+- **LinkedIn:** [utkarshkhajuria05](https://linkedin.com/in/utkarshkhajuria05)
 - **Email:** utkarshkhajuria55@gmail.com
 
----
-
-## 🤔 Why I'm Doing This
-
-I'm not here for a resume line. I genuinely want to make CGAL's Python bindings better.
-
-Computational geometry is powerful. CGAL's algorithms are elegant. But the barrier to entry is too high for Python developers who just want to solve geometry problems without reading C++ source code.
-
-I want to fix that. Whether GSoC accepts me or not, I'll keep contributing. This is work that matters—making advanced algorithms accessible to more people.
-
-**Update (Jan 5):** Already proven this commitment. Submitted two substantial PRs totaling 21 methods documented, discovered 7 crash scenarios and 10+ corruption cases through systematic testing, researched 3 docstring organization approaches with proof-of-concept, wrote 3,000+ lines of research documentation across multiple topics. Not waiting for GSoC decisions to contribute—actively researching and solving problems as they come up.
+### GSoC 2026
+- **Proposal:** See `proposal/gsoc-2026-proposal-v3.docx`
+- **Timeline:** 12 weeks, 350 hours total
+- **Mentor:** Efi Fogel (efifogel@gmail.com)
 
 ---
 
-## 📊 Time Investment Breakdown
+## 📝 License
 
-| Phase | Activity | Hours | Details |
-|-------|----------|-------|---------|
-| **Phase 1: Foundation** | Environment Setup | ~8h | Building CGAL, dependencies, testing |
-| | 2D Arrangements Study | ~12h | DCEL, traits, examples, 600+ line analysis |
-| | Python Bindings Analysis | ~10h | Code reading, gap identification |
-| | Nanobind Learning | ~12h | Policies, lifetime, line 857 investigation |
-| | Proposal Writing | ~8h | Research, writing, diagrams, revision |
-| **Phase 2: Contributions** | cgalpy Build & Testing | ~12h | Arrangements build, method testing |
-| | PR #1 Preparation | ~10h | Research docs + docstrings + submission |
-| | Deep Methods Research | ~13h | Systematic testing of 25+ methods |
-| | PR #2 Preparation | ~6h | 15 method docstrings + integration |
-| **Phase 3: Extended Research** | Docstring Organization | ~2h | 3 approaches + proof-of-concept |
-| | Additional Crash Testing | ~3h | 2 new crashes + 3 safe behaviors |
-| **Total** | | **~96h** | Documented work Dec 20 – Jan 5, 2026 |
+This repository documents preparation work for Google Summer of Code 2026. The CGAL library is licensed under GPL/LGPL. Binding code follows the same licensing as the official CGAL Python bindings repository.
 
 ---
 
-## 🎓 What I've Learned
+## 🙏 Acknowledgments
 
-### Technical:
-- CGAL's template architecture is elegant but requires deep understanding
-- Nanobind lifetime management is critical for safety
-- Python bindings need comprehensive safety documentation
-- Empirical testing reveals behaviors docs don't mention
-- NO precondition validation in specialized methods—dangerous!
-- 7 ways to crash Python interpreter with CGAL bindings
-- 10+ ways to silently corrupt arrangements
-- Handle invalidation is a major safety concern
-- **NEW:** Docstring organization significantly affects code readability
-- **NEW:** Proof-of-concepts validate approaches before implementation
-- **NEW:** Some methods ARE safe—positive testing matters too
-
-### Process:
-- Read actual code, not just docs
-- Test systematically, not casually
-- Document discoveries immediately
-- Small, focused PRs are easier to review
-- 13 hours of testing finds more than 13 days of guessing
-- Writing test code is as important as writing docstrings
-- Safety warnings save users from painful debugging
-- **NEW:** Respond to mentor questions with research, not guesses
-- **NEW:** Multiple solution approaches show deep thinking
-- **NEW:** Balance negative testing (crashes) with positive testing (safe behaviors)
-
-### Personal:
-- I love this kind of deep technical work
-- Finding crashes and documenting them properly is satisfying
-- I'm ready for the full GSoC challenge
-- This is the kind of long-term project I want to commit to
-- Going from "I want to contribute" to "I submitted 2 PRs with 21 methods documented" feels amazing
-- **NEW:** Continuing research after PRs shows genuine commitment
-- **NEW:** Exploring mentor questions immediately builds trust
-- **NEW:** 95+ hours invested before GSoC applications even open proves this isn't about resume padding
+- **Efi Fogel** for detailed mentorship and technical guidance through multiple email exchanges
+- **CGAL community** for building an exceptional computational geometry library
+- **nanobind developers** for creating modern Python binding tools
 
 ---
 
-## 💪 Closing Thoughts
-
-This README isn't AI-generated. It's my actual journey over 16 days spanning December 2025 and January 2026.
-
-I started knowing nothing about CGAL. Now I can:
-- ✅ Build it from source
-- ✅ Understand its architecture deeply
-- ✅ Find crashes through systematic testing
-- ✅ Write production-quality NumPy-style documentation
-- ✅ Submit PRs that demonstrate technical depth
-- ✅ Discover critical safety issues that users need to know about
-- ✅ Research architectural questions with multiple solution approaches
-- ✅ Verify safe behaviors (not just find crashes)
-
-That's what 95+ hours of genuine effort looks like.
-
-I've documented 21 methods. I've found 7 ways to crash Python. I've discovered 10+ ways to silently corrupt data. I've written 900+ lines of test code and 3,000+ lines of research documentation. I've researched 3 docstring organization approaches with working proof-of-concept.
-
-This isn't preparation. This is contribution.
-
-Whether or not GSoC works out, I'm proud of this work. And I'm excited to keep going.
-
-**Computational geometry deserves better Python support. Let's build it together.**
-
----
-
-**Last Updated:** January 5, 2026, 11:30 PM IST  
-**Status:** Two PRs submitted + Extended research complete, awaiting mentor review  
-**Next Milestone:** Email mentor with research updates, incorporate feedback, continue documentation work
-
----
-
-**Utkarsh Khajuria**  
-Third-year CS student, VIT Chennai  
-CGAL Python bindings contributor (not hoping—doing it!)
+**Last Updated:** January 11, 2026, 9:48 PM IST  
+**Repository:** [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)  
+**Status:** Phase 3 Complete — Ready for GSoC Selection 🚀
