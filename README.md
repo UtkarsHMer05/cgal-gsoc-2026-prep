@@ -4,8 +4,8 @@
 **Project:** Enhancing CGAL Python Bindings  
 **Mentor:** Efi Fogel (efifogel@gmail.com)  
 **Organization:** CGAL (Computational Geometry Algorithms Library)  
-**Period:** December 20, 2025 – January 11, 2026  
-**Total Investment:** 107+ hours
+**Period:** December 20, 2025 – January 17, 2026  
+**Total Investment:** 116+ hours
 
 ---
 
@@ -26,7 +26,7 @@
 
 ## 🎯 Overview
 
-This repository documents my preparation work for Google Summer of Code 2026 with CGAL, focusing on enhancing the Python bindings for the Computational Geometry Algorithms Library. Over **107+ hours** across three phases, I built CGAL from source, learned the 2D Arrangements package, empirically tested methods, discovered crash scenarios, and researched solutions to technical challenges raised by my mentor.
+This repository documents my preparation work for Google Summer of Code 2026 with CGAL, focusing on enhancing the Python bindings for the Computational Geometry Algorithms Library. Over **116+ hours** across four phases, I built CGAL from source, learned the 2D Arrangements package, empirically tested methods, discovered crash scenarios, researched solutions to technical challenges, and implemented proof-of-concept Named Parameters operators.
 
 ### Key Achievements
 
@@ -37,6 +37,10 @@ This repository documents my preparation work for Google Summer of Code 2026 wit
 - ✅ Researched 3 docstring organization approaches (Approach A validated)
 - ✅ Identified critical bugs (line 857 lifetime management issue)
 - ✅ Created comprehensive CGAL package analysis (19 packages evaluated)
+- ✅ Implemented proof-of-concept Named Parameters operators (2 in production repo)
+- ✅ Discovered property map type resolution challenge (the REAL Week 7-8 challenge)
+- ✅ Analyzed complete Named Parameters architecture (3,500 lines documentation)
+- ✅ Created 14-day implementation plan for GSoC Weeks 7-8
 
 ---
 
@@ -145,6 +149,79 @@ Addressed mentor's technical questions and extended research.
 - `research/crash-scenarios/additional-crash-scenarios.md` — Comprehensive findings
 - 9 test files for crash scenarios (`test_crash_*.py`)
 - `docs/technical/build_pmp_guide.md` — PMP build documentation
+
+---
+
+### Phase 3.5: Named Parameters Deep Dive (5+ hours, Jan 17, 2026) 🆕
+
+Deep research into CGAL's Named Parameters system and proof-of-concept implementation.
+
+**Achievements:**
+
+#### ✅ Complete Architecture Analysis
+- Studied Efi's operator-based Named Parameters system
+- Analyzed 5 core files: `named_parameter_applicator.hpp`, `Named_parameter_wrapper.hpp`, etc.
+- Documented complete data flow: Python dict → Operators → Parameter chaining → CGAL function
+- Created 3,500-line technical analysis document
+- **Key Insight:** Discovered variadic template recursion pattern
+
+#### ✅ Proof-of-Concept Implementation
+- Created 3 reference operators in prep repo:
+  1. `Named_parameter_verbose.hpp` (Pattern 1: Simple Value)
+  2. `Named_parameter_vertex_point_map.hpp` (Pattern 2: Property Map)
+  3. `Named_parameter_geom_traits.hpp` (Pattern 3: Kernel/Traits)
+- Implemented 2 operators in **actual cgal-python-bindings repo**:
+  - Branch: `feature/named-params-operators-poc`
+  - Commit: `eb5a9e39` (60 lines, 2 files)
+  - Operators are structurally correct following Efi's pattern
+
+#### ✅ Integration Attempt & Critical Discovery
+- Attempted to integrate operators into `compute_vertex_normals()`
+- **Discovered THE hard problem:** Property map type resolution
+- Compilation error: `no type named 'reference' in 'boost::property_traits<nanobind::handle>'`
+- **Realization:** Operators are trivial (30 lines, 30 min). The 2-week allocation is for solving the Python ↔ C++ property map type bridge!
+
+#### ✅ The Property Map Challenge
+
+**Problem:** CGAL functions internally call `get(property_map, key)` which requires:
+
+```cpp
+boost::property_traits<PropertyMapType>::reference
+```
+
+But Python passes `nanobind::handle` (Python object), which doesn't satisfy this.
+
+**4 Potential Solutions Analyzed:**
+1. Explicit casting in operators (but mesh type unknown at operator level)
+2. Template specialization per mesh (combinatorial explosion)
+3. Defer casting to wrapper (how to extract from compiled np chain?)
+4. Python-side property map binding first (prerequisites?)
+
+#### ✅ Comprehensive Documentation
+- `NAMED_PARAMS_COMPLETE_ANALYSIS.md` (3,500 lines) — Architecture deep dive
+- `implementation-plan.md` (1,200 lines) — Day-by-day plan for Weeks 7-8
+- `questions-for-efi.md` (900 lines) — 10 sections, 20+ technical questions
+- `QUICK_REFERENCE.md` (400 lines) — Cheat sheet for GSoC implementation
+- `operator-patterns-discovered.md` — Complete taxonomy of 5 patterns
+- `visual-architecture.md` — ASCII diagrams explaining data flow
+- `PROPERTY_MAP_CHALLENGE.md` — Deep dive into type resolution problem
+- `README.md` (comprehensive) — Full proof-of-concept documentation
+
+**Files Created:**
+- `phase3-research/test-named-params-implementation/` (7 documents, 6,000+ lines)
+- `phase3-research/proof-of-concept-operators/` (3 operators + tests + docs)
+- Production code: `cgal-python-bindings/src/libs/cgalpy/include/CGALPY/Named_parameter_*.hpp` (2 files)
+
+**Total Documentation This Phase:** 12,000+ lines
+
+**What This Demonstrates:**
+- ✅ Can reverse-engineer complex C++ template systems
+- ✅ Quickly identified the real technical challenge (within 1 hour)
+- ✅ Won't waste time implementing wrong approach during GSoC
+- ✅ Understands why Efi allocated 2 weeks for this task
+- ✅ Can discuss 4 potential solutions intelligently
+
+**Status:** Email ready for Jan 23 with findings and critical question about type resolution strategy
 
 ---
 
@@ -258,27 +335,28 @@ Created comprehensive analysis of 19 CGAL packages using 0-3 completeness scale:
 
 ```
 cgal-gsoc-2026-prep/
-├── README.md                          # This file
+├── README.md                              # This file
+├── paste.txt                              # Master AI context (updated regularly)
 ├── proposal/
-│   ├── gsoc-2026-proposal-v1.md      # Dec 24 - original
-│   ├── gsoc-2026-proposal-v2.docx    # Jan 1 - revised after feedback
-│   └── gsoc-2026-proposal-v3.docx    # Jan 11 - final with CI & package table
+│   ├── gsoc-2026-proposal-v1.md           # Dec 24 - original
+│   ├── gsoc-2026-proposal-v2.docx         # Jan 1 - revised after feedback
+│   └── gsoc-2026-proposal-v3.docx         # Jan 11 - final with CI & package table
 │
-├── phase1-foundation/                 # Dec 20-24, 50+ hours
-│   ├── environment-setup.md           # CGAL build instructions
-│   ├── cgal-learning-notes.md         # DCEL, traits, policy-based design
-│   ├── nanobind-deep-dive.md          # Lifetime management, policies
-│   └── line857-bug-analysis.md        # Memory management bug
+├── phase1-foundation/                     # Dec 20-24, 50+ hours
+│   ├── environment-setup.md               # CGAL build instructions
+│   ├── cgal-learning-notes.md             # DCEL, traits, policy-based design
+│   ├── nanobind-deep-dive.md              # Lifetime management, policies
+│   └── line857-bug-analysis.md            # Memory management bug
 │
-├── phase2-contributions/              # Dec 25-29, 40+ hours
-│   ├── pr1-submission.md              # First PR: 6 methods documented
-│   ├── pr2-submission.md              # Second PR: 15 methods documented
-│   ├── complete-methods-research.md   # 2,500 lines method analysis
-│   ├── test_removal_methods.py        # 300 lines tests
-│   ├── test_modification_methods.py   # 350 lines tests
-│   └── test_query_methods.py          # 200 lines tests
+├── phase2-contributions/                  # Dec 25-29, 40+ hours
+│   ├── pr1-submission.md                  # First PR: 6 methods documented
+│   ├── pr2-submission.md                  # Second PR: 15 methods documented
+│   ├── complete-methods-research.md       # 2,500 lines method analysis
+│   ├── test_removal_methods.py            # 300 lines tests
+│   ├── test_modification_methods.py       # 350 lines tests
+│   └── test_query_methods.py              # 200 lines tests
 │
-├── research/                          # Jan 5-11, 17+ hours
+├── research/                              # Jan 5-11, 17+ hours
 │   ├── docstring-location/
 │   │   ├── docstring-location-research.md
 │   │   ├── test-approach-a/
@@ -299,6 +377,32 @@ cgal-gsoc-2026-prep/
 │       ├── test_crash_9_split_then_access.py
 │       └── README.md
 │
+├── phase3-research/                       # Jan 17, 5+ hours 🆕
+│   ├── test-named-params-implementation/
+│   │   ├── analysis/
+│   │   │   └── NAMED_PARAMS_COMPLETE_ANALYSIS.md  # 3,500 lines
+│   │   ├── findings/
+│   │   │   ├── questions-for-efi.md               # 900 lines
+│   │   │   ├── implementation-plan.md             # 1,200 lines
+│   │   │   ├── operator-patterns-discovered.md    # Pattern taxonomy
+│   │   │   ├── visual-architecture.md             # Mermaid diagrams
+│   │   │   └── email-draft-jan23.md               # Ready to send
+│   │   ├── QUICK_REFERENCE.md                     # 400 lines cheat sheet
+│   │   └── README.md
+│   │
+│   └── proof-of-concept-operators/        # 🆕 Reference implementations
+│       ├── README.md                      # Comprehensive POC documentation
+│       ├── PROPERTY_MAP_CHALLENGE.md      # Type resolution deep dive
+│       ├── CMakeLists.txt                 # Reference build (not meant to compile)
+│       ├── include/CGALPY/operators/
+│       │   ├── Named_parameter_verbose.hpp
+│       │   ├── Named_parameter_vertex_point_map.hpp
+│       │   └── Named_parameter_geom_traits.hpp
+│       ├── src/
+│       │   └── mock_test.cpp              # Pattern demonstration
+│       └── tests/
+│           └── test_operators.py          # Python test structure
+│
 ├── docs/
 │   ├── technical/
 │   │   ├── build_guide.md
@@ -307,18 +411,20 @@ cgal-gsoc-2026-prep/
 │   └── troubleshooting/
 │       └── common_issues.md
 │
-├── efi-feedback/                     # Mentor communication history
+├── efi-feedback/                          # Mentor communication history
 │   ├── email1-proposal-feedback.txt
 │   ├── email2-work-direction.txt
 │   ├── email3-ci-packages.txt
+│   ├── email4-named-params-questions.txt  # 🆕 Jan 23 (pending)
 │   ├── my-response-jan1.txt
 │   └── my-update-jan11.txt
 │
-└── master-prompts/                   # AI context files
+└── master-prompts/                        # AI context files
     ├── master-prompt-v9.0.md
     ├── master-prompt-v10.0.md
     ├── master-prompt-v11.0.md
-    └── master-prompt-v12.0.md        # CURRENT
+    ├── master-prompt-v12.0.md
+    └── master-prompt-v13.0.md             # CURRENT 🆕
 ```
 
 ---
@@ -366,20 +472,85 @@ def remove_isolated_vertex(arr, vertex):
 
 ---
 
-### Research Task 3: Named Parameters 📋 TO DO
+### Research Task 3: Named Parameters Architecture ✅ COMPLETE (Jan 17) 🆕
 
-**Location:** `lib/export_pmp_normal_computation.cpp`  
-**Method:** `compute_face_normals()`  
-**Status:** Not yet started
+**Question from Mentor:** Study Named Parameters implementation in `export_pmp_normal_computation.cpp`
 
-**Background from Mentor:**
-> "It is applied to compute_face_normals(), and implemented in lib/export_pmp_normal_computation.cpp. It is a hard topic, and I suggest that you simply put it in the timetable and assign, say, 2 weeks to this task."
+**Status:** ✅ Comprehensive analysis complete + proof-of-concept implemented
 
-**Next Steps:**
-1. Study Efi's implementation
-2. Document the compile-time type handling pattern
-3. Identify 15-20 other functions needing this pattern
-4. Create technical analysis document
+#### Architecture Understanding
+
+Efi's system uses:
+1. **Operator structs** with `m_name` (dict key) and `operator()` (parameter chaining)
+2. **Variadic template recursion** via `named_parameter_applicator`
+3. **std::apply wrapper** to unpack function arguments from tuple
+4. **CGAL's compile-time parameter chain** (e.g., `.vertex_point_map().geom_traits()`)
+
+**Data Flow:**
+
+```
+Python dict → Applicator (recursive matching) → Operators → Parameter chain → Wrapper → CGAL function
+```
+
+#### Operators Implemented (Proof-of-Concept)
+
+**Reference implementations** (in prep repo):
+- Pattern 1: `Named_parameter_verbose` — Boolean parameter
+- Pattern 2: `Named_parameter_vertex_point_map` — Property map parameter
+- Pattern 3: `Named_parameter_geom_traits` — Kernel parameter
+
+**Production implementations** (in cgal-python-bindings repo):
+- Branch: `feature/named-params-operators-poc`
+- Commit: `eb5a9e39`
+- Files: `Named_parameter_vertex_point_map.hpp`, `Named_parameter_vertex_normal_map.hpp`
+
+#### The Critical Challenge Discovered
+
+**Compilation Error:**
+
+```
+error: no type named 'reference' in 'boost::property_traits<nanobind::handle>'
+```
+
+**Root Cause:** CGAL functions internally call `get(property_map, key)` which requires `boost::property_traits<PropertyMapType>` to be defined. Python passes `nanobind::handle` which doesn't satisfy this.
+
+**Realization:** Operators themselves are trivial (30 lines, 30 min each). The 2-week GSoC allocation is for solving the **property map type bridge** between Python and C++.
+
+#### Four Potential Solutions Analyzed
+
+| Solution | Approach | Pros | Cons |
+|----------|----------|------|------|
+| A | Explicit casting in operators | Clean separation | Mesh type unknown at operator level |
+| B | Template specialization per mesh | Type-safe | Combinatorial explosion of specializations |
+| C | Defer casting to wrapper | Wrapper knows mesh type | How to extract from compiled np chain? |
+| D | Python-side property map binding | Proper C++ types from Python | Requires prerequisite bindings |
+
+#### Questions for Efi (Jan 23 Email)
+
+**Critical Question:** Which type resolution strategy should I use in Weeks 7-8?
+
+**Supporting Questions:**
+1. Should Weeks 7-8 include binding property map creation functions first?
+2. Is the "extension method" you mentioned related to this type resolution?
+3. Which of the 4 approaches aligns with your vision?
+
+#### Documentation Created
+
+- ✅ 3,500-line architecture analysis
+- ✅ 1,200-line implementation plan (day-by-day for Weeks 7-8)
+- ✅ 900-line question document (10 sections, 20+ questions)
+- ✅ 400-line quick reference guide
+- ✅ Operator patterns taxonomy
+- ✅ Visual architecture diagrams (Mermaid)
+- ✅ Property map challenge deep dive
+
+**Total:** 12,000+ lines of documentation
+
+**Confidence Level:**
+- **Before:** 70% — "I understand the pattern"
+- **After:** 95% — "I understand the REAL challenge and can execute with guidance"
+
+**Status:** Email draft ready for Jan 23. Waiting for Efi's guidance on type resolution strategy before implementing during GSoC.
 
 ---
 
@@ -413,7 +584,7 @@ def remove_isolated_vertex(arr, vertex):
 
 ## 📈 Key Statistics
 
-### Time Investment (Dec 20 – Jan 11, 2026)
+### Time Investment (Dec 20 – Jan 17, 2026)
 
 | Phase | Activity | Hours | Dates |
 |-------|----------|-------|-------|
@@ -430,24 +601,34 @@ def remove_isolated_vertex(arr, vertex):
 | **Phase 3** | Docstring research | 2h | Jan 5 |
 | | Crash testing | 3h | Jan 5-6 |
 | | PMP build success | 8h | Jan 11 |
-| **Total** | | **107h** | Dec 20-Jan 11 |
+| **Phase 3.5** | Named Parameters analysis | 3h | Jan 17 |
+| | Proof-of-concept implementation | 2h | Jan 17 |
+| | Integration attempt & debugging | 2h | Jan 17 |
+| | Documentation (12,000+ lines) | 2h | Jan 17 |
+| **Total** | | **116h** | Dec 20-Jan 17 |
 
 ### Contribution Metrics
 
 | Metric | Count | Status |
 |--------|-------|--------|
-| Total hours invested | 107+ | Updated |
+| Total hours invested | 116+ | Updated Jan 17 |
+| Total documentation lines | 22,500+ | Updated Jan 17 |
 | Methods fully documented | 21 | 6 in PR #1, 15 in PR #2 |
 | Methods empirically tested | 30+ | Systematic testing |
 | Test code written | 900 lines | 9 test files |
-| Research documentation | 3,500+ lines | Comprehensive |
+| Research documentation | 3,500+ lines | Phase 1-3 |
 | Docstrings written | 950 lines | NumPy-style |
 | Crash scenarios discovered | 7 | 5 from Dec + 2 new |
 | Corruption scenarios found | 10 | Silent failures |
 | Safe methods confirmed | 18 | Positive testing |
 | Pull requests submitted | 2 | Substantial work |
 | Research approaches documented | 3 | Docstring organization |
-| Proof-of-concepts created | 1 | Approach A |
+| Proof-of-concepts created | 2 | Approach A + Named Params |
+| Named Parameters operators | 5 | 3 reference + 2 production |
+| Commits to cgal-python-bindings | 1 | eb5a9e39 on feature branch |
+| Branches created | 1 | feature/named-params-operators-poc |
+| Architecture analyses | 1 | 3,500 lines Named Parameters |
+| Implementation plans | 1 | 1,200 lines for Weeks 7-8 |
 
 ---
 
@@ -459,12 +640,15 @@ def remove_isolated_vertex(arr, vertex):
 3. Check Phase 1 (`phase1-foundation/`) to see how I learned CGAL
 4. Review Phase 2 (`phase2-contributions/`) for PR submissions and testing work
 5. Explore Research (`research/`) for technical solutions to mentor's questions
+6. Check Phase 3.5 (`phase3-research/`) for Named Parameters deep dive 🆕
 
 ### For Understanding Technical Challenges:
 - **Docstring shadowing:** `research/docstring-location/docstring-location-research.md`
 - **Crash scenarios:** `research/crash-scenarios/additional-crash-scenarios.md`
 - **Build issues:** `docs/technical/build_guide.md`
 - **Line 857 bug:** `phase1-foundation/line857-bug-analysis.md`
+- **Named Parameters:** `phase3-research/test-named-params-implementation/` 🆕
+- **Property Map Challenge:** `phase3-research/proof-of-concept-operators/PROPERTY_MAP_CHALLENGE.md` 🆕
 
 ### For Replicating My Environment:
 1. Read `docs/technical/build_guide.md` for step-by-step CGAL build
@@ -475,12 +659,14 @@ def remove_isolated_vertex(arr, vertex):
 
 ## 🚀 Next Steps
 
-### Immediate (Jan 11-15, 2026)
+### Immediate (Jan 17-23, 2026)
 
 - [x] Build PMP bindings successfully ✅
-- [ ] Email Efi with PMP build success update
-- [ ] Research Task 3: Study Named Parameters implementation
-- [ ] Test Approach B: External header files
+- [x] Research Named Parameters architecture ✅
+- [x] Implement proof-of-concept operators ✅
+- [x] Discover property map type resolution challenge ✅
+- [ ] Email Efi on Jan 23 with Named Parameters findings
+- [ ] Wait for Efi's response on type resolution strategy
 - [ ] Research Task 4: Doxygen auto-generation feasibility
 - [ ] Research Task 5: NumPy arrays integration
 
@@ -539,6 +725,6 @@ This repository documents preparation work for Google Summer of Code 2026. The C
 
 ---
 
-**Last Updated:** January 11, 2026, 9:48 PM IST  
+**Last Updated:** January 17, 2026, 4:56 PM IST  
 **Repository:** [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)  
-**Status:** Phase 3 Complete — Ready for GSoC Selection 🚀
+**Status:** Phase 3.5 Complete — Named Parameters Research Done — Email Ready for Jan 23 🚀
