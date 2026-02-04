@@ -1,0 +1,1045 @@
+tall -e . -v 2>&1 | tee build-log.txt
+Using pip 25.3 from /Users/utkarshkhajuria/miniforge3/lib/python3.12/site-packages/pip (python 3.12)
+Obtaining file:///Users/utkarshkhajuria/cgal-python-bindings
+  Installing build dependencies: started
+  Running command installing build dependencies
+  Using pip 25.3 from /Users/utkarshkhajuria/miniforge3/lib/python3.12/site-packages/pip (python 3.12)
+  Collecting conan>=2.0.0
+    Using cached conan-2.25.2-py3-none-any.whl
+  Collecting setuptools
+    Obtaining dependency information for setuptools from https://files.pythonhosted.org/packages/94/b8/f1f62a5e3c0ad2ff1d189590bfa4c46b4f3b6e49cef6f26c6ee4e575394d/setuptools-80.10.2-py3-none-any.whl.metadata
+    Using cached setuptools-80.10.2-py3-none-any.whl.metadata (6.6 kB)
+  Collecting scikit-build>=0.15.0
+    Obtaining dependency information for scikit-build>=0.15.0 from https://files.pythonhosted.org/packages/c3/a3/21b519f58de90d684056c52ec4e45f744cfda7483f082dcc4dd18cc74a93/scikit_build-0.18.1-py3-none-any.whl.metadata
+    Downloading scikit_build-0.18.1-py3-none-any.whl.metadata (18 kB)
+  Collecting scikit-build-core>=0.10.7
+    Obtaining dependency information for scikit-build-core>=0.10.7 from https://files.pythonhosted.org/packages/43/49/ec16b3db6893db788ae35f98506ff5a9c25dca7eb18cc38ada8a4c1dc944/scikit_build_core-0.11.6-py3-none-any.whl.metadata
+    Downloading scikit_build_core-0.11.6-py3-none-any.whl.metadata (18 kB)
+  Collecting nanobind<=2.10.2,>=2.3.0
+    Obtaining dependency information for nanobind<=2.10.2,>=2.3.0 from https://files.pythonhosted.org/packages/14/06/cb08965f985a5e1b9cb55ed96337c1f6daaa6b9cbdaeabe6bb3f7a1a11df/nanobind-2.10.2-py3-none-any.whl.metadata
+    Using cached nanobind-2.10.2-py3-none-any.whl.metadata (1.8 kB)
+  Collecting sphinx>=7.1.2
+    Obtaining dependency information for sphinx>=7.1.2 from https://files.pythonhosted.org/packages/73/f7/b1884cb3188ab181fc81fa00c266699dab600f927a964df02ec3d5d1916a/sphinx-9.1.0-py3-none-any.whl.metadata
+    Downloading sphinx-9.1.0-py3-none-any.whl.metadata (5.8 kB)
+  Collecting typing-extensions
+    Obtaining dependency information for typing-extensions from https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl.metadata
+    Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+  Collecting requests<3.0.0,>=2.25 (from conan>=2.0.0)
+    Obtaining dependency information for requests<3.0.0,>=2.25 from https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl.metadata
+    Using cached requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
+  Collecting urllib3<3.0,>=1.26.6 (from conan>=2.0.0)
+    Obtaining dependency information for urllib3<3.0,>=1.26.6 from https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl.metadata
+    Downloading urllib3-2.6.3-py3-none-any.whl.metadata (6.9 kB)
+  Collecting colorama<0.5.0,>=0.4.3 (from conan>=2.0.0)
+    Obtaining dependency information for colorama<0.5.0,>=0.4.3 from https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl.metadata
+    Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+  Collecting PyYAML<7.0,>=6.0 (from conan>=2.0.0)
+    Obtaining dependency information for PyYAML<7.0,>=6.0 from https://files.pythonhosted.org/packages/89/a0/6cf41a19a1f2f3feab0e9c0b74134aa2ce6849093d5517a0c550fe37a648/pyyaml-6.0.3-cp312-cp312-macosx_11_0_arm64.whl.metadata
+    Downloading pyyaml-6.0.3-cp312-cp312-macosx_11_0_arm64.whl.metadata (2.4 kB)
+  Collecting patch-ng<1.19,>=1.18.0 (from conan>=2.0.0)
+    Using cached patch_ng-1.18.1-py3-none-any.whl
+  Collecting fasteners>=0.15 (from conan>=2.0.0)
+    Obtaining dependency information for fasteners>=0.15 from https://files.pythonhosted.org/packages/51/ac/e5d886f892666d2d1e5cb8c1a41146e1d79ae8896477b1153a21711d3b44/fasteners-0.20-py3-none-any.whl.metadata
+    Using cached fasteners-0.20-py3-none-any.whl.metadata (4.8 kB)
+  Collecting Jinja2<4.0.0,>=3.0 (from conan>=2.0.0)
+    Obtaining dependency information for Jinja2<4.0.0,>=3.0 from https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl.metadata
+    Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+  Collecting python-dateutil<3,>=2.8.0 (from conan>=2.0.0)
+    Obtaining dependency information for python-dateutil<3,>=2.8.0 from https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata
+    Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+  Collecting MarkupSafe>=2.0 (from Jinja2<4.0.0,>=3.0->conan>=2.0.0)
+    Obtaining dependency information for MarkupSafe>=2.0 from https://files.pythonhosted.org/packages/9a/81/7e4e08678a1f98521201c3079f77db69fb552acd56067661f8c2f534a718/markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl.metadata
+    Downloading markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl.metadata (2.7 kB)
+  Collecting six>=1.5 (from python-dateutil<3,>=2.8.0->conan>=2.0.0)
+    Obtaining dependency information for six>=1.5 from https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl.metadata
+    Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+  Collecting charset_normalizer<4,>=2 (from requests<3.0.0,>=2.25->conan>=2.0.0)
+    Obtaining dependency information for charset_normalizer<4,>=2 from https://files.pythonhosted.org/packages/f3/85/1637cd4af66fa687396e757dec650f28025f2a2f5a5531a3208dc0ec43f2/charset_normalizer-3.4.4-cp312-cp312-macosx_10_13_universal2.whl.metadata
+    Downloading charset_normalizer-3.4.4-cp312-cp312-macosx_10_13_universal2.whl.metadata (37 kB)
+  Collecting idna<4,>=2.5 (from requests<3.0.0,>=2.25->conan>=2.0.0)
+    Obtaining dependency information for idna<4,>=2.5 from https://files.pythonhosted.org/packages/0e/61/66938bbb5fc52dbdf84594873d5b51fb1f7c7794e9c0f5bd885f30bc507b/idna-3.11-py3-none-any.whl.metadata
+    Downloading idna-3.11-py3-none-any.whl.metadata (8.4 kB)
+  Collecting certifi>=2017.4.17 (from requests<3.0.0,>=2.25->conan>=2.0.0)
+    Obtaining dependency information for certifi>=2017.4.17 from https://files.pythonhosted.org/packages/e6/ad/3cc14f097111b4de0040c83a525973216457bbeeb63739ef1ed275c1c021/certifi-2026.1.4-py3-none-any.whl.metadata
+    Downloading certifi-2026.1.4-py3-none-any.whl.metadata (2.5 kB)
+  Collecting distro (from scikit-build>=0.15.0)
+    Obtaining dependency information for distro from https://files.pythonhosted.org/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl.metadata
+    Downloading distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+  Collecting packaging (from scikit-build>=0.15.0)
+    Obtaining dependency information for packaging from https://files.pythonhosted.org/packages/b7/b9/c538f279a4e237a006a2c98387d081e9eb060d203d8ed34467cc0f0b9b53/packaging-26.0-py3-none-any.whl.metadata
+    Using cached packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+  Collecting wheel>=0.32.0 (from scikit-build>=0.15.0)
+    Obtaining dependency information for wheel>=0.32.0 from https://files.pythonhosted.org/packages/87/22/b76d483683216dde3d67cba61fb2444be8d5be289bf628c13fc0fd90e5f9/wheel-0.46.3-py3-none-any.whl.metadata
+    Using cached wheel-0.46.3-py3-none-any.whl.metadata (2.4 kB)
+  Collecting pathspec>=0.10.1 (from scikit-build-core>=0.10.7)
+    Obtaining dependency information for pathspec>=0.10.1 from https://files.pythonhosted.org/packages/ef/3c/2c197d226f9ea224a9ab8d197933f9da0ae0aac5b6e0f884e2b8d9c8e9f7/pathspec-1.0.4-py3-none-any.whl.metadata
+    Downloading pathspec-1.0.4-py3-none-any.whl.metadata (13 kB)
+  Collecting sphinxcontrib-applehelp>=1.0.7 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-applehelp>=1.0.7 from https://files.pythonhosted.org/packages/5d/85/9ebeae2f76e9e77b952f4b274c27238156eae7979c5421fba91a28f4970d/sphinxcontrib_applehelp-2.0.0-py3-none-any.whl.metadata
+    Downloading sphinxcontrib_applehelp-2.0.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting sphinxcontrib-devhelp>=1.0.6 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-devhelp>=1.0.6 from https://files.pythonhosted.org/packages/35/7a/987e583882f985fe4d7323774889ec58049171828b58c2217e7f79cdf44e/sphinxcontrib_devhelp-2.0.0-py3-none-any.whl.metadata
+    Downloading sphinxcontrib_devhelp-2.0.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting sphinxcontrib-htmlhelp>=2.0.6 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-htmlhelp>=2.0.6 from https://files.pythonhosted.org/packages/0a/7b/18a8c0bcec9182c05a0b3ec2a776bba4ead82750a55ff798e8d406dae604/sphinxcontrib_htmlhelp-2.1.0-py3-none-any.whl.metadata
+    Downloading sphinxcontrib_htmlhelp-2.1.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting sphinxcontrib-jsmath>=1.0.1 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-jsmath>=1.0.1 from https://files.pythonhosted.org/packages/c2/42/4c8646762ee83602e3fb3fbe774c2fac12f317deb0b5dbeeedd2d3ba4b77/sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl.metadata
+    Downloading sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl.metadata (1.4 kB)
+  Collecting sphinxcontrib-qthelp>=1.0.6 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-qthelp>=1.0.6 from https://files.pythonhosted.org/packages/27/83/859ecdd180cacc13b1f7e857abf8582a64552ea7a061057a6c716e790fce/sphinxcontrib_qthelp-2.0.0-py3-none-any.whl.metadata
+    Downloading sphinxcontrib_qthelp-2.0.0-py3-none-any.whl.metadata (2.3 kB)
+  Collecting sphinxcontrib-serializinghtml>=1.1.9 (from sphinx>=7.1.2)
+    Obtaining dependency information for sphinxcontrib-serializinghtml>=1.1.9 from https://files.pythonhosted.org/packages/52/a7/d2782e4e3f77c8450f727ba74a8f12756d5ba823d81b941f1b04da9d033a/sphinxcontrib_serializinghtml-2.0.0-py3-none-any.whl.metadata
+    Downloading sphinxcontrib_serializinghtml-2.0.0-py3-none-any.whl.metadata (2.4 kB)
+  Collecting Pygments>=2.17 (from sphinx>=7.1.2)
+    Obtaining dependency information for Pygments>=2.17 from https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl.metadata
+    Using cached pygments-2.19.2-py3-none-any.whl.metadata (2.5 kB)
+  Collecting docutils<0.23,>=0.21 (from sphinx>=7.1.2)
+    Obtaining dependency information for docutils<0.23,>=0.21 from https://files.pythonhosted.org/packages/02/10/5da547df7a391dcde17f59520a231527b8571e6f46fc8efb02ccb370ab12/docutils-0.22.4-py3-none-any.whl.metadata
+    Downloading docutils-0.22.4-py3-none-any.whl.metadata (15 kB)
+  Collecting snowballstemmer>=2.2 (from sphinx>=7.1.2)
+    Obtaining dependency information for snowballstemmer>=2.2 from https://files.pythonhosted.org/packages/c8/78/3565d011c61f5a43488987ee32b6f3f656e7f107ac2782dd57bdd7d91d9a/snowballstemmer-3.0.1-py3-none-any.whl.metadata
+    Downloading snowballstemmer-3.0.1-py3-none-any.whl.metadata (7.9 kB)
+  Collecting babel>=2.13 (from sphinx>=7.1.2)
+    Obtaining dependency information for babel>=2.13 from https://files.pythonhosted.org/packages/77/f5/21d2de20e8b8b0408f0681956ca2c69f1320a3848ac50e6e7f39c6159675/babel-2.18.0-py3-none-any.whl.metadata
+    Downloading babel-2.18.0-py3-none-any.whl.metadata (2.2 kB)
+  Collecting alabaster>=0.7.14 (from sphinx>=7.1.2)
+    Obtaining dependency information for alabaster>=0.7.14 from https://files.pythonhosted.org/packages/7e/b3/6b4067be973ae96ba0d615946e314c5ae35f9f993eca561b356540bb0c2b/alabaster-1.0.0-py3-none-any.whl.metadata
+    Downloading alabaster-1.0.0-py3-none-any.whl.metadata (2.8 kB)
+  Collecting imagesize>=1.3 (from sphinx>=7.1.2)
+    Obtaining dependency information for imagesize>=1.3 from https://files.pythonhosted.org/packages/ff/62/85c4c919272577931d407be5ba5d71c20f0b616d31a0befe0ae45bb79abd/imagesize-1.4.1-py2.py3-none-any.whl.metadata
+    Downloading imagesize-1.4.1-py2.py3-none-any.whl.metadata (1.5 kB)
+  Collecting roman-numerals>=1.0.0 (from sphinx>=7.1.2)
+    Obtaining dependency information for roman-numerals>=1.0.0 from https://files.pythonhosted.org/packages/04/54/6f679c435d28e0a568d8e8a7c0a93a09010818634c3c3907fc98d8983770/roman_numerals-4.1.0-py3-none-any.whl.metadata
+    Downloading roman_numerals-4.1.0-py3-none-any.whl.metadata (3.3 kB)
+  Using cached nanobind-2.10.2-py3-none-any.whl (246 kB)
+  Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+  Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+  Downloading pyyaml-6.0.3-cp312-cp312-macosx_11_0_arm64.whl (173 kB)
+  Using cached requests-2.32.5-py3-none-any.whl (64 kB)
+  Downloading charset_normalizer-3.4.4-cp312-cp312-macosx_10_13_universal2.whl (208 kB)
+  Downloading idna-3.11-py3-none-any.whl (71 kB)
+  Downloading urllib3-2.6.3-py3-none-any.whl (131 kB)
+  Using cached setuptools-80.10.2-py3-none-any.whl (1.1 MB)
+  Downloading scikit_build-0.18.1-py3-none-any.whl (85 kB)
+  Downloading scikit_build_core-0.11.6-py3-none-any.whl (185 kB)
+  Downloading sphinx-9.1.0-py3-none-any.whl (3.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 424.8 kB/s  0:00:09
+  Downloading docutils-0.22.4-py3-none-any.whl (633 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 633.2/633.2 kB 331.1 kB/s  0:00:01
+  Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+  Downloading alabaster-1.0.0-py3-none-any.whl (13 kB)
+  Downloading babel-2.18.0-py3-none-any.whl (10.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 385.3 kB/s  0:00:26
+  Downloading certifi-2026.1.4-py3-none-any.whl (152 kB)
+  Using cached fasteners-0.20-py3-none-any.whl (18 kB)
+  Downloading imagesize-1.4.1-py2.py3-none-any.whl (8.8 kB)
+  Downloading markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl (12 kB)
+  Using cached packaging-26.0-py3-none-any.whl (74 kB)
+  Downloading pathspec-1.0.4-py3-none-any.whl (55 kB)
+  Using cached pygments-2.19.2-py3-none-any.whl (1.2 MB)
+  Downloading roman_numerals-4.1.0-py3-none-any.whl (7.7 kB)
+  Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+  Downloading snowballstemmer-3.0.1-py3-none-any.whl (103 kB)
+  Downloading sphinxcontrib_applehelp-2.0.0-py3-none-any.whl (119 kB)
+  Downloading sphinxcontrib_devhelp-2.0.0-py3-none-any.whl (82 kB)
+  Downloading sphinxcontrib_htmlhelp-2.1.0-py3-none-any.whl (98 kB)
+  Downloading sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl (5.1 kB)
+  Downloading sphinxcontrib_qthelp-2.0.0-py3-none-any.whl (88 kB)
+  Downloading sphinxcontrib_serializinghtml-2.0.0-py3-none-any.whl (92 kB)
+  Using cached wheel-0.46.3-py3-none-any.whl (30 kB)
+  Downloading distro-1.9.0-py3-none-any.whl (20 kB)
+  Installing collected packages: nanobind, urllib3, typing-extensions, sphinxcontrib-serializinghtml, sphinxcontrib-qthelp, sphinxcontrib-jsmath, sphinxcontrib-htmlhelp, sphinxcontrib-devhelp, sphinxcontrib-applehelp, snowballstemmer, six, setuptools, roman-numerals, PyYAML, Pygments, pathspec, patch-ng, packaging, MarkupSafe, imagesize, idna, fasteners, docutils, distro, colorama, charset_normalizer, certifi, babel, alabaster, wheel, scikit-build-core, requests, python-dateutil, Jinja2, sphinx, scikit-build, conan
+    Creating /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/pygmentize to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/docutils to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2html to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2html4 to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2html5 to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2latex to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2man to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2odt to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2pseudoxml to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2s5 to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2xetex to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/rst2xml to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/distro to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/normalizer to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/pybabel to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/wheel to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/sphinx-apidoc to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/sphinx-autogen to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/sphinx-build to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/sphinx-quickstart to 755
+    changing mode of /private/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/pip-build-env-e4swiavx/overlay/bin/conan to 755
+
+  ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+  torch 2.5.1 requires fsspec, which is not installed.
+  torch 2.5.1 requires sympy==1.13.1; python_version >= "3.9", but you have sympy 1.14.0 which is incompatible.
+  Successfully installed Jinja2-3.1.6 MarkupSafe-3.0.3 PyYAML-6.0.3 Pygments-2.19.2 alabaster-1.0.0 babel-2.18.0 certifi-2026.1.4 charset_normalizer-3.4.4 colorama-0.4.6 conan-2.25.2 distro-1.9.0 docutils-0.22.4 fasteners-0.20 idna-3.11 imagesize-1.4.1 nanobind-2.10.2 packaging-26.0 patch-ng-1.18.1 pathspec-1.0.4 python-dateutil-2.9.0.post0 requests-2.32.5 roman-numerals-4.1.0 scikit-build-0.18.1 scikit-build-core-0.11.6 setuptools-80.10.2 six-1.17.0 snowballstemmer-3.0.1 sphinx-9.1.0 sphinxcontrib-applehelp-2.0.0 sphinxcontrib-devhelp-2.0.0 sphinxcontrib-htmlhelp-2.1.0 sphinxcontrib-jsmath-1.0.1 sphinxcontrib-qthelp-2.0.0 sphinxcontrib-serializinghtml-2.0.0 typing-extensions-4.15.0 urllib3-2.6.3 wheel-0.46.3
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Running command Checking if build backend supports build_editable
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Running command Getting requirements to build editable
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Running command Preparing editable metadata (pyproject.toml)
+  2026-02-04 21:25:47,891 - scikit_build_core - INFO - RUN: /opt/homebrew/bin/cmake -E capabilities
+  2026-02-04 21:25:47,898 - scikit_build_core - INFO - CMake version: 4.2.1
+  *** scikit-build-core 0.11.6 using CMake 4.2.1 (metadata_editable)
+  2026-02-04 21:25:47,898 - scikit_build_core - INFO - Implementation: cpython darwin on arm64
+  2026-02-04 21:25:47,903 - scikit_build_core - INFO - Build directory: /Users/utkarshkhajuria/cgal-python-bindings/build/cp312-abi3-macosx_26_0_arm64
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: cgalpy
+  Building editable for cgalpy (pyproject.toml): started
+  Running command Building editable for cgalpy (pyproject.toml)
+  2026-02-04 21:25:48,043 - scikit_build_core - INFO - RUN: /opt/homebrew/bin/cmake -E capabilities
+  2026-02-04 21:25:48,050 - scikit_build_core - INFO - CMake version: 4.2.1
+  *** scikit-build-core 0.11.6 using CMake 4.2.1 (editable)
+  2026-02-04 21:25:48,051 - scikit_build_core - INFO - Implementation: cpython darwin on arm64
+  2026-02-04 21:25:48,053 - scikit_build_core - INFO - Build directory: /Users/utkarshkhajuria/cgal-python-bindings/build/cp312-abi3-macosx_26_0_arm64
+  *** Configuring CMake...
+  2026-02-04 21:25:48,076 - scikit_build_core - INFO - RUN: /opt/homebrew/bin/ninja --version
+  2026-02-04 21:25:48,078 - scikit_build_core - INFO - Ninja version: 1.13.2
+  2026-02-04 21:25:48,079 - scikit_build_core - INFO - RUN: /opt/homebrew/bin/cmake -S. -Bbuild/cp312-abi3-macosx_26_0_arm64 -DCMAKE_BUILD_TYPE:STRING=Release -Cbuild/cp312-abi3-macosx_26_0_arm64/CMakeInit.txt -DCMAKE_INSTALL_PREFIX=/var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/tmplg26st_l/wheel/platlib -DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/ninja
+  loading initial cache file build/cp312-abi3-macosx_26_0_arm64/CMakeInit.txt
+  -- The CXX compiler identification is GNU 15.2.0
+  -- Checking whether CXX compiler has -isysroot
+  -- Checking whether CXX compiler has -isysroot - yes
+  -- Checking whether CXX compiler supports OSX deployment target flag
+  -- Checking whether CXX compiler supports OSX deployment target flag - yes
+  -- Detecting CXX compiler ABI info
+  -- Detecting CXX compiler ABI info - done
+  -- Check for working CXX compiler: /opt/homebrew/bin/g++-14 - skipped
+  -- Detecting CXX compile features
+  -- Detecting CXX compile features - done
+  Profile 'default' already exists, skipping detection
+deafult
+  CMake Error at CMakeLists.txt:241 (message):
+    Conan install failed:
+
+    ======== Input profiles ========
+
+    Profile host:
+
+    [settings]
+
+    arch=armv8
+
+    build_type=Release
+
+    compiler=apple-clang
+
+    compiler.cppstd=17
+
+    compiler.libcxx=libc++
+
+    compiler.version=15
+
+    os=Macos
+
+    [conf]
+
+
+    tools.apple:sdk_path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk
+
+
+    tools.build:sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk
+
+
+
+    Profile build:
+
+    [settings]
+
+    arch=armv8
+
+    build_type=Release
+
+    compiler=gcc
+
+    compiler.cppstd=gnu17
+
+    compiler.libcxx=libstdc++11
+
+    compiler.version=15
+
+    os=Macos
+
+
+
+
+
+    ======== Computing dependency graph ========
+
+    cgal/6.0.1: Not found in local cache, looking in remotes...
+
+    cgal/6.0.1: Checking remote: conancenter
+
+    Connecting to remote 'conancenter' anonymously
+
+    cgal/6.0.1: Downloaded recipe revision e44537966ac7eacb77550a61504419fd
+
+    boost/1.83.0: Not found in local cache, looking in remotes...
+
+    boost/1.83.0: Checking remote: conancenter
+
+    boost/1.83.0: Downloaded recipe revision 3989436c24399e15c01ab4bf165703da
+
+    b2/5.4.2: Not found in local cache, looking in remotes...
+
+    b2/5.4.2: Checking remote: conancenter
+
+    b2/5.4.2: Downloaded recipe revision ffd6084a119587e70f11cd45d1a386e2
+
+    eigen/3.4.0: Not found in local cache, looking in remotes...
+
+    eigen/3.4.0: Checking remote: conancenter
+
+    eigen/3.4.0: Downloaded recipe revision e7256a460e38f651ab0aa5246f94cf6a
+
+    mpfr/4.2.1: Not found in local cache, looking in remotes...
+
+    mpfr/4.2.1: Checking remote: conancenter
+
+    mpfr/4.2.1: Downloaded recipe revision 3ea0c62e07e64e2be1518445351eb407
+
+    gmp/6.3.0: Not found in local cache, looking in remotes...
+
+    gmp/6.3.0: Checking remote: conancenter
+
+    gmp/6.3.0: Downloaded recipe revision 187de23af494e24e69bf9dfc1966a60d
+
+    m4/1.4.19: Not found in local cache, looking in remotes...
+
+    m4/1.4.19: Checking remote: conancenter
+
+    m4/1.4.19: Downloaded recipe revision b38ced39a01e31fef5435bc634461fd2
+
+    Graph root
+
+        conanfile.txt: /Users/utkarshkhajuria/cgal-python-bindings/conanfile.txt
+
+    Requirements
+
+        boost/1.83.0#3989436c24399e15c01ab4bf165703da - Downloaded (conancenter)
+        cgal/6.0.1#e44537966ac7eacb77550a61504419fd - Downloaded (conancenter)
+        eigen/3.4.0#e7256a460e38f651ab0aa5246f94cf6a - Downloaded (conancenter)
+        gmp/6.3.0#187de23af494e24e69bf9dfc1966a60d - Downloaded (conancenter)
+        mpfr/4.2.1#3ea0c62e07e64e2be1518445351eb407 - Downloaded (conancenter)
+
+    Build requirements
+
+        b2/5.4.2#ffd6084a119587e70f11cd45d1a386e2 - Downloaded (conancenter)
+        m4/1.4.19#b38ced39a01e31fef5435bc634461fd2 - Downloaded (conancenter)
+
+    Resolved version ranges
+
+        b2/[>=5.2 <6]: b2/5.4.2
+
+
+
+    ======== Computing necessary packages ========
+
+    boost/1.83.0: Main binary package
+    '3bbc6beeea9cefe1c4d96865ef03229e8862e0ce' missing
+
+    boost/1.83.0: Checking 9 compatible configurations
+
+    boost/1.83.0: Compatible configurations not found in cache, checking
+    servers
+
+    boost/1.83.0: '887b631f7b769dbb6078a1d157618a506fa4598b':
+    compiler.cppstd=11
+
+    boost/1.83.0: '5ab7f201052ab509f35e005b303e2fdb31b9bad4':
+    compiler.cppstd=gnu11
+
+    boost/1.83.0: '3d56aee84d3764545b0af9bb0831da707b39972e':
+    compiler.cppstd=14
+
+    boost/1.83.0: '6d9ab157d2f9ba7ecf00fa36f62186978a6bb6ae':
+    compiler.cppstd=gnu14
+
+    boost/1.83.0: '015e31f7f5c8282752d1f829a79ee38009888e50':
+    compiler.cppstd=gnu17
+
+    boost/1.83.0: '46535cee2780955c370765fa1a084677fb9b9b50':
+    compiler.cppstd=20
+
+    boost/1.83.0: '892a5c1c11d783cd865b6d7f7006d37fc8708f25':
+    compiler.cppstd=gnu20
+
+    boost/1.83.0: 'c13c35fa29b892e995659c970190bab54833ad35':
+    compiler.cppstd=23
+
+    boost/1.83.0: '4129b5701813a6c266fe910f3f859d636e3c958c':
+    compiler.cppstd=gnu23
+
+    boost/1.83.0: No compatible configuration found
+
+    gmp/6.3.0: Main binary package '28d38d1dec42fe6e85a636fc0a3cc156ce8ab7b0'
+    missing
+
+    gmp/6.3.0: Checking 11 compatible configurations
+
+    gmp/6.3.0: Compatible configurations not found in cache, checking servers
+
+    gmp/6.3.0: '3eca1e23b0771052c5e3afa28b008e2432dafe44': compiler.cppstd=98
+
+    gmp/6.3.0: '1f518eaf603d63f58cd32c00879a70b238a0ec2c':
+    compiler.cppstd=gnu98
+
+    gmp/6.3.0: '478d7c209d699580b67f9dd1d646ee463e9dd446': compiler.cppstd=11
+
+    gmp/6.3.0: '6198ea0197051aef1d78e79226c3032def06ffa7':
+    compiler.cppstd=gnu11
+
+    gmp/6.3.0: 'ffb8a30df506b1b346349a9f84217b6262c4bc4c': compiler.cppstd=14
+
+    gmp/6.3.0: 'fefc243019bb02deaa7580db94f73ffe4050f19f':
+    compiler.cppstd=gnu14
+
+    gmp/6.3.0: '7ef40b817265b9992f79d2a82b8beb4c8b5dba1a':
+    compiler.cppstd=gnu17
+
+    gmp/6.3.0: '314451934242d2659dc9217f68d5a8ca8386384c': compiler.cppstd=20
+
+    gmp/6.3.0: 'b3573f6ec87e167a96f65bbefa64ac522220424c':
+    compiler.cppstd=gnu20
+
+    gmp/6.3.0: '68a011d85d26115464a34c228821cc7434dd9e35': compiler.cppstd=23
+
+    gmp/6.3.0: '7b7ae354bc922e2a2954d2d68c2f9d6751b0509e':
+    compiler.cppstd=gnu23
+
+    gmp/6.3.0: No compatible configuration found
+
+
+
+    A new experimental approach for binary compatibility detection is
+    available.
+
+        Enable it by setting the core.graph:compatibility_mode=optimized conf
+        and get improved performance when querying multiple compatible binaries in remotes.
+
+
+
+    Requirements
+
+        boost/1.83.0#3989436c24399e15c01ab4bf165703da:3bbc6beeea9cefe1c4d96865ef03229e8862e0ce - Build
+        cgal/6.0.1#e44537966ac7eacb77550a61504419fd:da39a3ee5e6b4b0d3255bfef95601890afd80709#b6ad7d66387edfc8690d73cf27ae8a90 - Download (conancenter)
+        eigen/3.4.0#e7256a460e38f651ab0aa5246f94cf6a:da39a3ee5e6b4b0d3255bfef95601890afd80709#b2e7c2d86c5d1dbefc534889aa72e12c - Download (conancenter)
+        gmp/6.3.0#187de23af494e24e69bf9dfc1966a60d:28d38d1dec42fe6e85a636fc0a3cc156ce8ab7b0 - Build
+        mpfr/4.2.1#3ea0c62e07e64e2be1518445351eb407:34570ca7095ff7b03c10070d9c2cac501da005df - Build
+
+    Build requirements
+
+        b2/5.4.2#ffd6084a119587e70f11cd45d1a386e2:ef52fcb08b72f88cd87dade69f7b5e49a93b591a#6e9879931ba48da8598619f8b02ed37d - Download (conancenter)
+        m4/1.4.19#b38ced39a01e31fef5435bc634461fd2:617cae191537b47386c088e07b1822d8606b7e67#af3bb664b82c4f616d3146625c5b4bd5 - Download (conancenter)
+
+
+
+    ======== Installing packages ========
+
+
+
+    -------- Downloading 4 packages --------
+
+    Downloading binary packages in 8 parallel threads
+
+    eigen/3.4.0: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709
+    from remote 'conancenter'
+
+    m4/1.4.19: Retrieving package 617cae191537b47386c088e07b1822d8606b7e67 from
+    remote 'conancenter'
+
+    cgal/6.0.1: Retrieving package da39a3ee5e6b4b0d3255bfef95601890afd80709
+    from remote 'conancenter'
+
+    b2/5.4.2: Retrieving package ef52fcb08b72f88cd87dade69f7b5e49a93b591a from
+    remote 'conancenter'
+
+    b2/5.4.2: Package installed ef52fcb08b72f88cd87dade69f7b5e49a93b591a
+
+    b2/5.4.2: Downloaded package revision 6e9879931ba48da8598619f8b02ed37d
+
+    m4/1.4.19: Package installed 617cae191537b47386c088e07b1822d8606b7e67
+
+    m4/1.4.19: Downloaded package revision af3bb664b82c4f616d3146625c5b4bd5
+
+    eigen/3.4.0: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+    eigen/3.4.0: Downloaded package revision b2e7c2d86c5d1dbefc534889aa72e12c
+
+    cgal/6.0.1: Package installed da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+    cgal/6.0.1: Downloaded package revision b6ad7d66387edfc8690d73cf27ae8a90
+
+    boost/1.83.0: Sources downloaded from 'conancenter'
+
+    boost/1.83.0: Calling source() in
+    /Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src
+
+    boost/1.83.0: Downloading 122.9MB boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 4.2MB 3% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 9.2MB 7% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 14.3MB 11% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 18.9MB 15% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 24.8MB 20% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 28.7MB 23% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 33.8MB 27% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 38.7MB 31% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 43.8MB 35% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 49.5MB 40% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 54.8MB 44% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 59.2MB 48% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 65.4MB 53% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 69.3MB 56% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 74.9MB 60% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 80.3MB 65% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 85.5MB 69% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 90.9MB 73% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 96.3MB 78% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 101.1MB 82% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 105.0MB 85% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 109.2MB 88% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 113.8MB 92% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Downloaded 120.3MB 97% boost_1_83_0.tar.bz2
+
+    boost/1.83.0: Uncompressing boost_1_83_0.tar.bz2 to
+    /Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src
+
+    boost/1.83.0: Apply patch (conan): Optional flag to specify iconv from
+    either libc of libiconv
+
+    boost/1.83.0: Apply patch (official): Fix compilation on windows when
+    NOMINMAX is not defined
+
+
+
+    -------- Installing package boost/1.83.0 (4 of 7) --------
+
+    boost/1.83.0: Building from source
+
+    boost/1.83.0: Package boost/1.83.0:3bbc6beeea9cefe1c4d96865ef03229e8862e0ce
+
+    boost/1.83.0: settings: os=Macos arch=armv8 compiler=apple-clang
+    compiler.cppstd=17 compiler.libcxx=libc++ compiler.version=15
+    build_type=Release
+
+    boost/1.83.0: options: asio_no_deprecated=False buildid=None bzip2=True
+    diagnostic_definitions=False error_code_header_only=False
+    extra_b2_flags=None filesystem_no_deprecated=False
+    filesystem_use_std_fs=False header_only=False layout=system lzma=False
+    magic_autolink=False multithreading=True namespace=boost
+    namespace_alias=False segmented_stacks=False shared=True
+    system_no_deprecated=False system_use_utf8=False visibility=hidden
+    without_atomic=True without_chrono=True without_container=False
+    without_context=True without_contract=True without_coroutine=True
+    without_date_time=True without_exception=False without_fiber=True
+    without_filesystem=True without_graph=False without_graph_parallel=True
+    without_iostreams=True without_json=False without_locale=True
+    without_log=True without_math=False without_mpi=True without_nowide=True
+    without_program_options=True without_python=True without_random=False
+    without_regex=False without_serialization=False without_stacktrace=True
+    without_system=False without_test=True without_thread=True
+    without_timer=True without_type_erasure=True without_url=True
+    without_wave=True zlib=True zstd=False
+
+    boost/1.83.0: Building your package in
+    /Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/b
+
+    boost/1.83.0: Calling generate()
+
+    boost/1.83.0: Generators folder:
+    /Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/b/build-release/conan
+
+    boost/1.83.0: Generating aggregated env files
+
+    boost/1.83.0: Generated aggregated env files: ['conanbuild.sh',
+    'conanrun.sh']
+
+    boost/1.83.0: Calling build()
+
+    boost/1.83.0: WARN: replace_in_file didn't find pattern '/* thread_local
+    */' in
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/boost/stacktrace/detail/libbacktrace_impls.hpp'
+    file.
+
+    boost/1.83.0: WARN: replace_in_file didn't find pattern '/* static __thread
+    */' in
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/boost/stacktrace/detail/libbacktrace_impls.hpp'
+    file.
+
+    boost/1.83.0: WARN: replace_in_file didn't find pattern 'local generic-os =
+    [ set.difference $(all-os) : aix darwin vxworks solaris osf hpux ] ;' in
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build/src/tools/gcc.jam'
+    file.
+
+    boost/1.83.0: WARN: replace_in_file didn't find pattern 'local no-threading
+    = android beos haiku sgi darwin vxworks ;' in
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build/src/tools/gcc.jam'
+    file.
+
+    boost/1.83.0: WARN: Patching user-config.jam
+
+    boost/1.83.0: WARN:
+
+    using "clang-darwin" : :
+    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+    -isysroot
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+    -arch arm64 :
+
+
+    <archiver>"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar"
+    <ranlib>"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib"
+    <compileflags>"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk
+    "
+    <linkflags>"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk"
+    ;
+
+    boost/1.83.0: WARN: b2 -q target-os=darwin architecture=arm
+    address-model=64 binary-format=mach-o abi=aapcs --layout=system
+    --user-config=/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build/user-config.jam
+    -sNO_ZLIB=1 -sNO_BZIP2=1 -sNO_LZMA=1 -sNO_ZSTD=1 boost.locale.icu=off
+    --disable-icu boost.locale.iconv=off --disable-iconv threading=multi
+    visibility=hidden link=shared variant=release --with-container
+    --with-exception --with-graph --with-json --with-math --with-random
+    --with-regex --with-serialization --with-system toolset=clang-darwin
+    cxxstd=17 pch=on linkflags="-stdlib=libc++" cxxflags="-fPIC -stdlib=libc++"
+    install --prefix=/Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/p
+    -j8 --abbreviate-paths -d0 --debug-configuration
+    --build-dir="/Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/b/build-release"
+
+    boost/1.83.0: RUN: b2 -q target-os=darwin architecture=arm address-model=64
+    binary-format=mach-o abi=aapcs --layout=system
+    --user-config=/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build/user-config.jam
+    -sNO_ZLIB=1 -sNO_BZIP2=1 -sNO_LZMA=1 -sNO_ZSTD=1 boost.locale.icu=off
+    --disable-icu boost.locale.iconv=off --disable-iconv threading=multi
+    visibility=hidden link=shared variant=release --with-container
+    --with-exception --with-graph --with-json --with-math --with-random
+    --with-regex --with-serialization --with-system toolset=clang-darwin
+    cxxstd=17 pch=on linkflags="-stdlib=libc++" cxxflags="-fPIC -stdlib=libc++"
+    install --prefix=/Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/p
+    -j8 --abbreviate-paths -d0 --debug-configuration
+    --build-dir="/Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/b/build-release"
+
+    notice: found boost-build.jam at
+    /Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/boost-build.jam
+
+    notice: loading B2 from
+    /Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/build-system.jam
+
+    notice: Searching '/etc' '/Users/utkarshkhajuria'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/util'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/tools'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/options'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/contrib'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/build'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2' for
+    site-config configuration file 'site-config.jam'.
+
+    notice: Configuration file 'site-config.jam' not found in '/etc'
+    '/Users/utkarshkhajuria'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/util'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/tools'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/options'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/contrib'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2/build'
+    '/Users/utkarshkhajuria/.conan2/p/b2035f5ae7e2dd7/p/bin/.b2'.
+
+    notice: Loading explicitly specified user configuration file:
+
+        /Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build/user-config.jam
+
+    notice: Searching
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build' for
+    user-config configuration file 'user-config.jam'.
+
+    notice: Loading user-config configuration file 'user-config.jam' from
+    '/Users/utkarshkhajuria/.conan2/p/boost3eae647bfb5b0/s/src/tools/build'.
+
+    notice: will use
+    '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++'
+    '-isysroot'
+    '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk'
+    '-arch' 'arm64' for clang-darwin, condition <toolset>clang-17
+
+    notice: iostreams: not using zlib compression
+
+    notice: iostreams: not using bzip compression
+
+    notice: iostreams: not using lzma compression
+
+    notice: iostreams: not using zstd compression
+
+    notice: [python-cfg] Configuring python...
+
+    notice: [python-cfg] Checking interpreter command "python"...
+
+    notice: [python-cfg] running command 'python -c "from sys import *;
+    print('version=%d.%d\nplatform=%s\nprefix=%s\nexec_prefix=%s\nexecutable=%s'
+    %
+    (version_info[0],version_info[1],platform,prefix,exec_prefix,executable))"
+    2>&1'
+
+    notice: [python-cfg] ...requested configuration matched!
+
+    notice: [python-cfg] Details of this Python configuration:
+
+    notice: [python-cfg] interpreter command: "python"
+
+    notice: [python-cfg] include path:
+    "/Users/utkarshkhajuria/miniforge3/include/python3.12"
+
+    notice: [python-cfg] library path:
+    "/Users/utkarshkhajuria/miniforge3/lib/python3.12/config"
+    "/Users/utkarshkhajuria/miniforge3/lib"
+
+    notice: [python-cfg] Checking for NumPy...
+
+    notice: [python-cfg] running command 'python -c "import sys; sys.stderr =
+    sys.stdout; import numpy; print(numpy.get_include())"'
+
+    notice: [python-cfg] NumPy disabled.  Reason:
+
+    notice: [python-cfg] python -c "import sys; sys.stderr = sys.stdout; import
+    numpy; print(numpy.get_include())" aborted with
+
+    notice: [python-cfg] Traceback (most recent call last):
+
+      File "<string>", line 1, in <module>
+
+    ModuleNotFoundError: No module named 'numpy'
+
+    notice: [python-cfg] no framework directory found; using library path
+
+    Performing configuration checks
+
+
+
+        - default address-model    : 64-bit [1]
+        - default architecture     : arm [1]
+        - has_icu builds           : no [2]
+        - cxx11_constexpr          : yes [2]
+        - cxx11_decltype           : yes [2]
+        - cxx11_hdr_tuple          : yes [2]
+        - cxx11_template_aliases   : yes [2]
+        - cxx11_variadic_templates : yes [2]
+        - cxx11_basic_alignas      : yes [2]
+        - gcc visibility           : yes [2]
+        - cxx11_noexcept           : yes [2]
+        - cxx11_rvalue_references  : yes [2]
+        - sfinae_expr              : yes [2]
+        - cxx11_auto_declarations  : yes [2]
+        - cxx11_lambdas            : yes [2]
+        - cxx11_unified_initialization_syntax : yes [2]
+        - cxx11_hdr_initializer_list : yes [2]
+        - cxx11_hdr_chrono         : yes [2]
+        - cxx11_thread_local       : yes [2]
+        - cxx11_nullptr            : yes [2]
+        - cxx11_numeric_limits     : yes [2]
+        - cxx11_hdr_array          : yes [2]
+        - cxx11_hdr_atomic         : yes [2]
+        - cxx11_hdr_type_traits    : yes [2]
+        - cxx11_allocator          : yes [2]
+        - cxx11_explicit_conversion_operators : yes [2]
+        - long double support      : yes [2]
+
+
+
+    [1] clng-17
+
+    [2]
+    clng-drwn-17/rls/bst.l-off/bst.l-off/cxstd-17-iso/pythn-3.12/thrd-mlt/vsblt-hdn
+
+
+
+    Component configuration:
+
+
+
+        - atomic                   : not building
+        - chrono                   : not building
+        - container                : building
+        - context                  : not building
+        - contract                 : not building
+        - coroutine                : not building
+        - date_time                : not building
+        - exception                : building
+        - fiber                    : not building
+        - filesystem               : not building
+        - graph                    : building
+        - graph_parallel           : not building
+        - headers                  : not building
+        - iostreams                : not building
+        - json                     : building
+        - locale                   : not building
+        - log                      : not building
+        - math                     : building
+        - mpi                      : not building
+        - nowide                   : not building
+        - program_options          : not building
+        - python                   : not building
+        - random                   : building
+        - regex                    : building
+        - serialization            : building
+        - stacktrace               : not building
+        - system                   : building
+        - test                     : not building
+        - thread                   : not building
+        - timer                    : not building
+        - type_erasure             : not building
+        - url                      : not building
+        - wave                     : not building
+
+
+
+
+
+    boost/1.83.0: Package '3bbc6beeea9cefe1c4d96865ef03229e8862e0ce' built
+
+    boost/1.83.0: Build folder
+    /Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/b/build-release
+
+    boost/1.83.0: Generating the package
+
+    boost/1.83.0: Packaging in folder
+    /Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/p
+
+    boost/1.83.0: Calling package()
+
+    boost/1.83.0: package(): Packaged 1 '.txt' file: LICENSE_1_0.txt
+
+    boost/1.83.0: package(): Packaged 15177 '.hpp' files
+
+    boost/1.83.0: package(): Packaged 148 '.h' files
+
+    boost/1.83.0: package(): Packaged 17 files
+
+    boost/1.83.0: package(): Packaged 310 '.ipp' files
+
+    boost/1.83.0: package(): Packaged 2 '.inc' files: strict_cpp_re.inc,
+    cpp_re.inc
+
+    boost/1.83.0: package(): Packaged 14 '.dylib' files
+
+    boost/1.83.0: package(): Packaged 1 '.a' file: libboost_exception.a
+
+    boost/1.83.0: Created package revision 50d1ab2eebd372b3cae154aa24739f06
+
+    boost/1.83.0: Package '3bbc6beeea9cefe1c4d96865ef03229e8862e0ce' created
+
+    boost/1.83.0: Full package reference:
+    boost/1.83.0#3989436c24399e15c01ab4bf165703da:3bbc6beeea9cefe1c4d96865ef03229e8862e0ce#50d1ab2eebd372b3cae154aa24739f06
+
+    boost/1.83.0: Package folder
+    /Users/utkarshkhajuria/.conan2/p/b/boost0d552ead9e44d/p
+
+    gmp/6.3.0: Sources downloaded from 'conancenter'
+
+    gmp/6.3.0: Calling source() in
+    /Users/utkarshkhajuria/.conan2/p/gmp3104286d2bb80/s/src
+
+    gmp/6.3.0: Uncompressing gmp-6.3.0.tar.bz2 to .
+
+
+
+    -------- Installing package gmp/6.3.0 (5 of 7) --------
+
+    gmp/6.3.0: Building from source
+
+    gmp/6.3.0: Package gmp/6.3.0:28d38d1dec42fe6e85a636fc0a3cc156ce8ab7b0
+
+    gmp/6.3.0: settings: os=Macos arch=armv8 compiler=apple-clang
+    compiler.cppstd=17 compiler.libcxx=libc++ compiler.version=15
+    build_type=Release
+
+    gmp/6.3.0: options: disable_assembly=True enable_cxx=True fPIC=True
+    shared=False
+
+    gmp/6.3.0: Copying sources to build folder
+
+    gmp/6.3.0: Building your package in
+    /Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b
+
+    gmp/6.3.0: Calling generate()
+
+    gmp/6.3.0: Generators folder:
+    /Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b/build-release/conan
+
+    gmp/6.3.0: Generating aggregated env files
+
+    gmp/6.3.0: Generated aggregated env files: ['conanbuild.sh', 'conanrun.sh']
+
+    gmp/6.3.0: Calling build()
+
+    gmp/6.3.0: Apply patch (file): patches/0001-msvc-dumpbin-yasm-wrapper.patch
+
+    gmp/6.3.0: Apply patch (file):
+    patches/6.x.x-0001-fix-MSVC-next-prime-error.patch
+
+    gmp/6.3.0: Apply patch (file): patches/cpp23-unprototyped-functions.patch
+
+    gmp/6.3.0: RUN:
+    "/Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b/src/configure"
+    --disable-shared --enable-static --prefix=/ '--bindir=${prefix}/bin'
+    '--sbindir=${prefix}/bin' '--libdir=${prefix}/lib'
+    '--includedir=${prefix}/include' '--oldincludedir=${prefix}/include'
+    --with-pic=yes --enable-assembly=no --enable-fat=no --enable-cxx=yes
+    --srcdir=../src
+
+    checking build system type...  applem2-apple-darwin25.2.0
+
+    checking host system type...  applem2-apple-darwin25.2.0
+
+    checking for a BSD-compatible install...  /usr/bin/install -c
+
+    checking whether build environment is sane...  yes
+
+    checking for a thread-safe mkdir -p...  ../src/install-sh -c -d
+
+    checking for gawk...  no
+
+    checking for mawk...  no
+
+    checking for nawk...  no
+
+    checking for awk...  awk
+
+    checking whether make sets $(MAKE)...  yes
+
+    checking whether make supports nested variables...  yes
+
+    checking whether to enable maintainer-specific portions of Makefiles...  no
+
+    checking ABI=64
+
+    checking whether /opt/homebrew/bin/gcc-14 is gcc...  yes
+
+    checking compiler /opt/homebrew/bin/gcc-14 -fPIC --sysroot
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk
+    -O3 -DNDEBUG...  yes
+
+    checking whether ARM gcc unsigned division works...  yes
+
+    checking for gcc...  /opt/homebrew/bin/gcc-14
+
+    checking whether the C compiler works...  yes
+
+    checking for C compiler default output file name...  a.out
+
+    checking for suffix of executables...
+
+    checking whether we are cross compiling...  no
+
+    checking for suffix of object files...  o
+
+    checking whether we are using the GNU C compiler...  yes
+
+    checking whether /opt/homebrew/bin/gcc-14 accepts -g...  yes
+
+    checking for /opt/homebrew/bin/gcc-14 option to accept ISO C89...  none
+    needed
+
+    checking whether /opt/homebrew/bin/gcc-14 understands -c and -o together...
+    yes
+
+    checking for /opt/homebrew/bin/gcc-14 option to accept ISO C99...  none
+    needed
+
+    checking how to run the C preprocessor...  /opt/homebrew/bin/gcc-14 -E
+
+    checking build system compiler /opt/homebrew/bin/gcc-14...  yes
+
+    checking for build system preprocessor...  /opt/homebrew/bin/gcc-14 -E
+
+    checking for build system executable suffix...
+
+    checking whether build system compiler is ANSI...  yes
+
+    checking for build system compiler math library...  -lm
+
+    checking whether we are using the GNU C++ compiler...  yes
+
+    checking whether /opt/homebrew/bin/g++-14 accepts -g...  yes
+
+    checking C++ compiler /opt/homebrew/bin/g++-14 -DNDEBUG -stdlib=libc++
+    -std=c++17 -fPIC --sysroot
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk
+    -O3...  no, std iostream
+
+    configure: error: C++ compiler not available, see config.log for details
+
+    /Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b/src/configure: line
+    390: sort: No such file or directory
+
+    /Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b/src/configure: line
+    387: sed: No such file or directory
+
+
+
+    gmp/6.3.0: ERROR:
+
+    Package '28d38d1dec42fe6e85a636fc0a3cc156ce8ab7b0' build failed
+
+    gmp/6.3.0: WARN: Build folder
+    /Users/utkarshkhajuria/.conan2/p/b/gmp52231bdff5e1b/b/build-release
+
+    ERROR: gmp/6.3.0: Error in build() method, line 147
+
+        autotools.configure()
+
+        ConanException: Error 1 while executing
+
+
+
+  -- Configuring incomplete, errors occurred!
+
+  *** CMake configuration failed
+  error: subprocess-exited-with-error
+  
+  × Building editable for cgalpy (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> No available output.
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  full command: /Users/utkarshkhajuria/miniforge3/bin/python3 /Users/utkarshkhajuria/miniforge3/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py build_editable /var/folders/bh/n3gw34jj18qgt5t8c5xh5h2r0000gn/T/tmph2t264w9
+  cwd: /Users/utkarshkhajuria/cgal-python-bindings
+  Building editable for cgalpy (pyproject.toml): finished with status 'error'
+  ERROR: Failed building editable for cgalpy
+Failed to build cgalpy
+error: failed-wheel-build-for-install
+
+× Failed to build installable wheels for some pyproject.toml based projects
+╰─> cgalpy
