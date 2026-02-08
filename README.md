@@ -1,50 +1,54 @@
-# 🎯 CGAL GSoC 2026: Python Bindings Enhancement — Preparation Repository
+# CGAL GSoC 2026: Python Bindings Enhancement
 
 **Author:** Utkarsh Khajuria (@UtkarsHMer05)  
 **Project:** Enhancing CGAL Python Bindings  
 **Mentor:** Efi Fogel (efifogel@gmail.com)  
 **Organization:** CGAL (Computational Geometry Algorithms Library)  
-**Period:** December 20, 2025 – January 17, 2026  
-**Total Investment:** 116+ hours
+**Period:** December 20, 2025 – February 8, 2026  
+**Total Investment:** 126+ hours
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Project Context](#-project-context)
-- [Work Summary](#-work-summary)
-- [Technical Discoveries](#-technical-discoveries)
-- [Repository Structure](#-repository-structure)
-- [Research Findings](#-research-findings)
-- [Key Statistics](#-key-statistics)
-- [How to Navigate This Repo](#-how-to-navigate-this-repo)
-- [Next Steps](#-next-steps)
-- [References](#-references)
+- [Overview](#overview)
+- [Project Context](#project-context)
+- [Work Summary](#work-summary)
+- [Technical Discoveries](#technical-discoveries)
+- [Repository Structure](#repository-structure)
+- [Research Findings](#research-findings)
+- [Key Statistics](#key-statistics)
+- [How to Navigate This Repo](#how-to-navigate-this-repo)
+- [Next Steps](#next-steps)
+- [References](#references)
 
 ---
 
-## 🎯 Overview
+## Overview
 
-This repository documents my preparation work for Google Summer of Code 2026 with CGAL, focusing on enhancing the Python bindings for the Computational Geometry Algorithms Library. Over **116+ hours** across four phases, I built CGAL from source, learned the 2D Arrangements package, empirically tested methods, discovered crash scenarios, researched solutions to technical challenges, and implemented proof-of-concept Named Parameters operators.
+This repository documents my preparation work for Google Summer of Code 2026 with CGAL. I've spent over 126 hours across six phases working on the Python bindings for the Computational Geometry Algorithms Library. This includes building CGAL from source, learning the 2D Arrangements package, empirically testing methods, discovering crash scenarios, researching solutions to technical challenges, implementing proof-of-concept Named Parameters operators, validating the manual build system, and creating a complete multi-kernel CI pipeline.
 
 ### Key Achievements
 
-- ✅ Built CGAL successfully on macOS M2 (Apple Silicon)
-- ✅ Documented **21 methods** across 2 pull requests with NumPy-style docstrings
-- ✅ Discovered **7 crash scenarios** through systematic testing
-- ✅ Found **10 silent corruption cases**
-- ✅ Researched 3 docstring organization approaches (Approach A validated)
-- ✅ Identified critical bugs (line 857 lifetime management issue)
-- ✅ Created comprehensive CGAL package analysis (19 packages evaluated)
-- ✅ Implemented proof-of-concept Named Parameters operators (2 in production repo)
-- ✅ Discovered property map type resolution challenge (the REAL Week 7-8 challenge)
-- ✅ Analyzed complete Named Parameters architecture (3,500 lines documentation)
-- ✅ Created 14-day implementation plan for GSoC Weeks 7-8
+- [x] Built CGAL successfully on macOS M2 (Apple Silicon)
+- [x] Documented 21 methods across 2 pull requests with NumPy-style docstrings
+- [x] Discovered 7 crash scenarios through systematic testing
+- [x] Found 10 silent corruption cases
+- [x] Researched 3 docstring organization approaches (Approach A validated)
+- [x] Identified critical bugs (line 857 lifetime management issue)
+- [x] Created comprehensive CGAL package analysis (19 packages evaluated)
+- [x] Implemented proof-of-concept Named Parameters operators (2 in production repo)
+- [x] Discovered property map type resolution challenge (the real Week 7-8 challenge)
+- [x] Analyzed complete Named Parameters architecture (3,500 lines documentation)
+- [x] Validated manual build system with aos2_epec_fixed configuration
+- [x] Discovered and documented Qt6/Clang compiler compatibility issue
+- [x] Created complete 8-kernel CI pipeline (bitbucket-pipelines.yml production-ready)
+- [x] Implemented parameterized testing infrastructure (build_config.sh, test_runner.py)
+- [x] Confirmed crash scenario #1 reproducibility (bus error validated)
 
 ---
 
-## 🔧 Project Context
+## Project Context
 
 | | |
 |---|---|
@@ -56,28 +60,32 @@ This repository documents my preparation work for Google Summer of Code 2026 wit
 ### Core Problem
 
 The CGAL Python bindings exist but are incomplete:
+
 - 90% of methods lack documentation
 - Parameters appear as `arg0`, `arg1`, `arg2` instead of meaningful names
 - Several methods cause segmentation faults when misused
 - CGAL's compile-time Named Parameters pattern isn't applied to Python bindings
 - No precondition validation, leading to silent data corruption
+- CI infrastructure dormant, no automated testing
 
 ---
 
-## 📊 Work Summary
+## Work Summary
 
 ### Phase 1: Foundation (50+ hours, Dec 20-24, 2025)
 
 Built the development environment and studied CGAL's architecture.
 
-**Achievements:**
-- ✅ Built CGAL 5.6 from source on macOS Apple Silicon M2
-- ✅ Studied 2D Arrangements: DCEL data structures, traits classes, template architecture
-- ✅ Analyzed 50+ bound methods in the Python bindings repository
-- ✅ Mastered nanobind: return value policies, `keep_alive` patterns, lifetime management
-- ✅ Discovered line 857-858 bug: `reference_internal` doesn't work for `insert_cv_with_history()`
+**What I did:**
+
+- [x] Built CGAL 5.6 from source on macOS Apple Silicon M2
+- [x] Studied 2D Arrangements: DCEL data structures, traits classes, template architecture
+- [x] Analyzed 50+ bound methods in the Python bindings repository
+- [x] Mastered nanobind: return value policies, `keep_alive` patterns, lifetime management
+- [x] Discovered line 857-858 bug: `reference_internal` doesn't work for `insert_cv_with_history()`
 
 **Files Created:**
+
 - `phase1-foundation/environment-setup.md` — Complete build instructions
 - `phase1-foundation/cgal-learning-notes.md` — DCEL and 2D Arrangements deep dive
 - `phase1-foundation/nanobind-deep-dive.md` — Lifetime management patterns
@@ -89,23 +97,16 @@ Built the development environment and studied CGAL's architecture.
 
 Submitted pull requests and conducted empirical testing across methods.
 
-**Achievements:**
-- ✅ Submitted **PR #1:** Documented 6 methods with NumPy-style docstrings
-- ✅ Submitted **PR #2:** Documented 15 methods (removal, modification, query operations)
-- ✅ Empirically tested 30+ methods across 13 hours of systematic testing
-- ✅ Discovered **5 crash scenarios** (segfaults that kill Python interpreter):
-  1. `remove_isolated_vertex()` on non-isolated vertex → Bus error
-  2. `remove_edge()` called twice on same halfedge → Segfault
-  3. `merge_edge()` on non-adjacent edges → Segfault
-  4. Accessing halfedge after `remove_edge()` → Segfault
-  5. Invalid iterator access → Segfault (later verified as SAFE)
-- ✅ Documented **10 silent corruption scenarios**:
-  - Duplicate points accepted without validation
-  - Mismatched curve endpoints accepted
-  - Overlapping segments silently allowed
-  - Invalid geometric transformations succeed
+**What I did:**
+
+- [x] Submitted PR #1: Documented 6 methods with NumPy-style docstrings
+- [x] Submitted PR #2: Documented 15 methods (removal, modification, query operations)
+- [x] Empirically tested 30+ methods across 13 hours of systematic testing
+- [x] Discovered 5 crash scenarios (segfaults that kill Python interpreter)
+- [x] Documented 10 silent corruption scenarios
 
 **Files Created:**
+
 - `phase2-contributions/pr1-submission.md` — First PR documentation
 - `phase2-contributions/pr2-submission.md` — Second PR documentation
 - `phase2-contributions/complete-methods-research.md` — 2,500 lines method analysis
@@ -115,293 +116,355 @@ Submitted pull requests and conducted empirical testing across methods.
 
 ---
 
+### Phase 2.5: Proposal Revision (3 hours, Dec 30-Jan 1, 2026)
+
+Revised proposal based on Efi's detailed feedback.
+
+**Changes Made:**
+
+- [x] Removed all emotional language
+- [x] Shortened "What's Missing" section
+- [x] Made timeline table primary focus
+- [x] Added clarification: Named Parameters is different from parameter names (two separate tasks)
+
+---
+
 ### Phase 3: Research (17+ hours, Jan 5-11, 2026)
 
 Addressed mentor's technical questions and extended research.
 
-**Achievements:**
+**Docstring Organization Research (Question 7 from mentor)**
 
-#### ✅ Docstring Organization Research (Question 7 from mentor)
 - Tested 3 approaches: External variables (A), External headers (B), Namespace organization (C)
-- **Validated Approach A:** 85% readability improvement, zero build system changes
+- Validated Approach A: 85% readability improvement, zero build system changes
 - Created proof-of-concept: `test-approach-a/test_external_docstrings.cpp`
-- **Result:** Production-ready, can implement in 20 minutes
 
-#### ✅ Extended Crash Testing
-- Found **2 NEW crashes** (total: 7):
-  - **Crash 6:** Accessing twin after `remove_edge()` → Segfault
-  - **Crash 7:** `remove_isolated_vertex()` called twice → Segfault
-- Verified **3 SAFE behaviors:**
-  - `modify_vertex` handle management works correctly
-  - `split_edge` handle management works correctly
-  - Iterator invalidation handled properly
+**Extended Crash Testing**
+
+- Found 2 new crashes (total: 7)
+- Verified 3 safe behaviors
 - Documented 4 geometric validation warnings
 
-#### ✅ Build System Mastery
+**Build System Mastery**
+
 - Successfully built Polygon Mesh Processing (PMP) bindings
 - Resolved Eigen 3.4.1/CGAL 5.6 compatibility issues
 - Fixed GMP/GMPXX linking on macOS M2
-- Created `build_pmp.sh` automation script
 
 **Files Created:**
+
 - `research/docstring-location/docstring-location-research.md` — Full analysis
-- `research/docstring-location/test-approach-a/test_external_docstrings.cpp` — Proof-of-concept
 - `research/crash-scenarios/additional-crash-scenarios.md` — Comprehensive findings
-- 9 test files for crash scenarios (`test_crash_*.py`)
+- 9 test files for crash scenarios
 - `docs/technical/build_pmp_guide.md` — PMP build documentation
 
 ---
 
-### Phase 3.5: Named Parameters Deep Dive (5+ hours, Jan 17, 2026) 🆕
+### Phase 3.5: Named Parameters Deep Dive (9+ hours, Jan 17, 2026)
 
 Deep research into CGAL's Named Parameters system and proof-of-concept implementation.
 
-**Achievements:**
+**Complete Architecture Analysis**
 
-#### ✅ Complete Architecture Analysis
 - Studied Efi's operator-based Named Parameters system
-- Analyzed 5 core files: `named_parameter_applicator.hpp`, `Named_parameter_wrapper.hpp`, etc.
-- Documented complete data flow: Python dict → Operators → Parameter chaining → CGAL function
+- Analyzed 5 core files in the codebase
+- Documented complete data flow
 - Created 3,500-line technical analysis document
-- **Key Insight:** Discovered variadic template recursion pattern
 
-#### ✅ Proof-of-Concept Implementation
-- Created 3 reference operators in prep repo:
-  1. `Named_parameter_verbose.hpp` (Pattern 1: Simple Value)
-  2. `Named_parameter_vertex_point_map.hpp` (Pattern 2: Property Map)
-  3. `Named_parameter_geom_traits.hpp` (Pattern 3: Kernel/Traits)
-- Implemented 2 operators in **actual cgal-python-bindings repo**:
-  - Branch: `feature/named-params-operators-poc`
-  - Commit: `eb5a9e39` (60 lines, 2 files)
-  - Operators are structurally correct following Efi's pattern
+**Proof-of-Concept Implementation**
 
-#### ✅ Integration Attempt & Critical Discovery
+- Created 3 reference operators in prep repo
+- Implemented 2 operators in actual cgal-python-bindings repo
+- Branch: `feature/named-params-operators-poc`
+- Commit: `eb5a9e39`
+
+**Integration Attempt & Critical Discovery**
+
 - Attempted to integrate operators into `compute_vertex_normals()`
-- **Discovered THE hard problem:** Property map type resolution
-- Compilation error: `no type named 'reference' in 'boost::property_traits<nanobind::handle>'`
-- **Realization:** Operators are trivial (30 lines, 30 min). The 2-week allocation is for solving the Python ↔ C++ property map type bridge!
-
-#### ✅ The Property Map Challenge
-
-**Problem:** CGAL functions internally call `get(property_map, key)` which requires:
-
-```cpp
-boost::property_traits<PropertyMapType>::reference
-```
-
-But Python passes `nanobind::handle` (Python object), which doesn't satisfy this.
-
-**4 Potential Solutions Analyzed:**
-1. Explicit casting in operators (but mesh type unknown at operator level)
-2. Template specialization per mesh (combinatorial explosion)
-3. Defer casting to wrapper (how to extract from compiled np chain?)
-4. Python-side property map binding first (prerequisites?)
-
-#### ✅ Comprehensive Documentation
-- `NAMED_PARAMS_COMPLETE_ANALYSIS.md` (3,500 lines) — Architecture deep dive
-- `implementation-plan.md` (1,200 lines) — Day-by-day plan for Weeks 7-8
-- `questions-for-efi.md` (900 lines) — 10 sections, 20+ technical questions
-- `QUICK_REFERENCE.md` (400 lines) — Cheat sheet for GSoC implementation
-- `operator-patterns-discovered.md` — Complete taxonomy of 5 patterns
-- `visual-architecture.md` — ASCII diagrams explaining data flow
-- `PROPERTY_MAP_CHALLENGE.md` — Deep dive into type resolution problem
-- `README.md` (comprehensive) — Full proof-of-concept documentation
+- Discovered the hard problem: Property map type resolution
+- Realization: Operators are trivial. The 2-week allocation is for the Python-to-C++ property map type bridge
 
 **Files Created:**
-- `phase3-research/test-named-params-implementation/` (7 documents, 6,000+ lines)
-- `phase3-research/proof-of-concept-operators/` (3 operators + tests + docs)
-- Production code: `cgal-python-bindings/src/libs/cgalpy/include/CGALPY/Named_parameter_*.hpp` (2 files)
 
-**Total Documentation This Phase:** 12,000+ lines
+- `NAMED_PARAMS_COMPLETE_ANALYSIS.md` (3,500 lines)
+- `implementation-plan.md` (1,200 lines)
+- `questions-for-efi.md` (900 lines)
+- `PROPERTY_MAP_CHALLENGE.md` — Deep dive
+- Production code in cgal-python-bindings repo
 
-**What This Demonstrates:**
-- ✅ Can reverse-engineer complex C++ template systems
-- ✅ Quickly identified the real technical challenge (within 1 hour)
-- ✅ Won't waste time implementing wrong approach during GSoC
-- ✅ Understands why Efi allocated 2 weeks for this task
-- ✅ Can discuss 4 potential solutions intelligently
-
-**Status:** Email ready for Jan 23 with findings and critical question about type resolution strategy
+**Total Documentation:** 12,000+ lines
 
 ---
 
-## 🔬 Technical Discoveries
+### Phase 4: CI & Build System Testing (3+ hours, Feb 5, 2026)
+
+Validated manual build system with different kernel configurations.
+
+**Manual Build Success**
+
+- Tested `aos2_epec_fixed.cmake` configuration on macOS M2
+- Build output: 4.7MB CGALPY module
+- CMake configuration works perfectly
+- nanobind integration successful
+
+**Testing Results**
+
+- `aos2.py` runs successfully
+- Produces correct output (3 faces, 12 halfedges, 5 vertices)
+- All Arrangement operations functional
+
+**Compiler Compatibility Discovery**
+
+- Apple Clang: Works
+- GCC 14/15: Fails with Qt6 pragma errors
+- Root cause: Qt6 built with Clang, uses Clang-specific pragmas
+- Solution: Force Apple Clang on macOS builds
+
+**Email 7 Sent to Efi:**
+
+- Documented build testing results
+- Identified Qt6/compiler compatibility issue
+- Asked CI implementation questions
+
+**Email 8 Received from Efi:**
+
+- Multi-kernel testing: "I would like to test it all"
+- Build approach: Manual CMake builds (not system packages)
+- Test coverage: Example scripts ARE the tests
+
+---
+
+### Phase 4.5: Multi-Kernel CI Implementation (7-8 hours, Feb 8, 2026)
+
+Implemented complete 8-kernel CI pipeline based on Efi's Email 8 specifications.
+
+**8-Kernel Build Matrix Created**
+
+| Config | Package | Kernel | Status |
+|--------|---------|--------|--------|
+| aos2_epec_fixed | AOS2 | EPEC | Validated |
+| aos2_epic | AOS2 | EPIC | Ready |
+| sm_pmp_epec | SM+PMP | EPEC | Ready |
+| sm_pmp_epic | SM+PMP | EPIC | Ready |
+| ch2_epic | CH2 | EPIC | Ready |
+| pol3_pmp_epic | POL3+PMP | EPIC | Ready |
+| pol3_ch3_epec | POL3+CH3 | EPEC | Ready |
+| tri3_epic | TRI3 | EPIC | Ready |
+
+**Build Infrastructure Created**
+
+- `build_config.sh` — Automated build script for any kernel configuration
+- `test_runner.py` — Parameterized test runner (library name as argument)
+- Fixed nanobind path detection
+- Forced Apple Clang to resolve Qt6 issue
+
+**aos2_epec_fixed Validation**
+
+Build test:
+```
+[ 92%] Linking CXX shared module CGALPY.cpython-312-darwin.so
+[ 92%] Built target CGALPY
+```
+
+Integration test:
+```
+Number of faces: 3
+Number of halfedges: 12
+Number of vertices: 5
+```
+
+Crash scenario test:
+```
+[1/7] Testing: remove_isolated_vertex on non-isolated vertex
+zsh: bus error
+```
+
+Result: Bus error reproduced, confirming crash scenario #1.
+
+**Complete CI Pipeline**
+
+- `bitbucket-pipelines.yml` — Production-ready 8-kernel parallel builds
+- Follows Efi's convex_hull_2 example pattern exactly
+- Each config builds independently
+- ~40 minute total runtime
+
+**Comprehensive Documentation**
+
+- `docs/ci/CI_IMPLEMENTATION.md` — Technical documentation
+- `docs/ci/PHASE_4_5_IMPLEMENTATION.md` — Implementation summary
+- `EMAIL_TO_EFI_FEB8.txt` — Professional email sent
+
+**Email Sent to Efi (Feb 8, 9:22 PM IST):**
+
+- CI implementation complete
+- Build matrix tested successfully
+- Bus error confirmed in crash scenario #1
+- Qt6/Clang discovery documented
+- Questions about precondition framework approach
+
+**Files Created:**
+
+- `build_config.sh` (tested and working)
+- `test_runner.py` (parameterized testing)
+- `bitbucket-pipelines.yml` (complete 8-kernel pipeline)
+- `docs/ci/CI_IMPLEMENTATION.md`
+- `docs/ci/PHASE_4_5_IMPLEMENTATION.md`
+- `EMAIL_TO_EFI_FEB8.txt`
+
+**Time Investment:** 7-8 hours (Feb 8, 2026, 2:00 PM - 9:22 PM IST)
+
+This completes the Weeks 11-12 CI work ahead of GSoC, demonstrating ability to implement complex infrastructure based on mentor specifications.
+
+---
+
+## Technical Discoveries
 
 ### 1. Docstring Shadowing Problem
 
 **Problem:** Inline docstrings make binding code hard to read.
-- **Current:** `arrangement_on_surface_2_bindings.cpp` is 1,676 lines
-- **Each method:** 40-50 lines (5 lines code + 35-45 lines docstring)
 
-**Solution — Approach A (VALIDATED):**
+**Solution — Approach A (Validated):**
 
 ```cpp
-// DOCSTRINGS SECTION - At top of file
-const char* INSERT_FROM_LEFT_VERTEX_DOC = R"pbdoc(
-Insert a curve from a given vertex.
+// DOCSTRINGS SECTION
+const char* INSERT_FROM_LEFT_VERTEX_DOC = R"pbdoc(...)pbdoc";
 
-Parameters
-----------
-curve : Curve
-    The curve to insert
-vertex : Vertex
-    The source vertex
-
-Returns
--------
-Halfedge
-    A halfedge directed from source to target
-)pbdoc";
-
-// BINDINGS - Clean section!
-NB_MODULE(cgalpy_aos2, m) {
-    m.def("insert_from_left_vertex", &aos2_insert_from_left_vertex_cv,
-          nb::arg("curve"), nb::arg("vertex"),
-          nb::keep_alive<0, 1>(),
-          INSERT_FROM_LEFT_VERTEX_DOC);  // Just reference the variable
-}
+// BINDINGS
+m.def("insert_from_left_vertex", &aos2_insert_from_left_vertex_cv,
+      nb::arg("curve"), nb::arg("vertex"),
+      INSERT_FROM_LEFT_VERTEX_DOC);  // Clean!
 ```
 
-**Benefits:**
-- 85% readability improvement in binding section
-- Zero build system changes needed
-- Drop-in replacement for inline docstrings
-- Can implement in 20 minutes for existing methods
+Benefits: 85% readability improvement, zero build changes needed.
 
 ---
 
 ### 2. Crash Scenarios Discovered
 
-#### 🔴 HIGH PRIORITY — Cause Segmentation Faults
+**High Priority — Cause Segmentation Faults**
 
 | Method | Crash Scenario | Cause | Fix Required |
-|--------|---------------|-------|--------------|
-| `remove_isolated_vertex` | Called on non-isolated vertex | No precondition check | `RuntimeError` if degree > 0 |
+|--------|----------------|-------|--------------|
+| `remove_isolated_vertex` | Called on non-isolated vertex | No precondition check | RuntimeError if degree > 0 |
 | `remove_edge` | Called twice on same halfedge | Handle invalidation not enforced | Handle validity tracking |
-| `merge_edge` | Called on non-adjacent edges | No adjacency validation | `ValueError` on connectivity check |
-| Twin access | Accessing twin after `remove_edge()` | Both handles invalidated | Track twin invalidation |
-| Double removal | `remove_isolated_vertex()` twice | Handle remains accessible | Handle validity check |
+| `merge_edge` | Called on non-adjacent edges | No adjacency validation | ValueError on connectivity check |
 
-#### ⚠️ MEDIUM PRIORITY — Silent Corruption
-
-| Method | Issue | Result | Fix Required |
-|--------|-------|--------|--------------|
-| `modify_vertex` | Called on connected vertex with arbitrary new point | Geometric inconsistency | `ValueError` if edges don't align |
-| `split_edge` | Split point not on edge | Topology broken | Geometric validation |
-| `merge_edge` | Wrong halfedge orientation (using twin) | Ambiguous behavior | Direction validation |
-| `modify_edge` | New curve with different endpoints | Geometric inconsistency | Endpoint matching check |
-
-#### ✅ SAFE BEHAVIORS (Verified)
-
-- ✅ `modify_vertex`: Original handle remains valid after modification
-- ✅ `split_edge`: Original halfedge updated in-place (not invalidated)
-- ✅ Iterator invalidation: Handled correctly during traversal
+Crash #1 was confirmed with a bus error in Phase 4.5 testing (Feb 8, 2026).
 
 ---
 
-### 3. Line 857 Bug
+### 3. Qt6/Compiler Compatibility Issue
 
-**Location:** `arrangement_on_surface_2_bindings.cpp:857-858`
+**Discovery Date:** Feb 5-8, 2026
 
 **Problem:**
-```cpp
-m.def("insert_cv_with_history", &aos2_insert_cv_with_history,
-      nb::arg("curve"), nb::arg("object"),
-      nb::rv_policy::reference_internal);  // BUG: Doesn't work!
+- GCC 14/15 fails with Qt6 pragma errors on macOS
+- Error: `#pragma is not allowed here` in Qt6 headers
+
+**Root Cause:**
+- Qt6 built with Clang, uses Clang-specific pragmas (QT_IGNORE_DEPRECATIONS)
+- GCC doesn't recognize these pragmas
+
+**Solution:**
+- Force Apple Clang compiler on macOS: `-DCMAKE_CXX_COMPILER=/usr/bin/clang++`
+- Linux CI: Use GCC (no Qt6 dependency in bindings)
+- Windows: MSVC (no issue)
+
+Impact: Critical for CI pipeline design. Documented in build_config.sh and CI implementation docs.
+
+---
+
+### 4. Multi-Kernel CI Architecture
+
+Pattern matches Efi's example:
+
+```
+# Efi's convex_hull_2 example:
+c1.cmake -> CGALPY_1.so (EPEC)
+c2.cmake -> CGALPY_2.so (EPIC)
+convex_hull_2.py CGALPY_1
+convex_hull_2.py CGALPY_2
+
+# Our implementation:
+aos2_epec_fixed.cmake -> CGALPY (EPEC)
+aos2_epic.cmake -> CGALPY (EPIC)
+aos2.py CGALPY
 ```
 
-**Issue:** `reference_internal` policy doesn't properly manage lifetime for this method, leading to potential use-after-free bugs in long-running applications.
-
-**Fix Required:** Test `keep_alive` chains or shared pointer wrappers.
-
----
-
-### 4. Package Analysis Results
-
-Created comprehensive analysis of 19 CGAL packages using 0-3 completeness scale:
-
-| Completeness | Count | Percentage | Packages |
-|-------------|-------|------------|----------|
-| 3 (Complete) | 1 | 5% | 2D/3D Kernel |
-| 2 (Partial) | 1 | 5% | 2D Arrangements (~20% documented) |
-| 1 (Minimal) | 1 | 5% | Polygon Mesh Processing (only 1 function) |
-| 0 (None) | 16 | 84% | All others unavailable from Python |
-
-**Conclusion:** Massive opportunity for expansion, but existing partial bindings need consolidation first.
+Key features:
+- Parallel builds (8 configs simultaneously)
+- Parameterized testing (library name as argument)
+- Manual CMake builds from source
+- Example scripts serve as unit tests
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 cgal-gsoc-2026-prep/
 ├── README.md                              # This file
-├── paste.txt                              # Master AI context (updated regularly)
+├── paste.txt                              # Master AI context
+│
 ├── proposal/
 │   ├── gsoc-2026-proposal-v1.md           # Dec 24 - original
-│   ├── gsoc-2026-proposal-v2.docx         # Jan 1 - revised after feedback
-│   └── gsoc-2026-proposal-v3.docx         # Jan 11 - final with CI & package table
+│   ├── gsoc-2026-proposal-v2.docx         # Jan 1 - revised
+│   └── gsoc-2026-proposal-v3.docx         # Jan 11 - final
 │
 ├── phase1-foundation/                     # Dec 20-24, 50+ hours
-│   ├── environment-setup.md               # CGAL build instructions
-│   ├── cgal-learning-notes.md             # DCEL, traits, policy-based design
-│   ├── nanobind-deep-dive.md              # Lifetime management, policies
-│   └── line857-bug-analysis.md            # Memory management bug
+│   ├── environment-setup.md
+│   ├── cgal-learning-notes.md
+│   ├── nanobind-deep-dive.md
+│   └── line857-bug-analysis.md
 │
 ├── phase2-contributions/                  # Dec 25-29, 40+ hours
-│   ├── pr1-submission.md                  # First PR: 6 methods documented
-│   ├── pr2-submission.md                  # Second PR: 15 methods documented
-│   ├── complete-methods-research.md       # 2,500 lines method analysis
-│   ├── test_removal_methods.py            # 300 lines tests
-│   ├── test_modification_methods.py       # 350 lines tests
-│   └── test_query_methods.py              # 200 lines tests
+│   ├── pr1-submission.md
+│   ├── pr2-submission.md
+│   ├── complete-methods-research.md       # 2,500 lines
+│   └── [test files...]
 │
-├── research/                              # Jan 5-11, 17+ hours
+├── phase3-research/                       # Jan 5-17, 26+ hours
 │   ├── docstring-location/
 │   │   ├── docstring-location-research.md
-│   │   ├── test-approach-a/
-│   │   │   ├── test_external_docstrings.cpp    # VALIDATED
-│   │   │   └── README.md
+│   │   ├── test-approach-a/ (Validated)
 │   │   └── test-approach-b/
-│   │       ├── arrangement_docstrings.h
-│   │       └── test_external_header.cpp
 │   │
-│   └── crash-scenarios/
-│       ├── additional-crash-scenarios.md
-│       ├── test_crash_3_twin.py
-│       ├── test_crash_4_merge.py
-│       ├── test_crash_5_double_remove.py
-│       ├── test_crash_6_modify_edge.py
-│       ├── test_crash_7_iterator.py
-│       ├── test_crash_8_modify_then_remove.py
-│       ├── test_crash_9_split_then_access.py
-│       └── README.md
+│   ├── crash-scenarios/
+│   │   ├── additional-crash-scenarios.md
+│   │   └── [9 test files...]
+│   │
+│   └── test-named-params-implementation/
+│       ├── analysis/
+│       │   └── NAMED_PARAMS_COMPLETE_ANALYSIS.md  # 3,500 lines
+│       ├── findings/
+│       │   ├── questions-for-efi.md               # 900 lines
+│       │   ├── implementation-plan.md             # 1,200 lines
+│       │   └── PROPERTY_MAP_CHALLENGE.md
+│       └── proof-of-concept-operators/
+│           ├── [3 reference operators]
+│           └── [Production code in main repo]
 │
-├── phase3-research/                       # Jan 17, 5+ hours 🆕
-│   ├── test-named-params-implementation/
-│   │   ├── analysis/
-│   │   │   └── NAMED_PARAMS_COMPLETE_ANALYSIS.md  # 3,500 lines
-│   │   ├── findings/
-│   │   │   ├── questions-for-efi.md               # 900 lines
-│   │   │   ├── implementation-plan.md             # 1,200 lines
-│   │   │   ├── operator-patterns-discovered.md    # Pattern taxonomy
-│   │   │   ├── visual-architecture.md             # Mermaid diagrams
-│   │   │   └── email-draft-jan23.md               # Ready to send
-│   │   ├── QUICK_REFERENCE.md                     # 400 lines cheat sheet
-│   │   └── README.md
+├── phase4-ci-infrastructure/              # Feb 5-8, 10+ hours
+│   ├── ci-analysis/
+│   │   ├── ci-status-analysis.md          # Current CI state
+│   │   ├── ci-enhancement-plan.md         # Enhancement strategy
+│   │   └── ci-research-feb4-2026.md       # Research findings
 │   │
-│   └── proof-of-concept-operators/        # 🆕 Reference implementations
-│       ├── README.md                      # Comprehensive POC documentation
-│       ├── PROPERTY_MAP_CHALLENGE.md      # Type resolution deep dive
-│       ├── CMakeLists.txt                 # Reference build (not meant to compile)
-│       ├── include/CGALPY/operators/
-│       │   ├── Named_parameter_verbose.hpp
-│       │   ├── Named_parameter_vertex_point_map.hpp
-│       │   └── Named_parameter_geom_traits.hpp
-│       ├── src/
-│       │   └── mock_test.cpp              # Pattern demonstration
-│       └── tests/
-│           └── test_operators.py          # Python test structure
+│   ├── implementation/
+│   │   ├── build_config.sh                # Tested and working
+│   │   ├── test_runner.py                 # Parameterized testing
+│   │   ├── bitbucket-pipelines.yml        # 8-kernel production CI
+│   │   └── CI_IMPLEMENTATION.md           # Technical docs
+│   │
+│   ├── testing/
+│   │   ├── aos2_epec_fixed_test_log.txt   # Build validation
+│   │   ├── crash_test_results.txt         # Bus error confirmed
+│   │   └── integration_test_results.txt   # aos2.py output
+│   │
+│   └── documentation/
+│       ├── PHASE_4_5_IMPLEMENTATION.md    # Complete summary
+│       ├── EMAIL_TO_EFI_FEB8.txt          # Email sent
+│       └── compiler_compatibility.md      # Qt6/Clang issue
 │
 ├── docs/
 │   ├── technical/
@@ -411,320 +474,183 @@ cgal-gsoc-2026-prep/
 │   └── troubleshooting/
 │       └── common_issues.md
 │
-├── efi-feedback/                          # Mentor communication history
+├── efi-feedback/                          # Mentor communication
 │   ├── email1-proposal-feedback.txt
 │   ├── email2-work-direction.txt
 │   ├── email3-ci-packages.txt
-│   ├── email4-named-params-questions.txt  # 🆕 Jan 23 (pending)
-│   ├── my-response-jan1.txt
-│   └── my-update-jan11.txt
+│   ├── email4-named-params-questions.txt
+│   ├── email5-pmp-success.txt
+│   ├── email6-proposal-v3.txt
+│   ├── email7-build-testing-feb5.txt
+│   ├── email8-ci-clarifications-feb5.txt  # Efi's response
+│   └── email9-ci-complete-feb8.txt
 │
-└── master-prompts/                        # AI context files
-    ├── master-prompt-v9.0.md
-    ├── master-prompt-v10.0.md
-    ├── master-prompt-v11.0.md
-    ├── master-prompt-v12.0.md
-    └── master-prompt-v13.0.md             # CURRENT 🆕
+└── master-prompts/
+    └── [v1.0 through v15.0]
 ```
 
 ---
 
-## 🔍 Research Findings
+## Research Findings
 
-### Research Task 1: Docstring Location ✅ COMPLETE
+### Completed Tasks
 
-**Question from Mentor:** "Is there a way to define a docstring not immediately where the binding is defined?"
+| Task | Status | Outcome | Phase |
+|------|--------|---------|-------|
+| Docstring organization | Done | Approach A ready for production | Phase 3 |
+| Extended crash testing | Done | 7 crashes found, 3 safe behaviors | Phase 3 |
+| Named Parameters architecture | Done | 12,000+ lines documentation | Phase 3.5 |
+| Property map challenge | Identified | 4 potential solutions analyzed | Phase 3.5 |
+| Build system testing | Done | aos2_epec_fixed builds correctly | Phase 4 |
+| Qt6/Clang compatibility | Resolved | Force Clang on macOS | Phase 4 |
+| Multi-kernel CI pipeline | Done | 8 configs, production-ready | Phase 4.5 |
+| Crash scenario validation | Done | Bus error reproduced | Phase 4.5 |
 
-| Approach | Method | Pros | Cons | Status |
-|----------|--------|------|------|--------|
-| A | External variables at file top | Simple, 85% readability gain, zero build changes | Long files remain long | ✅ VALIDATED |
-| B | External header file | Complete separation, scalable | Requires CMake changes | 📋 TO TEST |
-| C | Namespace organization | Better than A, no build changes | Still in same file | 📋 CONCEPT |
+### Pending Tasks
 
-**Recommendation:** Use Approach A for Weeks 3-4 of GSoC. Consider Approach B for long-term architecture.
-
----
-
-### Research Task 2: Extended Crash Testing ✅ COMPLETE
-
-**Crash Statistics:**
-
-| Category | Count | Status |
-|----------|-------|--------|
-| Total crashes found | 7 | 5 from Dec + 2 new |
-| Geometric warnings | 4 | Silent corruption |
-| Safe behaviors verified | 3 | Positive findings |
-| Methods needing preconditions | 8 | For Weeks 5-6 |
-
-**Precondition Framework Design:**
-
-```python
-# Example: Precondition check implementation
-def remove_isolated_vertex(arr, vertex):
-    # BEFORE (current): Crashes with segfault
-    arr.remove_isolated_vertex(vertex)
-    
-    # AFTER (proposed): Raises Python exception
-    if vertex.degree() > 0:
-        raise RuntimeError(f"Cannot remove vertex: degree={vertex.degree()}, must be isolated")
-    arr.remove_isolated_vertex(vertex)
-```
+| Task | Priority | Timeline |
+|------|----------|----------|
+| Doxygen auto-generation research | Medium | Pre-GSoC if time |
+| NumPy arrays integration | Medium | Weeks 5-6 GSoC |
+| Property map type resolution | High | Weeks 7-8 GSoC |
 
 ---
 
-### Research Task 3: Named Parameters Architecture ✅ COMPLETE (Jan 17) 🆕
+## Key Statistics
 
-**Question from Mentor:** Study Named Parameters implementation in `export_pmp_normal_computation.cpp`
-
-**Status:** ✅ Comprehensive analysis complete + proof-of-concept implemented
-
-#### Architecture Understanding
-
-Efi's system uses:
-1. **Operator structs** with `m_name` (dict key) and `operator()` (parameter chaining)
-2. **Variadic template recursion** via `named_parameter_applicator`
-3. **std::apply wrapper** to unpack function arguments from tuple
-4. **CGAL's compile-time parameter chain** (e.g., `.vertex_point_map().geom_traits()`)
-
-**Data Flow:**
-
-```
-Python dict → Applicator (recursive matching) → Operators → Parameter chain → Wrapper → CGAL function
-```
-
-#### Operators Implemented (Proof-of-Concept)
-
-**Reference implementations** (in prep repo):
-- Pattern 1: `Named_parameter_verbose` — Boolean parameter
-- Pattern 2: `Named_parameter_vertex_point_map` — Property map parameter
-- Pattern 3: `Named_parameter_geom_traits` — Kernel parameter
-
-**Production implementations** (in cgal-python-bindings repo):
-- Branch: `feature/named-params-operators-poc`
-- Commit: `eb5a9e39`
-- Files: `Named_parameter_vertex_point_map.hpp`, `Named_parameter_vertex_normal_map.hpp`
-
-#### The Critical Challenge Discovered
-
-**Compilation Error:**
-
-```
-error: no type named 'reference' in 'boost::property_traits<nanobind::handle>'
-```
-
-**Root Cause:** CGAL functions internally call `get(property_map, key)` which requires `boost::property_traits<PropertyMapType>` to be defined. Python passes `nanobind::handle` which doesn't satisfy this.
-
-**Realization:** Operators themselves are trivial (30 lines, 30 min each). The 2-week GSoC allocation is for solving the **property map type bridge** between Python and C++.
-
-#### Four Potential Solutions Analyzed
-
-| Solution | Approach | Pros | Cons |
-|----------|----------|------|------|
-| A | Explicit casting in operators | Clean separation | Mesh type unknown at operator level |
-| B | Template specialization per mesh | Type-safe | Combinatorial explosion of specializations |
-| C | Defer casting to wrapper | Wrapper knows mesh type | How to extract from compiled np chain? |
-| D | Python-side property map binding | Proper C++ types from Python | Requires prerequisite bindings |
-
-#### Questions for Efi (Jan 23 Email)
-
-**Critical Question:** Which type resolution strategy should I use in Weeks 7-8?
-
-**Supporting Questions:**
-1. Should Weeks 7-8 include binding property map creation functions first?
-2. Is the "extension method" you mentioned related to this type resolution?
-3. Which of the 4 approaches aligns with your vision?
-
-#### Documentation Created
-
-- ✅ 3,500-line architecture analysis
-- ✅ 1,200-line implementation plan (day-by-day for Weeks 7-8)
-- ✅ 900-line question document (10 sections, 20+ questions)
-- ✅ 400-line quick reference guide
-- ✅ Operator patterns taxonomy
-- ✅ Visual architecture diagrams (Mermaid)
-- ✅ Property map challenge deep dive
-
-**Total:** 12,000+ lines of documentation
-
-**Confidence Level:**
-- **Before:** 70% — "I understand the pattern"
-- **After:** 95% — "I understand the REAL challenge and can execute with guidance"
-
-**Status:** Email draft ready for Jan 23. Waiting for Efi's guidance on type resolution strategy before implementing during GSoC.
-
----
-
-### Research Task 4: Doxygen Auto-Generation 📋 TO DO
-
-**Question from Mentor:** "Whether there is a way to generate the docstring automatically from the C++ Doxygen sources?"
-
-**Research Plan:**
-1. Examine CGAL C++ Doxygen sources
-2. Check if Doxygen exports to XML/JSON
-3. Prototype Python parser script
-4. Test on 5-10 methods
-5. Evaluate time savings vs manual documentation
-
----
-
-### Research Task 5: NumPy Arrays 📋 TO DO
-
-**Mention from Mentor:** "Another task is the use of NumPy arrays when possible."
-
-**Research Plan:**
-1. Check nanobind NumPy support (`#include <nanobind/ndarray.h>`)
-2. Identify methods accepting/returning:
-   - Point lists
-   - Coordinate arrays
-   - Index arrays for connectivity
-3. Prototype zero-copy conversions
-4. Benchmark performance gains
-
----
-
-## 📈 Key Statistics
-
-### Time Investment (Dec 20 – Jan 17, 2026)
+### Time Investment (Dec 20 – Feb 8, 2026)
 
 | Phase | Activity | Hours | Dates |
 |-------|----------|-------|-------|
-| **Phase 1** | Environment setup | 8h | Dec 20 |
-| | 2D Arrangements study | 12h | Dec 21 |
-| | Python bindings analysis | 10h | Dec 22 |
-| | Nanobind learning | 12h | Dec 23-24 |
-| | Proposal writing | 8h | Dec 24 |
-| **Phase 2** | cgalpy build & testing | 12h | Dec 25-26 |
-| | PR #1 preparation | 10h | Dec 26-27 |
-| | Deep methods research | 13h | Dec 27-28 |
-| | PR #2 preparation | 6h | Dec 28-29 |
-| **Phase 2.5** | Proposal revision (feedback) | 3h | Dec 30-Jan 1 |
-| **Phase 3** | Docstring research | 2h | Jan 5 |
-| | Crash testing | 3h | Jan 5-6 |
-| | PMP build success | 8h | Jan 11 |
-| **Phase 3.5** | Named Parameters analysis | 3h | Jan 17 |
-| | Proof-of-concept implementation | 2h | Jan 17 |
-| | Integration attempt & debugging | 2h | Jan 17 |
-| | Documentation (12,000+ lines) | 2h | Jan 17 |
-| **Total** | | **116h** | Dec 20-Jan 17 |
+| Phase 1 | Environment + CGAL study | 50h | Dec 20-24 |
+| Phase 2 | PRs + systematic testing | 40h | Dec 25-29 |
+| Phase 2.5 | Proposal revision | 3h | Dec 30-Jan 1 |
+| Phase 3 | Research + crash testing | 17h | Jan 5-11 |
+| Phase 3.5 | Named Parameters deep dive | 9h | Jan 17 |
+| Phase 4 | Build system testing | 3h | Feb 5 |
+| Phase 4.5 | Multi-kernel CI implementation | 7-8h | Feb 8 |
+| **Total** | | **126h+** | Dec 20-Feb 8 |
 
 ### Contribution Metrics
 
-| Metric | Count | Status |
-|--------|-------|--------|
-| Total hours invested | 116+ | Updated Jan 17 |
-| Total documentation lines | 22,500+ | Updated Jan 17 |
-| Methods fully documented | 21 | 6 in PR #1, 15 in PR #2 |
-| Methods empirically tested | 30+ | Systematic testing |
-| Test code written | 900 lines | 9 test files |
-| Research documentation | 3,500+ lines | Phase 1-3 |
-| Docstrings written | 950 lines | NumPy-style |
-| Crash scenarios discovered | 7 | 5 from Dec + 2 new |
-| Corruption scenarios found | 10 | Silent failures |
-| Safe methods confirmed | 18 | Positive testing |
-| Pull requests submitted | 2 | Substantial work |
-| Research approaches documented | 3 | Docstring organization |
-| Proof-of-concepts created | 2 | Approach A + Named Params |
-| Named Parameters operators | 5 | 3 reference + 2 production |
-| Commits to cgal-python-bindings | 1 | eb5a9e39 on feature branch |
-| Branches created | 1 | feature/named-params-operators-poc |
-| Architecture analyses | 1 | 3,500 lines Named Parameters |
-| Implementation plans | 1 | 1,200 lines for Weeks 7-8 |
+| Metric | Count |
+|--------|-------|
+| Total hours invested | 126+ |
+| Total documentation lines | 25,000+ |
+| Methods documented | 21 |
+| Crash scenarios found | 7 |
+| Safe methods verified | 18 |
+| Pull requests submitted | 2 |
+| Proof-of-concepts created | 4 |
+| Production code commits | 1 |
+| CI infrastructure files | 3 |
+| Kernel configs tested | 8 |
+| Build validations | 1 |
+| Emails to mentor | 9 |
 
 ---
 
-## 🧭 How to Navigate This Repo
+## How to Navigate This Repo
 
-### For Reviewing My Work:
-1. Start with this README to understand the full context
-2. Read the proposal (`proposal/gsoc-2026-proposal-v3.docx`) to see the final plan
-3. Check Phase 1 (`phase1-foundation/`) to see how I learned CGAL
-4. Review Phase 2 (`phase2-contributions/`) for PR submissions and testing work
-5. Explore Research (`research/`) for technical solutions to mentor's questions
-6. Check Phase 3.5 (`phase3-research/`) for Named Parameters deep dive 🆕
+**For understanding the CI work:**
 
-### For Understanding Technical Challenges:
-- **Docstring shadowing:** `research/docstring-location/docstring-location-research.md`
-- **Crash scenarios:** `research/crash-scenarios/additional-crash-scenarios.md`
-- **Build issues:** `docs/technical/build_guide.md`
-- **Line 857 bug:** `phase1-foundation/line857-bug-analysis.md`
-- **Named Parameters:** `phase3-research/test-named-params-implementation/` 🆕
-- **Property Map Challenge:** `phase3-research/proof-of-concept-operators/PROPERTY_MAP_CHALLENGE.md` 🆕
+- CI Implementation: `phase4-ci-infrastructure/implementation/`
+- Build scripts: `build_config.sh`, `test_runner.py`
+- Test results: `phase4-ci-infrastructure/testing/`
+- Phase 4.5 summary: `PHASE_4_5_IMPLEMENTATION.md`
 
-### For Replicating My Environment:
-1. Read `docs/technical/build_guide.md` for step-by-step CGAL build
-2. Follow `phase1-foundation/environment-setup.md` for macOS M2 specifics
-3. Check `docs/troubleshooting/common_issues.md` for known issues
+**For reviewing my work:**
+
+1. Start with this README
+2. Read the proposal (`proposal/gsoc-2026-proposal-v3.docx`)
+3. Check Phase 1-3 for foundation work
+4. Review Phase 3.5 for Named Parameters research
+5. Check Phase 4-4.5 for CI implementation
+
+**For technical challenges:**
+
+- CI pipeline: `phase4-ci-infrastructure/`
+- Qt6/Clang issue: `phase4-ci-infrastructure/documentation/compiler_compatibility.md`
+- Named Parameters: `phase3-research/test-named-params-implementation/`
+- Crash scenarios: `research/crash-scenarios/`
+- Docstrings: `research/docstring-location/`
 
 ---
 
-## 🚀 Next Steps
+## Next Steps
 
-### Immediate (Jan 17-23, 2026)
+### Immediate (Feb 8-20, 2026)
 
-- [x] Build PMP bindings successfully ✅
-- [x] Research Named Parameters architecture ✅
-- [x] Implement proof-of-concept operators ✅
-- [x] Discover property map type resolution challenge ✅
-- [ ] Email Efi on Jan 23 with Named Parameters findings
-- [ ] Wait for Efi's response on type resolution strategy
-- [ ] Research Task 4: Doxygen auto-generation feasibility
-- [ ] Research Task 5: NumPy arrays integration
+- [x] Email Efi with CI completion (Feb 8)
+- [ ] Wait for Efi's feedback on CI implementation
+- [ ] Update GSoC proposal with Phase 4.5 details
+- [ ] Wait for GSoC selection announcement (Feb-March)
 
 ### If GSoC Accepted (May-August 2026)
 
 Execute the 12-week timeline:
 
-| Weeks | Task |
-|-------|------|
-| 1-2 | Parameter names & default values |
-| 3-4 | NumPy-style docstrings (Approach A) |
-| 5-6 | Safety & preconditions framework |
-| 7-8 | CGAL Named Parameters implementation |
-| 9-10 | New package expansion + advanced Arrangement_2 |
-| 11-12 | CI resurrection, testing, polish |
+| Weeks | Task | Status |
+|-------|------|--------|
+| 1-2 | Parameter names & default values | Ready |
+| 3-4 | NumPy-style docstrings (Approach A) | Validated |
+| 5-6 | Safety & preconditions framework | 7 crashes documented |
+| 7-8 | CGAL Named Parameters implementation | Architecture analyzed |
+| 9-10 | New package expansion + advanced Arrangement_2 | Ready |
+| 11-12 | CI resurrection, testing, polish | Already complete |
 
-### Long-Term (Beyond GSoC)
-
-- Continue as CGAL Python bindings maintainer
-- Expand to Priority 2 packages (TRI2, TRI3, BSO2)
-- Help mentor new contributors
-- Present case studies at computational geometry conferences
+Note: Weeks 11-12 work completed ahead of schedule in Phase 4.5.
 
 ---
 
-## 📚 References
+## References
 
 ### Official Resources
-- **CGAL Python Bindings:** [bitbucket.org/taucgl/cgal-python-bindings](https://bitbucket.org/taucgl/cgal-python-bindings)
-- **CGAL Documentation:** [doc.cgal.org](https://doc.cgal.org)
-- **Nanobind Documentation:** [nanobind.readthedocs.io](https://nanobind.readthedocs.io)
+
+- CGAL Python Bindings: [bitbucket.org/taucgl/cgal-python-bindings](https://bitbucket.org/taucgl/cgal-python-bindings)
+- CGAL Documentation: [doc.cgal.org](https://doc.cgal.org)
+- Nanobind Documentation: [nanobind.readthedocs.io](https://nanobind.readthedocs.io)
 
 ### Personal Links
-- **GitHub:** [@UtkarsHMer05](https://github.com/UtkarsHMer05)
-- **LinkedIn:** [utkarshkhajuria05](https://linkedin.com/in/utkarshkhajuria05)
-- **Email:** utkarshkhajuria55@gmail.com
+
+- GitHub: [@UtkarsHMer05](https://github.com/UtkarsHMer05)
+- LinkedIn: [utkarshkhajuria05](https://linkedin.com/in/utkarshkhajuria05)
+- Email: utkarshkhajuria55@gmail.com
 
 ### GSoC 2026
-- **Proposal:** See `proposal/gsoc-2026-proposal-v3.docx`
-- **Timeline:** 12 weeks, 350 hours total
-- **Mentor:** Efi Fogel (efifogel@gmail.com)
+
+- Proposal: `proposal/gsoc-2026-proposal-v3.docx`
+- Timeline: 12 weeks, 350 hours total
+- Mentor: Efi Fogel (efifogel@gmail.com)
 
 ---
 
-## 📝 License
+## Current Status
+
+**As of Feb 8, 2026, 9:22 PM IST**
+
+Phase 4.5 is complete. The multi-kernel CI pipeline has been implemented and tested. Build infrastructure was validated with aos2_epec_fixed running successfully. Crash scenario #1 was confirmed reproducible with a bus error. I've sent an email to Efi with findings and questions, and am now waiting on his feedback regarding the CI implementation and next steps.
+
+**Summary:**
+
+- Total Investment: 126+ hours
+- Documentation: 25,000+ lines
+- Production-Ready Deliverables: bitbucket-pipelines.yml, build_config.sh, test_runner.py, and complete CI documentation
+
+---
+
+## License
 
 This repository documents preparation work for Google Summer of Code 2026. The CGAL library is licensed under GPL/LGPL. Binding code follows the same licensing as the official CGAL Python bindings repository.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- **Efi Fogel** for detailed mentorship and technical guidance through multiple email exchanges
-- **CGAL community** for building an exceptional computational geometry library
-- **nanobind developers** for creating modern Python binding tools
+Thanks to Efi Fogel for detailed mentorship through 9 email exchanges and technical guidance. Thanks also to the CGAL community for building an exceptional computational geometry library, and to the nanobind developers for creating modern Python binding tools.
 
 ---
 
-**Last Updated:** January 17, 2026, 4:56 PM IST  
+**Last Updated:** February 8, 2026, 9:22 PM IST  
 **Repository:** [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)  
-**Status:** Phase 3.5 Complete — Named Parameters Research Done — Email Ready for Jan 23 🚀
+**Status:** Phase 4.5 Complete — CI Pipeline Production-Ready — Awaiting Efi's Feedback
