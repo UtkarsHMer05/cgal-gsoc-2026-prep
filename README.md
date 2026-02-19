@@ -4,8 +4,8 @@
 **Project:** Enhancing CGAL Python Bindings  
 **Mentor:** Efi Fogel (efifogel@gmail.com)  
 **Organization:** CGAL (Computational Geometry Algorithms Library)  
-**Period:** December 20, 2025 – February 8, 2026  
-**Total Investment:** 126+ hours
+**Period:** December 20, 2025 – February 20, 2026  
+**Total Investment:** 130+ hours
 
 ---
 
