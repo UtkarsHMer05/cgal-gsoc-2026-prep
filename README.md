@@ -500,8 +500,8 @@ cgal-gsoc-2026-prep/
 | Proof-of-concepts created | 4 |
 | Production code commits | 3 |
 | CI kernel configs | 8 |
-| Emails to mentor | 13 |
-| Proposal versions | 3 |
+| Emails to mentor | 43+ |
+| Proposal versions | 10+ |
 
 ---
 
