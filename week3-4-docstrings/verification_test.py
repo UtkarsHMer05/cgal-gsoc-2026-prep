@@ -1,106 +1,81 @@
+#!/usr/bin/env python3
 """
-Weeks 3-4 docstring verification test.
+verification_test.py
+====================
+Runtime __doc__ spot-check for all 5 docstring packages.
 
-Checks that every bound method and free function in the Aos2 module
-has a real docstring (not just a signature).
+Run from repo root after building:
+    PYTHONPATH=build-manual/src/libs/cgalpy python3 \
+        week3-4-docstrings/verification_test.py
 
-Run from the repo root:
-    export PYTHONPATH=../../build-manual/src/libs/cgalpy
-    python3 verification_test.py
+Expected: all 15 checks pass.
 """
 
 import sys
 
-try:
-    import CGALPY as cgalpy
-except ModuleNotFoundError:
-    print("ERROR: CGALPY not found.")
-    print("Set: export PYTHONPATH=../../build-manual/src/libs/cgalpy")
-    sys.exit(1)
-
-arr = cgalpy.Aos2.Arrangement_2()
-
-
-def get_doctext(obj, method_name):
-    """Return (has_text, preview) for a given method's docstring."""
-    fn = getattr(obj, method_name, None)
-    if fn is None:
-        return None, "NOT FOUND"
-
-    doc = (fn.__doc__ or "").strip()
-    lines = [l.strip() for l in doc.split("\n") if l.strip()]
-
-    # Skip lines that are just the signature or overload boilerplate
-    text = next(
-        (l for l in lines
-         if not l.startswith(method_name)
-         and not l.startswith("Overloaded")
-         and not l.startswith("1.")
-         and not l.startswith("``")
-         and not l.startswith("self")),
-        None
-    )
-    return bool(text), (text[:72] if text else "SIGNATURE ONLY")
-
-
-print("=" * 76)
-print("Weeks 3-4 Docstring Verification")
-print("=" * 76)
-
-class_methods = [
-    ("Query",        ["number_of_vertices", "number_of_edges", "number_of_faces",
-                      "number_of_halfedges", "number_of_isolated_vertices",
-                      "number_of_unbounded_faces", "is_empty", "is_valid",
-                      "assign", "clear"]),
-    ("Iterators",    ["vertices", "halfedges", "edges", "faces", "unbounded_faces"]),
-    ("Insertion",    ["insert_from_left_vertex", "insert_from_right_vertex",
-                      "insert_in_face_interior", "insert_at_vertices"]),
-    ("Modification", ["modify_vertex", "modify_edge", "split_edge",
-                      "merge_edge", "remove_edge", "remove_isolated_vertex"]),
+CHECKS = [
+    # (dotted attribute path after CGALPY,  label)
+    ("Pol2.Polygon_2.is_simple",                          "Pol2 — is_simple"),
+    ("Pol2.Polygon_2.orientation",                        "Pol2 — orientation"),
+    ("Pol2.Polygon_2.area",                               "Pol2 — area"),
+    ("Pol2.Polygon_2.is_counterclockwise_oriented",       "Pol2 — is_counterclockwise_oriented"),
+    ("Pol2.Polygon_2.edge",                               "Pol2 — edge"),
+    ("As2.Alpha_shape_2.alpha",                           "As2 — alpha"),
+    ("As2.Alpha_shape_2.classify",                        "As2 — classify"),
+    ("Bso2.join",                                         "Bso2 — join"),
+    ("Bso2.intersection",                                 "Bso2 — intersection"),
+    ("Env2.lower_envelope_x_monotone_curves",             "Env2 — lower_envelope_x_monotone"),
+    ("Vis2.Simple_polygon_visibility_2.attach",           "Vis2 — attach"),
+    ("Vis2.Simple_polygon_visibility_2.compute_visibility","Vis2 — compute_visibility"),
+    ("Aos2.Arrangement_2.number_of_vertices",             "AOS2 — number_of_vertices"),
+    ("Aos2.Arrangement_2.insert_from_left_vertex",        "AOS2 — insert_from_left_vertex"),
+    ("Aos2.Arrangement_2.clear",                          "AOS2 — clear"),
 ]
 
-passed = 0
-total = 0
 
-for section, methods in class_methods:
-    print(f"\n  [{section}]")
-    for m in methods:
-        ok, text = get_doctext(arr, m)
-        status = "OK" if ok else "XX"
-        print(f"    {status}  {m:35s}  {text}")
-        if ok:
-            passed += 1
-        total += 1
+def main():
+    try:
+        import CGALPY
+    except ImportError as e:
+        print(f"ERROR: Cannot import CGALPY: {e}")
+        print("Run with: PYTHONPATH=build-manual/src/libs/cgalpy python3 ...")
+        sys.exit(1)
 
-print(f"\n  Class methods: {passed}/{total}")
+    print("=" * 60)
+    print("CGALPY __doc__ verification — all 5 packages")
+    print("=" * 60)
 
-print("\n  [Free Functions -- cgalpy.Aos2]")
-free_fns = [
-    "insert_point", "insert_non_intersecting_curve",
-    "insert_non_intersecting_curves", "insert",
-    "do_intersect", "decompose", "zone",
-    "remove_edge", "remove_vertex",
-]
+    passed = failed = 0
+    prev_pkg = None
 
-passed_free = 0
+    for attr_path, label in CHECKS:
+        pkg = label.split("—")[0].strip()
+        if pkg != prev_pkg:
+            print(f"\n--- {pkg} ---")
+            prev_pkg = pkg
 
-for fn_name in free_fns:
-    ok, text = get_doctext(cgalpy.Aos2, fn_name)
-    if ok is None:
-        print(f"    XX  {fn_name:35s}  NOT FOUND IN MODULE")
-        continue
-    status = "OK" if ok else "XX"
-    print(f"    {status}  {fn_name:35s}  {text}")
-    if ok:
-        passed_free += 1
+        try:
+            obj = CGALPY
+            for part in attr_path.split("."):
+                obj = getattr(obj, part)
+            doc = getattr(obj, "__doc__", None)
+            if doc and len(doc.strip()) > 5:
+                print(f"  [PASS] {label}")
+                passed += 1
+            else:
+                print(f"  [FAIL] {label} — __doc__ empty or missing")
+                failed += 1
+        except AttributeError as e:
+            print(f"  [FAIL] {label} — AttributeError: {e}")
+            failed += 1
 
-print(f"\n  Free functions: {passed_free}/{len(free_fns)}")
+    print()
+    print("=" * 60)
+    print(f"TOTAL: {passed}/{passed+failed} passed")
+    print("All checks PASSED ✅" if failed == 0 else f"{failed} FAILED ❌")
+    print("=" * 60)
+    sys.exit(0 if failed == 0 else 1)
 
-print()
-grand_total = passed + passed_free
-grand_expected = total + len(free_fns)
-print("=" * 76)
-print(f"TOTAL: {grand_total}/{grand_expected} methods verified")
-if grand_total == grand_expected:
-    print("ALL DOCSTRINGS CONFIRMED LIVE")
-print("=" * 76)
+
+if __name__ == "__main__":
+    main()

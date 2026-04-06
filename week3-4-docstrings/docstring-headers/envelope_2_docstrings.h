@@ -1,69 +1,61 @@
 #pragma once
 
-/*
- * envelope_2_docstrings.h
- * Docstring constants for envelope_2_bindings.cpp
- * Part of: src/libs/cgalpy/lib/docstrings/
- */
+// envelope_2_docstrings.h
+// =======================
+// Docstring constants for CGALPY.Env2 bindings.
+// Source: https://doc.cgal.org/latest/Envelope_2/
+// #include "docstrings/envelope_2_docstrings.h"
 
-const char* LOWER_ENVELOPE_X_MONOTONE_DOC = R"pbdoc(
+const char *LOWER_ENVELOPE_X_MONOTONE_DOC = R"pbdoc(
 Constructs the lower envelope of a set of x-monotone curves.
 
-The lower envelope is the lower boundary of the arrangement of curves.
-The output is stored in a minimization diagram (a 1D arrangement).
+The lower envelope is the pointwise minimum over the x-axis.
+Returns an Envelope_diagram_1 (minimization diagram).
 )pbdoc";
 
-const char* UPPER_ENVELOPE_X_MONOTONE_DOC = R"pbdoc(
+const char *UPPER_ENVELOPE_X_MONOTONE_DOC = R"pbdoc(
 Constructs the upper envelope of a set of x-monotone curves.
 
-The upper envelope is the upper boundary of the arrangement of curves.
-The output is stored in a maximization diagram (a 1D arrangement).
+The upper envelope is the pointwise maximum over the x-axis.
+Returns an Envelope_diagram_1 (maximization diagram).
 )pbdoc";
 
-const char* LOWER_ENVELOPE_DOC = R"pbdoc(
+const char *LOWER_ENVELOPE_DOC = R"pbdoc(
 Constructs the lower envelope of a set of curves.
 
-Curves are decomposed into x-monotone sub-curves internally.
-The output is stored in a minimization diagram.
+Curves are decomposed into x-monotone subcurves internally.
+Returns an Envelope_diagram_1.
 )pbdoc";
 
-const char* UPPER_ENVELOPE_DOC = R"pbdoc(
+const char *UPPER_ENVELOPE_DOC = R"pbdoc(
 Constructs the upper envelope of a set of curves.
 
-Curves are decomposed into x-monotone sub-curves internally.
-The output is stored in a maximization diagram.
+Curves are decomposed into x-monotone subcurves internally.
+Returns an Envelope_diagram_1.
 )pbdoc";
 
-const char* MINIMIZATION_DIAGRAM_DOC = R"pbdoc(
-Represents the lower envelope (minimization diagram) of a set of curves.
-
-The minimization diagram is a 1D arrangement where each edge is associated
-with the curves achieving the minimum y-value in that x-range.
+const char *MINIMIZATION_DIAGRAM_DOC = R"pbdoc(
+Returns the minimization diagram (lower envelope) of the input curves.
 )pbdoc";
 
-const char* MAXIMIZATION_DIAGRAM_DOC = R"pbdoc(
-Represents the upper envelope (maximization diagram) of a set of curves.
-
-The maximization diagram is a 1D arrangement where each edge is associated
-with the curves achieving the maximum y-value in that x-range.
+const char *MAXIMIZATION_DIAGRAM_DOC = R"pbdoc(
+Returns the maximization diagram (upper envelope) of the input curves.
 )pbdoc";
 
-const char* DIAGRAM_VERTEX_DOC = R"pbdoc(
-Returns a handle to a vertex in the envelope diagram.
+const char *DIAGRAM_VERTEX_DOC = R"pbdoc(
+Accesses a vertex in the envelope diagram.
 
-Diagram vertices correspond to x-coordinates where the envelope changes
-its defining curve(s).
+A diagram vertex is an x-coordinate where the active curve set changes.
 )pbdoc";
 
-const char* DIAGRAM_EDGE_DOC = R"pbdoc(
-Returns a handle to an edge in the envelope diagram.
+const char *DIAGRAM_EDGE_DOC = R"pbdoc(
+Accesses an edge in the envelope diagram.
 
-Each edge is associated with one or more curves that define the envelope
-over that x-interval.
+A diagram edge is an x-interval where one or more curves form the envelope.
 )pbdoc";
 
-const char* DIAGRAM_FACE_DOC = R"pbdoc(
-Returns the single unbounded face of the envelope diagram.
+const char *DIAGRAM_FACE_DOC = R"pbdoc(
+Accesses a face in the 1D envelope diagram.
 
-The minimization or maximization diagram has exactly one face.
+Faces are the open intervals between consecutive diagram vertices.
 )pbdoc";

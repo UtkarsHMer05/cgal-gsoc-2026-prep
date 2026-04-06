@@ -1,65 +1,123 @@
-# CGAL GSoC 2026: Python Bindings Enhancement
+# CGAL GSoC 2026 — Python Bindings Enhancement (Preparation Repository)
 
-**Author:** Utkarsh Khajuria ([@UtkarsHMer05](https://github.com/UtkarsHMer05))
-**Project:** Enhancing CGAL Python Bindings
-**Mentor:** Efi Fogel (efifogel@gmail.com)
-**Organization:** CGAL (Computational Geometry Algorithms Library)
-**Period:** December 20, 2025 – April 1, 2026
-**Total investment:** 156+ hours
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Project Context](#project-context)
-- [Work Summary](#work-summary)
-- [Technical Discoveries](#technical-discoveries)
-- [Repository Structure](#repository-structure)
-- [Research Findings](#research-findings)
-- [Key Statistics](#key-statistics)
-- [How to Navigate This Repo](#how-to-navigate-this-repo)
-- [Next Steps](#next-steps)
-- [References](#references)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+> **Student:** Utkarsh Khajuria · VIT Chennai · `utkarshkhajuria55@gmail.com`
+> **Mentor:** Efi Fogel · `efifogel@gmail.com`
+> **Program:** Google Summer of Code 2026 · CGAL · 350 h / 12 weeks
+> **Official repo:** https://bitbucket.org/taucgl/cgal-python-bindings
+> **Branch:** `feature/named-params-operators-poc`
+> **Latest upstream commit:** `ebea4e79` (Feb 27, 2026)
 
 ---
 
-## Overview
+## What this repo is
 
-This repository documents my preparation work for Google Summer of Code 2026 with CGAL. I've spent 156+ hours across twelve phases working on the Python bindings for the Computational Geometry Algorithms Library. This includes building CGAL from source, learning the 2D Arrangements package, empirically testing methods, discovering crash scenarios, researching solutions to technical challenges, implementing a precondition safety framework, implementing proof-of-concept Named Parameters operators, validating the manual build system, creating a complete multi-kernel CI pipeline, completing the Weeks 1-2 GSoC deliverable (parameter naming) ahead of schedule, completing the Weeks 3-4 GSoC deliverable (docstrings) ahead of schedule, building a 50/50 docstring automation proof-of-concept, and generating dedicated docstring header files for 5 packages.
+This repository documents every hour of pre-GSoC preparation work done
+between December 20, 2025 and the start of GSoC coding (May 2026).
+It is **not** the binding code itself — that lives on Bitbucket.
+Everything here is research notes, scripts, progress logs, and reference
+material that drove the actual code changes.
 
-### What has been done
+**155+ hours | 22 emails with mentor | 7 crashes found | 8-kernel CI pipeline**
 
-- Built CGAL successfully on macOS M2 (Apple Silicon)
-- Documented 21 methods across 2 pull requests
-- Discovered 7 crash scenarios through systematic testing
-- Found 10 silent corruption cases
-- Researched 3 docstring organization approaches (inline string confirmed)
-- Identified critical bugs (line 857 lifetime management issue)
-- Investigated line 857 — inside `#if CGALPY_AOS2_WITH_HISTORY`, returns `Curve_halfedges&`, not exposed in standard build configs
-- Created comprehensive CGAL package analysis (24 packages evaluated)
-- Implemented proof-of-concept Named Parameters operators
-- Discovered property map type resolution challenge (real Week 7-8 work)
-- Analyzed complete Named Parameters architecture (3,500+ lines of docs)
-- Validated manual build system with `aos2_epec_fixed` configuration
-- Discovered and documented Qt6/Clang compiler compatibility issue
-- Created complete 8-kernel CI pipeline (production-ready)
-- Implemented parameterized testing infrastructure (`build_config.sh`, `test_runner.py`)
-- Confirmed crash scenario #1 reproducibility (bus error validated)
-- Implemented two-layer precondition framework — all 7/7 crash tests passing
-- Refactored safety framework per mentor direction: 7 granular `CGALPY_NO_*`/`CGALPY_CHECK_*` flags
-- Added `nb::arg()` to all AOS2 mutation, Vertex, Halfedge, and Face methods
-- Restored 5 missing overloads found during parameter naming pass
-- Keyword argument calls from Python now work (e.g. `arr.insert_in_face_interior(p=p, f=f)`)
-- Added inline docstrings to all Vertex, Halfedge, Face methods (51 total)
-- Added inline docstrings to all AOS2 class methods + free functions (57 total)
-- 108 total documented methods — Weeks 3-4 deliverable complete pre-GSoC
-- Built docstring automation POC: 50/50 (100%) extraction from CGAL doc headers
-- Discovered 3 comment patterns in CGAL doc headers + alias map + override strategy
-- Generated 5 dedicated docstring header files (`docstrings/`) for pol2, as2, bso2, env2, vis2
-- ~50 docstring constants across 5 headers — Approach B implemented for remaining packages
+---
+
+## Repository structure
+
+```
+cgal-gsoc-2026-prep/
+├── phase1-foundation/          Dec 20-24 2025  Environment, DCEL study, nanobind mastery
+├── phase2-contributions/       Dec 25-29 2025  PRs, crash discovery (7 crashes, 10 corruptions)
+├── phase3-research/            Jan 5-11 2026   Docstring approaches A/B/C, PMP build, Named Params
+├── phase4-ci-infrastructure/   Feb 5-8 2026    Manual build fix, 8-kernel CI pipeline
+├── phase5-safety-framework/    Feb 19-27 2026  Framework built → refactored per Efi's direction
+├── weeks1-2-parameter-naming/  Mar 4-11 2026   nb::arg() on all AOS2 methods
+└── week3-4-docstrings/         Mar 13 – Apr 7  Docstring headers + automation + wiring
+    ├── docstring-headers/          All 5 .h files (reference copies)
+    ├── docstring_extractor.py      v1 extractor (iterative dev log)
+    ├── docstring_extractor_v2.py   Final clean extractor — 50/50 on AOS2
+    ├── verification_test.py        Runtime __doc__ spot-check script
+    ├── march13-vertex-halfedge-face-complete.md   March 13 session — vertex/halfedge/face docs
+    ├── march24-aos2-bindings-complete.md          March 24 session — AOS2 57 methods done
+    ├── march25-automation-research.md             Automation POC (50/50) + email thread
+    ├── april1-docstring-headers-generated.md      5 external header files created
+    ├── april7-polygon2-wiring.md                  10 missing constants identified + text
+    └── progress-notes.md                          Cumulative progress log (all sessions)
+```
+
+---
+
+## Key technical achievements (pre-GSoC)
+
+| Deliverable | Status | When |
+|---|---|---|
+| Dev environment (macOS M2, CGAL, nanobind) | ✅ Complete | Dec 20 |
+| DCEL mastery + 15 insertion methods tested | ✅ Complete | Dec 21 |
+| Line 857 bug discovered (`rv_policy` on free fn) | ✅ Complete | Dec 23 |
+| 7 crash scenarios documented with repro | ✅ Complete | Dec 28 – Jan 6 |
+| Proposal v3 (Efi's 9-section spec) | ✅ Complete | Jan 11 |
+| Named Parameters property map bridge problem | ✅ Complete | Jan 17 |
+| 8-kernel CI pipeline (GSoC Weeks 11-12) | ✅ Complete | Feb 8 |
+| 7-flag CMake safety architecture | ✅ Complete | Feb 27 |
+| nb::arg() on all AOS2 methods (GSoC Weeks 1-2) | ✅ Complete | Mar 11 |
+| Docstrings: vertex / halfedge / face (108 total) | ✅ Complete | Mar 13+24 |
+| Docstring extractor — 50/50 on AOS2 | ✅ Complete | Mar 25 |
+| 5 external docstring header files generated | ✅ Complete | Apr 1 |
+| 10 missing Polygon_2 constants identified + text | ✅ Complete | Apr 7 |
+
+---
+
+## Build commands (always use these)
+
+```bash
+export CC=/usr/bin/clang && export CXX=/usr/bin/clang++
+cmake -C ../cmake/tests/aos2_epec_fixed.cmake \
+      -DCMAKE_BUILD_TYPE=Release \
+      -Dnanobind_DIR=$(python3 -c "import nanobind; print(nanobind.cmake_dir())") \
+      ..
+make CGALPY -j4
+```
+
+Runtime import:
+
+```python
+import sys
+sys.path.insert(0, "build-manual/src/libs/cgalpy")
+import CGALPY   # capital — NOT cgalpy
+```
+
+---
+
+## Email thread summary
+
+| # | Key direction | Date |
+|---|---|---|
+| 1-2 | Make proposal concise, separate Task A/B | Dec 30-31 |
+| 3 | CI + package analysis required | Jan 7 |
+| 7-8 | Build results + CI clarifications | Feb 5 |
+| 11 | 5-point framework refactor direction | Feb 23 |
+| 17-18 | Weeks 3-4 complete + Landmarks correction | Mar 24 |
+| 20 | "automate docstring creation" | Mar 25 |
+| 22 | 50/50 POC results sent | Mar 25 |
+| 23 | **AWAITING EFI REPLY** | — |
+
+---
+
+## Current blockers
+
+- **Email 23** — awaiting Efi's reply on automation approach (Q5)
+- **polygon_2_docstrings.h** — 10 constants need appending before build
+- **4 other binding files** — wiring audit not yet done
+- **All local commits** — nothing pushed since `ebea4e79` (Feb 27)
+
+---
+
+## Absolute DO NOTs
+
+- Use lowercase `cgalpy` in import — it's `CGALPY`
+- Re-add `HandleRegistry` or `cgalpy_error_handler.h`
+- Commit without Efi's confirmation on Q5
+- Say "dynamically builds parameter chains"
+- Put docstring headers anywhere other than `src/libs/cgalpy/lib/docstrings/`
 
 ---
 
@@ -465,6 +523,11 @@ Files created (prep repo):
 - `week3-4-docstrings/docstring-headers/envelope_2_docstrings.h`
 - `week3-4-docstrings/docstring-headers/visibility_2_docstrings.h`
 
+#### Session 5 — April 7, 2026: Polygon_2 Wiring
+
+Identified 10 missing constants in `polygon_2_docstrings.h` and wrote their docstring text.
+Full details: [`week3-4-docstrings/april7-polygon2-wiring.md`](week3-4-docstrings/april7-polygon2-wiring.md)
+
 ---
 
 ## Technical Discoveries
@@ -546,81 +609,6 @@ Approach B is now implemented for 5 packages (pol2, as2, bso2, env2, vis2). AOS2
 
 ---
 
-## Repository Structure
-
-```
-cgal-gsoc-2026-prep/
-├── README.md                              <- this file
-├── CURRENT_STATUS.md
-├── paste.txt
-│
-├── proposal/
-│   ├── gsoc-2026-proposal-v1.md
-│   ├── gsoc-2026-proposal-v2.docx
-│   └── gsoc-2026-proposal-v3.docx
-│
-├── phase1-foundation/
-│   ├── environment-setup.md
-│   ├── cgal-learning-notes.md
-│   ├── nanobind-deep-dive.md
-│   └── line857-bug-analysis.md
-│
-├── phase2-contributions/
-│   ├── step2.3-first-pr/
-│   ├── step2.4-pr2-research/
-│   ├── step2.5-pr2-methods/
-│   └── step2.6-precondition-framework/
-│
-├── phase3-research/
-│   ├── docstring-approach-b/
-│   ├── proof-of-concept-operators/
-│   ├── research/
-│   ├── test-named-params-implementation/
-│   └── task3-named-params-study.md
-│
-├── phase4-ci-infrastructure/
-│   ├── implementation/
-│   │   ├── build_config.sh
-│   │   ├── test_runner.py
-│   │   └── bitbucket-pipelines.yml
-│   └── PHASE_4_5_IMPLEMENTATION.md
-│
-├── phase5-safety-framework/
-│   └── (precondition framework files)
-│
-├── week1-2-parameter-naming/
-│   ├── progress-notes.md
-│   └── sanity_test.py
-│
-├── week3-4-docstrings/
-│   ├── march13-vertex-halfedge-face-complete.md
-│   ├── march24-aos2-bindings-complete.md
-│   ├── march25-automation-research.md
-│   ├── docstring_extractor.py
-│   ├── progress-notes.md
-│   ├── verification_test.py
-│   └── docstring-headers/               <- NEW (April 1, 2026)
-│       ├── README.md
-│       ├── implementation.md
-│       ├── wiring-guide.md
-│       ├── polygon_2_docstrings.h
-│       ├── alpha_shape_2_docstrings.h
-│       ├── boolean_set_operations_2_docstrings.h
-│       ├── envelope_2_docstrings.h
-│       └── visibility_2_docstrings.h
-│
-└── efi-feedback/
-    ├── email01 through email16
-    ├── email17-mar24-weeks34-done.md
-    ├── email18-mar24-efi-landmarks-correction.md
-    ├── email19-mar25-what-to-research.md
-    ├── email20-mar25-efi-automate-docstrings.md
-    ├── email21-mar25-confirmed-direction.md
-    └── email22-mar25-50-50-results.md
-```
-
----
-
 ## Research Findings
 
 ### Completed tasks
@@ -642,6 +630,7 @@ cgal-gsoc-2026-prep/
 | Docstrings: AOS2 main | Done | 57 methods, +105 lines | Weeks 3-4 S2 |
 | Docstring automation POC | Done | 50/50 (100%) extraction | Weeks 3-4 S3 |
 | Docstring header files | Done | 5 headers, ~50 constants | Weeks 3-4 S4 |
+| Polygon_2 wiring audit | Done | 10 missing constants + text | Weeks 3-4 S5 |
 
 ---
 
@@ -665,13 +654,14 @@ cgal-gsoc-2026-prep/
 | Weeks 3-4 S2 | Docstrings: AOS2 main | 5h | Mar 24 |
 | Weeks 3-4 S3 | Docstring automation POC | 3h | Mar 25 |
 | Weeks 3-4 S4 | Docstring header files (5 pkgs) | 3h | Apr 1 |
-| **Total** | | **~156h** | **Dec 20–Apr 1** |
+| Weeks 3-4 S5 | Polygon_2 wiring audit | 1h | Apr 7 |
+| **Total** | | **~156h** | **Dec 20–Apr 7** |
 
 ### Contribution metrics
 
 | Metric | Count |
 |---|---|
-| Total hours invested | 156+ |
+| Total hours invested | 155+ |
 | Total documentation lines | 25,000+ |
 | Methods with parameter names | All AOS2 + vertex/halfedge/face |
 | Methods with inline docstrings | 108 (57 AOS2 + 13 vertex + 14 halfedge + 24 face) |
@@ -748,30 +738,12 @@ For reviewing end-to-end:
 
 ---
 
-## Next Steps
-
-### Awaiting Efi's response (Email 23)
-
-| Q# | Item | Asked |
-|---|---|---|
-| Q1 | `WITH_HISTORY` build config | Email 13, Feb 27 |
-| Q2 | `curve_halfedges` fix approach | Email 13, Feb 27 |
-| Q3 | CGAL fork location (taucgl vs personal) | Email 12, Feb 24 |
-| Q4 | `help-flags` target vs `cmake -LH` | Email 15, Mar 9 |
-| Q5 | Automation: clean up + run on all binding files | Email 22, Mar 25 |
-
-### Immediate actions (no email needed)
-
-1. **Wire headers** — add `#include "docstrings/..."` to 5 binding `.cpp` files and append DOC constants to each `.def()` call. Full instructions: [`week3-4-docstrings/docstring-headers/wiring-guide.md`](week3-4-docstrings/docstring-headers/wiring-guide.md)
-2. **Rebuild + verify** — `make CGALPY -j4` then check `.__doc__` in Python REPL
-3. **Extend automation script** — run against `~/cgal/Polygon/doc/Polygon/CGAL/` to measure `Polygon_2` extraction coverage
-
-### GSoC timeline status
+## GSoC Timeline Status
 
 | Weeks | Task | Status |
 |---|---|---|
 | 1-2 | Parameter Names | Complete (pre-GSoC, Mar 4-11) |
-| 3-4 | Docstrings | Complete (pre-GSoC, Mar 13 – Apr 1) |
+| 3-4 | Docstrings | Complete (pre-GSoC, Mar 13 – Apr 7) |
 | 3-4+ | Docstring automation POC | Complete (Mar 25, 50/50) |
 | 3-4+ | Docstring header files | Generated (Apr 1) — wiring pending |
 | 5-6 | Safety and Preconditions | 7 CMake flags done, CGAL patch pending |
@@ -804,6 +776,6 @@ Thanks to Efi Fogel for detailed mentorship through 22 email exchanges. The dept
 
 ---
 
-Last updated: April 1, 2026
+Last updated: April 7, 2026
 Repository: [github.com/UtkarsHMer05/cgal-gsoc-2026-prep](https://github.com/UtkarsHMer05/cgal-gsoc-2026-prep)
-Status: Weeks 1-2 complete | Weeks 3-4 complete | Automation POC 50/50 | Header files generated | Awaiting Email 23
+Status: Weeks 1-2 complete | Weeks 3-4 complete | Automation POC 50/50 | Header files generated | Polygon_2 wiring audit done | Awaiting Email 23

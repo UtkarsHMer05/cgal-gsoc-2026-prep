@@ -1,107 +1,97 @@
-# Weeks 3-4: Progress Notes
+# Weeks 3-4 Docstrings — Progress Notes
 
+> Cumulative log of all sessions in this work area.
+> Last updated: April 7, 2026
 
-## Session 1 — March 13, 2026
+---
 
-Goal: Add docstrings to vertex, halfedge, and face binding files.
+## Session 1 — March 13, 2026 (4 hours)
 
-Files modified:
-- `src/libs/cgalpy/lib/arr_vertex_bindings.cpp` — 13 methods
-- `src/libs/cgalpy/lib/arr_halfedge_bindings.cpp` — 14 methods
-- `src/libs/cgalpy/lib/arr_face_bindings.cpp` — 24 methods
+**Goal:** Begin Weeks 3-4 — add docstrings to DCEL component binding files.
 
-Docstring pattern confirmed (from `export_pol3_bgl.cpp`, `tri2`, `tri3`):
+Confirmed correct pattern from existing code. Completed:
+- `arr_vertex_bindings.cpp` — 13 methods
+- `arr_halfedge_bindings.cpp` — 14 methods
+- `arr_face_bindings.cpp` — 24 methods
 
-```cpp
-.def("method", &Class::method,
-     py::arg("x"),
-     "Docstring text here.",
-     ri)
+Build: clean. Runtime: verified. See `march13-vertex-halfedge-face-complete.md`.
+
+---
+
+## Session 2 — March 24, 2026 (4 hours)
+
+**Goal:** Complete Weeks 3-4 — AOS2 main bindings file.
+
+- `arrangement_on_surface_2_bindings.cpp` — 57 methods documented
+- Landmarks issue corrected by Efi (Email 18 — block exists at lines 1182-1192)
+
+**Total after this session: 108 methods.** See `march24-aos2-bindings-complete.md`.
+
+---
+
+## Session 3 — March 25, 2026 (3 hours)
+
+**Goal:** Proof-of-concept docstring extractor (triggered by Email 20 from Efi).
+
+- Discovered CGAL doc headers at `~/cgal/Arrangement_on_surface_2/doc/`
+- Identified 3 comment patterns (single-line, multi-line, ingroup_block)
+- Built alias map (5 entries) + manual overrides (4 entries)
+- After 6 iterations: **50/50 (100%) coverage** on AOS2 binding function list
+- Final script: `docstring_extractor_v2.py`
+- Emails 21 + 22 sent. **Email 23 awaiting Efi reply.**
+
+See `march25-automation-research.md`.
+
+---
+
+## Session 4 — April 1, 2026 (3 hours)
+
+**Goal:** Generate external docstring header files for all 5 non-AOS2 packages.
+
+Created `src/libs/cgalpy/lib/docstrings/` directory and 5 header files:
+
+| File | Constants |
+|---|---|
+| `polygon_2_docstrings.h` | 22 (+ 10 pending — Apr 7) |
+| `alpha_shape_2_docstrings.h` | 10 |
+| `boolean_set_operations_2_docstrings.h` | 7 |
+| `envelope_2_docstrings.h` | 9 |
+| `visibility_2_docstrings.h` | 5 |
+
+Headers generated but NOT yet included in `.cpp` files.
+Build NOT run. See `april1-docstring-headers-generated.md`.
+
+---
+
+## Session 5 — April 7, 2026 (1 hour)
+
+**Goal:** Audit `polygon_2_bindings.cpp` wiring vs. header.
+
+Discovery: `.cpp` ALREADY has DOC constants on every `.def()` — but
+`polygon_2_docstrings.h` is missing **10 constants** the `.cpp` references.
+
+The 10 missing constants:
+
+```
+IS_COUNTERCLOCKWISE_ORIENTED_DOC   IS_CLOCKWISE_ORIENTED_DOC
+IS_COLLINEAR_ORIENTED_DOC          HAS_ON_POSITIVE_SIDE_DOC
+HAS_ON_NEGATIVE_SIDE_DOC           HAS_ON_BOUNDARY_DOC
+HAS_ON_BOUNDED_SIDE_DOC            HAS_ON_UNBOUNDED_SIDE_DOC
+VERTEX_MUTABLE_DOC                 EDGE_DOC
 ```
 
-Key findings:
-- `py::` is an alias for `nanobind::` (`namespace py = nanobind;` at line 94)
-- `ri` is `constexpr auto ri(py::rv_policy::reference_internal);` at line 755
-- Inline string literals only — no `R"(...)"`, no external files
-- Docstring goes after all `py::arg()` calls, before `ri` or `py::keep_alive`
-
-Build result: clean, 0 errors, Apple Clang 17, macOS M2.
-Verification: all 51 docstrings confirmed via `fn.__doc__` in Python REPL.
-
+Exact text for all 10 written. Fix command ready.
+See `april7-polygon2-wiring.md`.
 
 ---
 
+## Running totals
 
-## Session 2 — March 24, 2026
-
-Goal: Add docstrings to `arrangement_on_surface_2_bindings.cpp`.
-
-File modified:
-- `src/libs/cgalpy/lib/arrangement_on_surface_2_bindings.cpp`
-
-Starting state: 1345 lines.
-Ending state: 1450 lines (+105 lines).
-
-Patch approach: `re.subn()` with `\s+` regex — plain `str.replace()` failed because Python `\n` didn't match actual newlines. 32/32 replacements in one run.
-
-Class member methods documented (25):
-
-| Category     | Methods                                                                                                      |
-|--------------|--------------------------------------------------------------------------------------------------------------|
-| Traits       | `geometry_traits`, `topology_traits`, `fictitious_face`                                                      |
-| Insertion    | `insert_from_left_vertex` x2, `insert_from_right_vertex` x2, `insert_in_face_interior` x2, `insert_at_vertices` x3 |
-| Modification | `modify_vertex`, `modify_edge`, `split_edge`, `merge_edge`, `remove_edge`, `remove_isolated_vertex`         |
-| Query        | `is_empty`, `is_valid`, `number_of_edges`, `number_of_faces`, `number_of_halfedges`, `number_of_isolated_vertices`, `number_of_unbounded_faces`, `number_of_vertices` |
-| Utility      | `assign`, `clear`                                                                                            |
-| Iterators    | `vertices`, `halfedges`, `edges`, `faces`, `unbounded_faces`                                                 |
-
-Free functions documented (32 overloads, 9 names):
-`insert_point` x4, `insert_non_intersecting_curve` x4, `insert_non_intersecting_curves` x1, `insert` x11, `do_intersect` x4, `decompose` x1, `zone` x4, `remove_edge` x1, `remove_vertex` x1.
-
-Build: clean, incremental (about 30 seconds).
-Verification: 25/25 class methods passed, 9/9 free function names passed.
-
-Mistake made: asked Efi about Landmarks_pl block being missing — it was already there at lines 1327-1332. Found via `grep` after Efi corrected. Lesson: grep first, ask second.
-
-
----
-
-
-## Session 3 — March 25, 2026
-
-Goal: Research docstring automation (Efi's suggestion via Email 20).
-
-Discovery: CGAL doc headers live at `~/cgal/Arrangement_on_surface_2/doc/Arrangement_on_surface_2/CGAL/`, not in Homebrew-installed headers (those have zero comments).
-
-Doc format: `/*!` style comments before function signatures. Three patterns:
-1. Single-line `/*! text. */` for simple methods
-2. Multi-line `/*! text \pre conditions */` for complex methods
-3. `/*! \ingroup ... \n\n description */` for free functions
-
-Script evolution: 7 iterations from 0% to 50/50 (100%).
-Key failure: negative lookahead in DOTALL mode breaks all matches (Attempt 5).
-Key fix: separate pattern for `\ingroup` blocks + forward scan for function name.
-
-Final result: 50/50 (100%) on full AOS2 target function list.
-
-Files created:
-- `docstring_extractor.py` — the working extraction script
-- `march25-automation-research.md` — full research documentation
-
-
----
-
-
-## Cumulative state after March 25
-
-| File                                       | Methods Documented | Lines Added | Date     |
-|--------------------------------------------|--------------------|-------------|----------|
-| `arr_vertex_bindings.cpp`                  | 13                 | ~50         | March 13 |
-| `arr_halfedge_bindings.cpp`                | 14                 | ~54         | March 13 |
-| `arr_face_bindings.cpp`                    | 24                 | ~101        | March 13 |
-| `arrangement_on_surface_2_bindings.cpp`    | 57                 | ~105        | March 24 |
-| **Total**                                  | **108**            | **+310 lines** |       |
-
-Automation POC: 50/50 (100%) on AOS2 function list.
-Total diff ready for Bitbucket: +492 insertions across 5 files.
-Latest Bitbucket commit: `ebea4e79` Feb 27 — not yet pushed upstream.
+| Metric | Value |
+|---|---|
+| Sessions | 5 |
+| Hours | ~15 |
+| Methods with docstrings | 108 |
+| External headers | 5 |
+| Automation coverage | 50/50 AOS2 |
+| Missing constants found | 10 (polygon_2) |
